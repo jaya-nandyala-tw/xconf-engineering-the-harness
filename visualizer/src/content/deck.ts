@@ -182,7 +182,7 @@ export const DECK: DeckItem[] = [
     content: {
       people: [
         {
-          name: "Jayasimha Reddy Nandyala",
+          name: "Jaya Simha Reddy Nandyala",
           title: "Senior Consultant | Full Stack Engineer",
           bio: "7+ years building enterprise apps across React, Python, and Java Spring Boot — now designing harness-engineering systems that make AI coding agents reliable across large, multi-repo codebases.",
         },
@@ -257,6 +257,27 @@ export const DECK: DeckItem[] = [
     sceneSlug: "workspace-wrapper",
     coversSlides: [],
   },
+  // Context rot content merged in here (was its own section 8) — this is a live
+  // demonstration of exactly the pain point "the problem, generalized" is describing.
+  {
+    kind: "static",
+    id: "s19",
+    section: 3,
+    navLabel: "Honesty beat",
+    slideKind: "statement",
+    content: {
+      title: "Bigger context windows don't fix this — they just make the haystack bigger.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "interactive",
+    id: "context-rot-problem",
+    section: 3,
+    navLabel: "Context Rot — Problem",
+    route: "/context-rot-problem",
+    sceneSlug: "context-rot-problem",
+    coversSlides: ["S19", "S20"],
+  },
   {
     kind: "static",
     id: "s8",
@@ -264,7 +285,7 @@ export const DECK: DeckItem[] = [
     navLabel: "Root cause",
     slideKind: "statement",
     content: {
-      title: "AI is only as good as the context it gets + the feedback loops that correct it.",
+      title: "AI is only as good as\nthe context it gets + the feedback loops that correct it.",
       highlightPlus: true,
     } satisfies StatementContent,
   },
@@ -322,6 +343,17 @@ export const DECK: DeckItem[] = [
     } satisfies StatementContent,
     bespokeComponent: SlideFilePathMatch,
   },
+  // Context rot's "Solution 2" is the deep-dive proof of this exact progressive-
+  // disclosure idea — merged in right after the concept slide above.
+  {
+    kind: "interactive",
+    id: "progressive-disclosure",
+    section: 4,
+    navLabel: "Context Rot — Progressive Disclosure",
+    route: "/progressive-disclosure",
+    sceneSlug: "progressive-disclosure",
+    coversSlides: ["S19", "S20"],
+  },
   {
     kind: "static",
     id: "s13",
@@ -370,6 +402,17 @@ export const DECK: DeckItem[] = [
     sceneSlug: "guides-sensors",
     coversSlides: ["S16"],
   },
+  // Context rot's "Solution 1" — sub-agents as context firewalls — is another
+  // corrective mechanism in the same spirit as the guides/sensors loop above.
+  {
+    kind: "interactive",
+    id: "context-rot-solution-1",
+    section: 6,
+    navLabel: "Context Rot — Sub-Agents",
+    route: "/context-rot-solution-1",
+    sceneSlug: "context-rot-solution-1",
+    coversSlides: ["S19", "S20"],
+  },
   {
     kind: "static",
     id: "s17a",
@@ -396,57 +439,8 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
-    id: "s18",
-    section: 7,
-    navLabel: "Demo — Sensors in action",
-    slideKind: "video-placeholder",
-    content: {
-      heading: "Demo 2 — Sensors in action",
-      setupLine: "Now watch the agent make a mistake — and catch it itself before a human ever sees it.",
-      callouts: ["Agent claims: done", "Sensor disagrees", "Agent self-corrects — no human review yet", "Silent on pass"],
-    } satisfies VideoPlaceholderContent,
-  },
-  {
-    kind: "static",
-    id: "s19",
-    section: 8,
-    navLabel: "Honesty beat",
-    slideKind: "statement",
-    content: {
-      title: "Bigger context windows don't fix this — they just make the haystack bigger.",
-    } satisfies StatementContent,
-  },
-  {
-    kind: "interactive",
-    id: "context-rot-problem",
-    section: 8,
-    navLabel: "Context Rot — Problem",
-    route: "/context-rot-problem",
-    sceneSlug: "context-rot-problem",
-    coversSlides: ["S19", "S20"],
-  },
-  {
-    kind: "interactive",
-    id: "context-rot-solution-1",
-    section: 8,
-    navLabel: "Context Rot — Sub-Agents",
-    route: "/context-rot-solution-1",
-    sceneSlug: "context-rot-solution-1",
-    coversSlides: ["S19", "S20"],
-  },
-  {
-    kind: "interactive",
-    id: "progressive-disclosure",
-    section: 8,
-    navLabel: "Context Rot — Progressive Disclosure",
-    route: "/progressive-disclosure",
-    sceneSlug: "progressive-disclosure",
-    coversSlides: ["S19", "S20"],
-  },
-  {
-    kind: "static",
     id: "s20",
-    section: 8,
+    section: 6,
     navLabel: "Context rot recap",
     slideKind: "table",
     content: {
@@ -458,6 +452,18 @@ export const DECK: DeckItem[] = [
         ["Self-verification bias", "Computational sensors override the agent's own “I'm done” claim"],
       ],
     } satisfies TableContent,
+  },
+  {
+    kind: "static",
+    id: "s18",
+    section: 7,
+    navLabel: "Demo — Sensors in action",
+    slideKind: "video-placeholder",
+    content: {
+      heading: "Demo 2 — Sensors in action",
+      setupLine: "Now watch the agent make a mistake — and catch it itself before a human ever sees it.",
+      callouts: ["Agent claims: done", "Sensor disagrees", "Agent self-corrects — no human review yet", "Silent on pass"],
+    } satisfies VideoPlaceholderContent,
   },
   {
     kind: "static",
