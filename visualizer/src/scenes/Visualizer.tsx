@@ -116,34 +116,30 @@ function GroupSection({ group, items }: { group: string; items: SceneMeta[] }) {
   );
 }
 
-export function Launcher() {
+export function Visualizer() {
   const blocks = buildBlocks(scenes);
 
   return (
-    <div className="min-h-screen bg-[#05060a] text-white px-8 py-12">
-      <div className="mx-auto max-w-5xl">
-        <p className="text-xs uppercase tracking-[0.2em] text-white/40">Engineering the Harness</p>
-        <h1 className="mt-2 text-4xl font-semibold">Concept Visualizer</h1>
-        <p className="mt-3 max-w-2xl text-white/60">
-          One scene per concept. Open a scene, then use{" "}
-          <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">→</kbd> /{" "}
-          <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">space</kbd> to advance beats,{" "}
-          <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">esc</kbd> to come back here.
-        </p>
+    <div>
+      <p className="max-w-2xl text-white/60">
+        Out-of-order practice — jump straight to any interactive concept. Open one, then use{" "}
+        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">→</kbd> /{" "}
+        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">space</kbd> to advance beats,{" "}
+        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">esc</kbd> for the Gallery.
+      </p>
 
-        <div className="mt-10 flex flex-col gap-4">
-          {blocks.map((block) =>
-            block.kind === "group" ? (
-              <GroupSection key={block.group} group={block.group} items={block.items} />
-            ) : (
-              <div key={block.items.map((s) => s.slug).join(",")} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {block.items.map((scene) => (
-                  <SceneCard key={scene.slug} scene={scene} />
-                ))}
-              </div>
-            ),
-          )}
-        </div>
+      <div className="mt-8 flex flex-col gap-4">
+        {blocks.map((block) =>
+          block.kind === "group" ? (
+            <GroupSection key={block.group} group={block.group} items={block.items} />
+          ) : (
+            <div key={block.items.map((s) => s.slug).join(",")} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {block.items.map((scene) => (
+                <SceneCard key={scene.slug} scene={scene} />
+              ))}
+            </div>
+          ),
+        )}
       </div>
     </div>
   );

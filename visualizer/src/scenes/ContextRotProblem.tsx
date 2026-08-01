@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
+import { useSceneNav } from "../lib/useSceneNav";
 import { useSpringNumber } from "../lib/useSpringNumber";
 import { SceneChrome } from "../components/SceneChrome";
 
@@ -91,9 +91,9 @@ const CATEGORY_OF: Record<string, Category> = {
 const CATEGORY_ORDER: Category[] = ["rules", "specdocs", "exploration", "conversation"];
 
 const CATEGORY_META: Record<Category, { label: string; color: string }> = {
-  rules: { label: "System & rules", color: "#60a5fa" },
+  rules: { label: "System & rules", color: "#a78bfa" },
   specdocs: { label: "Spec / doc reads", color: "#fbbf24" },
-  exploration: { label: "Codebase exploration", color: "#34d399" },
+  exploration: { label: "Codebase exploration", color: "#4ade80" },
   conversation: { label: "Conversation", color: "#e5e7eb" },
 };
 
@@ -522,18 +522,15 @@ function ContextBudgetPanel({ visibleIds }: { visibleIds: string[] }) {
 }
 
 export function ContextRotProblem() {
-  const navigate = useNavigate();
-  const { beat } = useBeats({
-    total: BEATS.length,
-    onPastEnd: () => navigate("/context-rot-solution-1"),
-  });
+  const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("context-rot-problem", BEATS.length);
+  const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
   const config = BEATS[beat];
   const chatLog = buildChatLog(BEATS, beat);
 
   return (
     <SceneChrome
-      nextHref="/context-rot-solution-1"
-      nextLabel="Next: Solution 1 — Sub-Agents →"
+      nextHref={nextHref}
+      nextLabel={nextLabel}
       label="Context Rot — Problem"
       totalBeats={BEATS.length}
       currentBeat={beat}

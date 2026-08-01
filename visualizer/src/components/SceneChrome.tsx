@@ -2,12 +2,15 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { BeatIndicator } from "./BeatIndicator";
+import thoughtworksLogo from "../assets/brand/thoughtworks-wordmark-light.png";
 
 interface SceneChromeProps {
   label: string;
   totalBeats: number;
   currentBeat: number;
-  caption: ReactNode;
+  // Omit on slides that carry their own full layout (cover, table, close) — the
+  // rotating-caption strip only makes sense for scenes built around one big statement.
+  caption?: ReactNode;
   children: ReactNode;
   // Optional full-height right rail — spans the entire viewport height, independent
   // of this scene's own header/footer, instead of living inside the centered `main`
@@ -33,11 +36,11 @@ export function SceneChrome({
 }: SceneChromeProps) {
   const isLast = currentBeat === totalBeats - 1;
   return (
-    <div className="flex h-screen w-screen bg-[#05060a] text-white overflow-hidden">
+    <div className="relative flex h-screen w-screen bg-wave text-white overflow-hidden">
       <div className="flex h-full min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between px-8 pt-6 text-xs uppercase tracking-[0.2em] text-white/40">
           <Link to="/" className="hover:text-white/70 transition-colors">
-            ← menu
+            ← gallery
           </Link>
           <span>{label}</span>
           <span>
@@ -50,20 +53,22 @@ export function SceneChrome({
         </main>
 
         <footer className="flex flex-col items-center gap-6 pb-10">
-          <div className="min-h-[110px] max-w-5xl px-6 text-center">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={String(caption)}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35 }}
-                className="text-4xl font-medium leading-tight text-white/90"
-              >
-                {caption}
-              </motion.p>
-            </AnimatePresence>
-          </div>
+          {caption != null && (
+            <div className="min-h-[130px] max-w-6xl px-6 text-center">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={String(caption)}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35 }}
+                  className="font-display text-5xl font-bold leading-tight text-white/90"
+                >
+                  {caption}
+                </motion.p>
+              </AnimatePresence>
+            </div>
+          )}
           <BeatIndicator total={totalBeats} current={currentBeat} />
 
           {isLast && nextHref ? (
@@ -79,10 +84,15 @@ export function SceneChrome({
 
           <p className="text-[11px] uppercase tracking-[0.15em] text-white/30">
             {isLast && nextHref
-              ? <>→ / space next flow &nbsp;·&nbsp; ← back &nbsp;·&nbsp; r restart &nbsp;·&nbsp; esc menu</>
-              : <>→ / space next &nbsp;·&nbsp; ← back &nbsp;·&nbsp; r restart &nbsp;·&nbsp; esc menu</>}
+              ? <>→ / space next flow &nbsp;·&nbsp; ← back &nbsp;·&nbsp; r restart &nbsp;·&nbsp; esc gallery</>
+              : <>→ / space next &nbsp;·&nbsp; ← back &nbsp;·&nbsp; r restart &nbsp;·&nbsp; esc gallery</>}
           </p>
         </footer>
+
+        <div className="pointer-events-none absolute bottom-6 left-8 flex items-center gap-3 opacity-80">
+          <img src={thoughtworksLogo} alt="Thoughtworks" className="h-4 w-auto" />
+          <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">XConf 2026</span>
+        </div>
       </div>
 
       {sidebar && (

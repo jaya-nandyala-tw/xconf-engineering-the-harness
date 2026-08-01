@@ -1,5 +1,8 @@
 import { Route, Routes } from "react-router-dom";
-import { Launcher } from "./scenes/Launcher";
+import { LandingLayout } from "./components/LandingLayout";
+import { Gallery } from "./scenes/Gallery";
+import { Visualizer } from "./scenes/Visualizer";
+import { SlidePlayer } from "./scenes/SlidePlayer";
 import { ContextRotProblem } from "./scenes/ContextRotProblem";
 import { ContextRotSolution1 } from "./scenes/ContextRotSolution1";
 import { SpecSplitTree } from "./scenes/SpecSplitTree";
@@ -10,7 +13,11 @@ import { WorkspaceWrapper } from "./scenes/WorkspaceWrapper";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Launcher />} />
+      <Route element={<LandingLayout />}>
+        <Route path="/" element={<Gallery />} />
+        <Route path="/visualizer" element={<Visualizer />} />
+      </Route>
+      <Route path="/deck/:id" element={<SlidePlayer />} />
       <Route path="/context-rot-problem" element={<ContextRotProblem />} />
       <Route path="/context-rot-solution-1" element={<ContextRotSolution1 />} />
       <Route path="/progressive-disclosure" element={<SpecSplitTree />} />

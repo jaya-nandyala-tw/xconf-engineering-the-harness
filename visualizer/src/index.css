@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+/* XConf 2026 / Thoughtworks brand tokens, pulled from the talk's slide template
+   (Colors + Typography reference slides) so the visualizer reads as part of the
+   same deck instead of a separate dev tool. */
+@theme {
+  --color-wave: #003d4f;
+  --color-flamingo: #f2617a;
+  --color-turmeric: #cc850a;
+  --color-jade: #6b9e78;
+  --color-sapphire: #47a1ad;
+  --color-amethyst: #634f7d;
+  --color-mist: #edf1f3;
+  --color-talc: #ffffff;
+  --color-onyx: #000000;
+
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bitter", Georgia, serif;
+}
+
 :root {
   color-scheme: dark;
 }
@@ -9,11 +27,11 @@ body,
 #root {
   margin: 0;
   height: 100%;
-  background: #05060a;
+  background: var(--color-wave);
 }
 
 body {
-  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 

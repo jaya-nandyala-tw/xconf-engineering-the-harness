@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
+import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
 
 type StageId = "guides" | "agent" | "sensors" | "outcome";
@@ -8,9 +9,9 @@ type SensorState = "pending" | "pass" | "fail";
 type LoopKind = "none" | "autofix" | "confirm-wait" | "confirm-resume";
 
 const STAGES: { id: StageId; label: string; color: string }[] = [
-  { id: "guides", label: "Guides", color: "#60a5fa" },
+  { id: "guides", label: "Guides", color: "#a78bfa" },
   { id: "agent", label: "Perform Task", color: "#e5e7eb" },
-  { id: "sensors", label: "Sensors", color: "#34d399" },
+  { id: "sensors", label: "Sensors", color: "#4ade80" },
   { id: "outcome", label: "Outcome", color: "#e5e7eb" },
 ];
 const STAGE_ORDER: StageId[] = ["guides", "agent", "sensors", "outcome"];
@@ -243,7 +244,7 @@ function StageNode({
     id === "sensors" && beat.sensors
       ? beat.sensors.some((s) => s === "fail")
         ? "#f87171"
-        : "#34d399"
+        : "#4ade80"
       : undefined;
 
   return (
@@ -268,7 +269,7 @@ function StageNode({
                 key={i}
                 className="h-1.5 w-1.5 rounded-full"
                 style={{
-                  backgroundColor: s === "pass" ? "#34d399" : s === "fail" ? "#f87171" : "rgba(255,255,255,0.15)",
+                  backgroundColor: s === "pass" ? "#4ade80" : s === "fail" ? "#f87171" : "rgba(255,255,255,0.15)",
                 }}
               />
             ))}
@@ -308,7 +309,7 @@ function MainConnector({ from, to, lit }: { from: number; to: number; lit: boole
 }
 
 function WaypointIcon({ state }: { state: "wait" | "approved" }) {
-  const color = state === "approved" ? "#34d399" : "#60a5fa";
+  const color = state === "approved" ? "#4ade80" : "#a78bfa";
   return (
     <foreignObject x={WAYPOINT_X - 20} y={WAYPOINT_Y - 20} width={40} height={40}>
       <motion.div
@@ -326,7 +327,7 @@ function WaypointIcon({ state }: { state: "wait" | "approved" }) {
 
 function FeedbackLoop({ loop }: { loop: LoopKind }) {
   const visible = loop !== "none";
-  const arcColor = loop === "confirm-resume" ? "#34d399" : "#60a5fa";
+  const arcColor = loop === "confirm-resume" ? "#4ade80" : "#a78bfa";
   const pathBTarget = loop === "autofix" || loop === "confirm-resume" ? 1 : 0;
   const showWaypoint = loop === "confirm-wait" || loop === "confirm-resume";
 
@@ -367,7 +368,7 @@ function FeedbackLoop({ loop }: { loop: LoopKind }) {
 }
 
 function WorkflowDiagram({ config, activeIndex }: { config: Beat; activeIndex: number }) {
-  const arcColor = config.loop === "confirm-resume" ? "#34d399" : "#60a5fa";
+  const arcColor = config.loop === "confirm-resume" ? "#4ade80" : "#a78bfa";
   return (
     <div className="relative rounded-[28px] border-2 border-white/10 bg-white/[0.02] px-7 pb-7 pt-11">
       <span className="absolute left-7 top-4 font-mono text-[11px] uppercase tracking-[0.2em] text-white/35">
@@ -429,7 +430,7 @@ function RequestBubble({ text }: { text: string | null }) {
 function SensorRow({ label, state }: { label: string; state: SensorState }) {
   const tone =
     state === "pass"
-      ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: "#6ee7b7" }
+      ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: "#86efac" }
       : state === "fail"
         ? { bg: "rgba(248,113,113,0.16)", border: "rgba(248,113,113,0.65)", text: "#fca5a5" }
         : { bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.1)", text: "rgba(255,255,255,0.35)" };
@@ -496,7 +497,7 @@ function DetailPanel({ config }: { config: Beat }) {
                 {config.loopNote && (
                   <p
                     className="text-sm leading-snug"
-                    style={{ color: config.loop === "confirm-resume" ? "#6ee7b7" : "#93c5fd" }}
+                    style={{ color: config.loop === "confirm-resume" ? "#86efac" : "#c4b5fd" }}
                   >
                     {config.loopNote}
                   </p>
@@ -518,7 +519,8 @@ function DetailPanel({ config }: { config: Beat }) {
 }
 
 export function GuidesSensorsPipeline() {
-  const { beat } = useBeats({ total: BEATS.length });
+  const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("guides-sensors", BEATS.length);
+  const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
   const config = BEATS[beat];
   const activeIndex = config.active ? STAGE_ORDER.indexOf(config.active) : -1;
 
@@ -528,6 +530,8 @@ export function GuidesSensorsPipeline() {
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
+      nextHref={nextHref}
+      nextLabel={nextLabel}
     >
       <div className="flex w-full max-w-5xl items-start gap-12">
         <WorkflowDiagram config={config} activeIndex={activeIndex} />

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
+import { useSceneNav } from "../lib/useSceneNav";
 import { useSpringNumber } from "../lib/useSpringNumber";
 import { SceneChrome } from "../components/SceneChrome";
 
@@ -99,7 +99,7 @@ const CATEGORY_OF: Record<string, Category> = {
 const CATEGORY_ORDER: Category[] = ["rules", "specdocs", "exploration", "conversation"];
 
 const CATEGORY_META: Record<Category, { label: string; color: string }> = {
-  rules: { label: "System & rules", color: "#60a5fa" },
+  rules: { label: "System & rules", color: "#a78bfa" },
   specdocs: { label: "Spec / doc reads", color: "#fbbf24" },
   exploration: { label: "Codebase exploration", color: "#34d399" },
   conversation: { label: "Conversation", color: "#e5e7eb" },
@@ -509,11 +509,11 @@ function ContextBudgetPanel({ visibleIds }: { visibleIds: string[] }) {
 }
 
 export function ContextRotSolution1() {
-  const navigate = useNavigate();
-  const { beat } = useBeats({
-    total: BEATS.length,
-    onPastEnd: () => navigate("/progressive-disclosure"),
-  });
+  const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav(
+    "context-rot-solution-1",
+    BEATS.length,
+  );
+  const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
   const config = BEATS[beat];
   const chatLog = buildChatLog(BEATS, beat);
 
@@ -523,8 +523,8 @@ export function ContextRotSolution1() {
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
-      nextHref="/progressive-disclosure"
-      nextLabel="Next: Solution 2 — Progressive Disclosure →"
+      nextHref={nextHref}
+      nextLabel={nextLabel}
       sidebar={
         <div className="flex h-full min-h-0 flex-col gap-3">
           <div className="min-h-0 flex-[7]">

@@ -2,6 +2,7 @@ import { hierarchy, tree as d3tree } from "d3-hierarchy";
 import { linkVertical } from "d3-shape";
 import { AnimatePresence, motion, useTransform } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
+import { useSceneNav } from "../lib/useSceneNav";
 import { useSpringNumber } from "../lib/useSpringNumber";
 import { SceneChrome } from "../components/SceneChrome";
 
@@ -388,7 +389,11 @@ function TokensLoadedBar({ linesLoaded }: { linesLoaded: number }) {
 }
 
 export function SpecSplitTree() {
-  const { beat } = useBeats({ total: BEATS.length });
+  const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav(
+    "progressive-disclosure",
+    BEATS.length,
+  );
+  const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
   const config = BEATS[beat];
   const activeIds = new Set(config.activeIds);
 
@@ -398,6 +403,8 @@ export function SpecSplitTree() {
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
+      nextHref={nextHref}
+      nextLabel={nextLabel}
     >
       <div className="flex w-full max-w-[1400px] items-center gap-6">
         <div className="flex flex-1 items-center justify-center overflow-hidden">

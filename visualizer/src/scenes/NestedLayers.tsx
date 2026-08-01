@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
+import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
 
 interface Layer {
@@ -17,7 +18,7 @@ const LAYERS: Layer[] = [
     title: "Harness Engineering",
     level: "system",
     metaphor: "the operating system",
-    color: "#60a5fa",
+    color: "#a78bfa",
     bullets: ["Orchestration", "Tool permissions", "Guardrails", "Retry loops"],
   },
   {
@@ -25,7 +26,7 @@ const LAYERS: Layer[] = [
     title: "Context Engineering",
     level: "session",
     metaphor: "the briefing packet",
-    color: "#22d3ee",
+    color: "#fb923c",
     bullets: ["Retrieval", "Memory", "Summarization"],
   },
   {
@@ -188,7 +189,8 @@ function AgentTitle() {
 }
 
 export function NestedLayers() {
-  const { beat } = useBeats({ total: BEATS.length });
+  const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("nested-layers", BEATS.length);
+  const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
   const config = BEATS[beat];
 
   return (
@@ -197,6 +199,8 @@ export function NestedLayers() {
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
+      nextHref={nextHref}
+      nextLabel={nextLabel}
     >
       <div className="flex w-full max-w-4xl items-center justify-center">
         <AnimatePresence mode="wait">

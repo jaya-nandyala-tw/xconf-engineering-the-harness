@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useBeats } from "../lib/useBeats";
+import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
 
 type RepoId = "billing" | "checkout" | "invoicing";
@@ -157,8 +158,8 @@ const BEATS: Beat[] = [
 
 const STATE_TONE: Record<RepoState, { border: string; bg: string; text: string; icon: string }> = {
   neutral: { border: "rgba(255,255,255,0.12)", bg: "rgba(255,255,255,0.02)", text: "rgba(255,255,255,0.4)", icon: "·" },
-  active: { border: "rgba(96,165,250,0.65)", bg: "rgba(96,165,250,0.1)", text: "#93c5fd", icon: "…" },
-  synced: { border: "rgba(52,211,153,0.65)", bg: "rgba(52,211,153,0.12)", text: "#6ee7b7", icon: "✓" },
+  active: { border: "rgba(96,165,250,0.65)", bg: "rgba(96,165,250,0.1)", text: "#c4b5fd", icon: "…" },
+  synced: { border: "rgba(52,211,153,0.65)", bg: "rgba(52,211,153,0.12)", text: "#86efac", icon: "✓" },
   drift: { border: "rgba(248,113,113,0.65)", bg: "rgba(248,113,113,0.12)", text: "#fca5a5", icon: "✗" },
 };
 
@@ -185,7 +186,7 @@ function RequestBubble({ text }: { text: string | null }) {
 }
 
 function DocRow({ label, shared, path }: { label: string; shared: boolean; path: string }) {
-  const color = shared ? "#93c5fd" : "rgba(255,255,255,0.35)";
+  const color = shared ? "#c4b5fd" : "rgba(255,255,255,0.35)";
   return (
     <div className="flex items-center gap-1.5 overflow-hidden">
       <motion.span animate={{ color }} className="shrink-0 text-[9px] uppercase tracking-wide">
@@ -272,7 +273,7 @@ function AnalysisPanel() {
 
 function GatePanel({ state }: { state: GateState }) {
   const approved = state === "approved";
-  const color = approved ? "#34d399" : "#60a5fa";
+  const color = approved ? "#4ade80" : "#a78bfa";
   return (
     <motion.div
       layout
@@ -311,7 +312,8 @@ function Callout({ tone, children }: { tone: "red" | "green"; children: ReactNod
 }
 
 export function WorkspaceWrapper() {
-  const { beat } = useBeats({ total: BEATS.length });
+  const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("workspace-wrapper", BEATS.length);
+  const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
   const config = BEATS[beat];
   const docsShared = config.sharedDocsShown ?? false;
 
@@ -321,6 +323,8 @@ export function WorkspaceWrapper() {
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
+      nextHref={nextHref}
+      nextLabel={nextLabel}
     >
       <div className="flex w-full max-w-4xl flex-col items-center gap-6">
         <RequestBubble text={config.request} />
