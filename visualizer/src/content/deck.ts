@@ -17,18 +17,22 @@ export interface DeckSection {
 // on the actual chrome (confirmed in review: section numbers and borders in it washed out).
 const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
 
-// Timings recomputed to a continuous run-of-show across only the sections that still
-// have content — demo clips 1/2 and the (already-merged-away) context rot section
-// dropped out entirely rather than leaving dead gaps in the schedule. `id` values are
-// kept as the original 01-talk-outline.md numbers since DeckItems reference them by id.
+// Renumbered sequentially (1-10) to match final array/chronological order. Context rot's
+// two solution scenes (sub-agents, progressive disclosure) now live inside its own section
+// instead of Guides/Sensors — they were appearing as "the fix" before the audience had
+// seen "the problem," and it restores scenes.ts's own native Problem -> Solution 1 ->
+// Solution 2 grouping. Guides/Sensors shrink back down and Context Rot grows to absorb them.
 export const SECTIONS: DeckSection[] = [
   { id: 1, title: "Title + hook + agenda", timeLabel: "0:00–1:30" },
   { id: 2, title: "The core idea", timeLabel: "1:30–5:00" },
   { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
   { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
-  { id: 6, title: "Layer 2 — Sensors", timeLabel: "13:00–17:00" },
-  { id: 9, title: "5 principles for any team", timeLabel: "17:00–19:30" },
-  { id: 10, title: "Self-score + recap + close", timeLabel: "19:30–21:00" },
+  { id: 5, title: "Visualizer beat — Guides via ai-workflows", timeLabel: "13:00–15:30" },
+  { id: 6, title: "Layer 2 — Sensors", timeLabel: "15:30–19:30" },
+  { id: 7, title: "Context rot — the open problem", timeLabel: "19:30–24:00" },
+  { id: 8, title: "Layer 3 — Make it reviewable", timeLabel: "24:00–26:30" },
+  { id: 9, title: "5 principles for any team", timeLabel: "26:30–29:00" },
+  { id: 10, title: "Self-score + recap + close", timeLabel: "29:00–30:00" },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =
@@ -42,6 +46,7 @@ export type SlideKind =
   | "video-placeholder"
   | "close"
   | "confession-crawl"
+  | "divider"
   | "bespoke";
 
 export interface CoverContent {
@@ -107,6 +112,15 @@ export interface ConfessionCrawlContent {
   lines: string[];
 }
 
+// A chapter card between major sections — see SlideDivider. Content is authored inline
+// per divider rather than derived from SECTIONS at render time, same as every other
+// static slide in this file.
+export interface DividerContent {
+  title: string;
+  subtitle?: string;
+  accent: Accent;
+}
+
 export type SlideContent =
   | CoverContent
   | PresentersContent
@@ -117,7 +131,8 @@ export type SlideContent =
   | TwoColumnContent
   | VideoPlaceholderContent
   | CloseContent
-  | ConfessionCrawlContent;
+  | ConfessionCrawlContent
+  | DividerContent;
 
 export interface StaticDeckItem {
   kind: "static";
@@ -144,8 +159,9 @@ export interface InteractiveDeckItem {
 
 export type DeckItem = StaticDeckItem | InteractiveDeckItem;
 
-// Full talk order — mirrors 04-slide-outline.md, cross-checked against 01-talk-outline.md.
-// Placeholders below ([PLACEHOLDER]) mark content not yet collected — see plan doc.
+// Full talk order — mirrors 04-slide-outline.md, cross-checked against 01-talk-outline.md
+// and the joint-talk collab docs (11-collab-doc-draft.md, 12-ai-workflows-potential-content.md).
+// Placeholders below ([PLACEHOLDER] / [BACKLOG]) mark content or scenes not yet built.
 export const DECK: DeckItem[] = [
   {
     kind: "static",
@@ -218,6 +234,7 @@ export const DECK: DeckItem[] = [
         { icon: "layers", label: "What a harness is" },
         { icon: "compass", label: "Guides" },
         { icon: "loop", label: "Sensors" },
+        { icon: "checklist", label: "Make it reviewable" },
         { icon: "flag", label: "Take this home" },
       ],
     } satisfies AgendaContent,
@@ -233,6 +250,18 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "divider-problem",
+    section: 3,
+    navLabel: "Section: The problem",
+    slideKind: "divider",
+    content: {
+      title: "The problem, generalized",
+      subtitle: "Not one team's mess — the shape any multi-repo (or multi-service) codebase runs into.",
+      accent: "turmeric",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
     id: "s7",
     section: 3,
     navLabel: "The shape of the problem",
@@ -245,7 +274,9 @@ export const DECK: DeckItem[] = [
         "Engineers work across many repos in separate windows — no single view of the system.",
         "The AI assistant only sees the one open file — it suggests the internet's pattern, not your team's.",
         "The AI never checks its own work — it says “done” whether or not it lints, type-checks, or passes tests.",
-        "Planning misses cross-repo blast radius — a “small” change quietly needs three more PRs elsewhere.",
+        "Planning misses cross-repo blast radius — a “small” change quietly needs three more PRs elsewhere, or, on a greenfield build, ships a cross-service change with no sign-off at all.",
+        "Gating everything isn't the fix either — a pipeline that stops for a human at every step just trades silent wrong changes for nothing finishing.",
+        "Large, fast AI-generated diffs turn review into the bottleneck — a human misses something buried in a 40-file change, or rubber-stamps it.",
       ],
       style: "bullet",
     } satisfies ListContent,
@@ -258,27 +289,6 @@ export const DECK: DeckItem[] = [
     route: "/workspace-wrapper",
     sceneSlug: "workspace-wrapper",
     coversSlides: [],
-  },
-  // Context rot content merged in here (was its own section 8) — this is a live
-  // demonstration of exactly the pain point "the problem, generalized" is describing.
-  {
-    kind: "static",
-    id: "s19",
-    section: 3,
-    navLabel: "Honesty beat",
-    slideKind: "statement",
-    content: {
-      title: "Bigger context windows don't fix this — they just make the haystack bigger.",
-    } satisfies StatementContent,
-  },
-  {
-    kind: "interactive",
-    id: "context-rot-problem",
-    section: 3,
-    navLabel: "Context Rot — Problem",
-    route: "/context-rot-problem",
-    sceneSlug: "context-rot-problem",
-    coversSlides: ["S19", "S20"],
   },
   {
     kind: "static",
@@ -318,10 +328,10 @@ export const DECK: DeckItem[] = [
     kind: "static",
     id: "s11",
     section: 4,
-    navLabel: "Six primitives",
+    navLabel: "Seven primitives",
     slideKind: "table",
     content: {
-      heading: "Six primitives",
+      heading: "Seven primitives",
       columns: ["Primitive", "What it does", "When it loads"],
       rows: [
         ["Global instructions", "Rules that always apply", "Every interaction"],
@@ -330,6 +340,7 @@ export const DECK: DeckItem[] = [
         ["Skills", "Repeatable multi-step workflows", "When explicitly invoked"],
         ["Prompts", "Single-task focused templates", "When explicitly invoked"],
         ["Specs", "The architecture knowledge base", "When referenced by the above"],
+        ["Confirmation gates", "Blocks on irreversible/cross-cutting decisions until a human confirms", "When scope is ambiguous or blast radius crosses repos"],
       ],
     } satisfies TableContent,
   },
@@ -345,17 +356,6 @@ export const DECK: DeckItem[] = [
     } satisfies StatementContent,
     bespokeComponent: SlideFilePathMatch,
   },
-  // Context rot's "Solution 2" is the deep-dive proof of this exact progressive-
-  // disclosure idea — merged in right after the concept slide above.
-  {
-    kind: "interactive",
-    id: "progressive-disclosure",
-    section: 4,
-    navLabel: "Context Rot — Progressive Disclosure",
-    route: "/progressive-disclosure",
-    sceneSlug: "progressive-disclosure",
-    coversSlides: ["S19", "S20"],
-  },
   {
     kind: "static",
     id: "s13",
@@ -367,6 +367,38 @@ export const DECK: DeckItem[] = [
       title: "A read-only agent literally cannot edit files.",
     } satisfies StatementContent,
     bespokeComponent: SlideAgentPersonas,
+  },
+  {
+    kind: "static",
+    id: "s13b",
+    section: 4,
+    navLabel: "Gate only what's irreversible",
+    slideKind: "statement",
+    content: {
+      eyebrow: "Gate only what's irreversible",
+      title: "Default everything else.",
+      subtitle:
+        "A confirmation gate on repo scope and cross-service changes — the decisions you can't cheaply undo. Everything else resolves to a visible, explicit default instead of stopping the pipeline.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "static",
+    id: "s14b",
+    section: 5,
+    navLabel: "Visualizer beat — Guides via ai-workflows",
+    slideKind: "list",
+    revealMode: "sequential",
+    content: {
+      heading: "Visualizer beat — Guides via ai-workflows",
+      subheading:
+        "[BACKLOG] Live interactive walkthrough, presented from the app rather than a recording — see lib/scenes.ts \"guides-visualizer\" for the not-yet-built scene. This list stands in as a placeholder slide until then.",
+      items: [
+        "Structured intake — a fixed sequence of inputs collected before any exploration or coding starts, not left to agent judgment.",
+        "Confirmation gate — the agent stops, presents which repos are affected, and waits for an explicit human answer before writing anything to disk.",
+        "Sensible defaults — a skipped optional input resolves to a visible, explicit default, not a silent guess.",
+      ],
+      style: "numbered",
+    } satisfies ListContent,
   },
   {
     kind: "static",
@@ -387,17 +419,6 @@ export const DECK: DeckItem[] = [
     route: "/guides-sensors",
     sceneSlug: "guides-sensors",
     coversSlides: ["S16"],
-  },
-  // Context rot's "Solution 1" — sub-agents as context firewalls — is another
-  // corrective mechanism in the same spirit as the guides/sensors loop above.
-  {
-    kind: "interactive",
-    id: "context-rot-solution-1",
-    section: 6,
-    navLabel: "Context Rot — Sub-Agents",
-    route: "/context-rot-solution-1",
-    sceneSlug: "context-rot-solution-1",
-    coversSlides: ["S19", "S20"],
   },
   {
     kind: "static",
@@ -425,8 +446,74 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
-    id: "s20",
+    id: "s17c",
     section: 6,
+    navLabel: "Phase gates",
+    slideKind: "statement",
+    content: {
+      eyebrow: "Phase gates",
+      title: "An automatic pass/fail verdict before the next phase is even allowed to start.",
+      subtitle: "RED → GREEN → REFACTOR → REVIEW — “silent success, verbose failure” running as the actual pipeline, not just a design rule.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "static",
+    id: "divider-context-rot",
+    section: 7,
+    navLabel: "Section: Context rot",
+    slideKind: "divider",
+    content: {
+      title: "Context rot — the open problem",
+      subtitle: "Guides and sensors both still run inside a context window. Now, the honest part.",
+      accent: "turmeric",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
+    id: "s19",
+    section: 7,
+    navLabel: "Honesty beat",
+    slideKind: "statement",
+    content: {
+      title: "Bigger context windows don't fix this — they just make the haystack bigger.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "interactive",
+    id: "context-rot-problem",
+    section: 7,
+    navLabel: "Context Rot — Problem",
+    route: "/context-rot-problem",
+    sceneSlug: "context-rot-problem",
+    coversSlides: ["S19", "S20"],
+  },
+  // Sub-agents (Solution 1) and progressive disclosure (Solution 2) now live here, right
+  // after the problem they fix, instead of inside Guides/Sensors — restoring scenes.ts's
+  // own native Problem -> Solution 1 -> Solution 2 grouping. This is also a capstone: both
+  // techniques reuse mechanisms (restricted sub-agents, scoped loading) already introduced
+  // in Guides, so it reads as "here's those tools applied to a genuinely hard problem."
+  {
+    kind: "interactive",
+    id: "context-rot-solution-1",
+    section: 7,
+    navLabel: "Context Rot — Sub-Agents",
+    route: "/context-rot-solution-1",
+    sceneSlug: "context-rot-solution-1",
+    coversSlides: ["S19", "S20"],
+  },
+  {
+    kind: "interactive",
+    id: "progressive-disclosure",
+    section: 7,
+    navLabel: "Context Rot — Progressive Disclosure",
+    route: "/progressive-disclosure",
+    sceneSlug: "progressive-disclosure",
+    coversSlides: ["S19", "S20"],
+  },
+  {
+    kind: "static",
+    id: "s20",
+    section: 7,
     navLabel: "Context rot recap",
     slideKind: "table",
     content: {
@@ -441,6 +528,69 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "divider-reviewable",
+    section: 8,
+    navLabel: "Section: Make it reviewable",
+    slideKind: "divider",
+    content: {
+      title: "Layer 3 — Make it reviewable",
+      subtitle: "Guides steer it, sensors catch it — but can a human still tell what happened? Two teams hit the same gap.",
+      accent: "amethyst",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
+    id: "s20b",
+    section: 8,
+    navLabel: "Two teams, same shape of gap",
+    slideKind: "two-column",
+    content: {
+      heading: "Two teams, same shape of gap",
+      left: {
+        label: "Jaya's side (ssi-ai-kit)",
+        body: "“Promote rules from docs into code” — stated in the harness's own docs. The flagship candidate (import/architecture boundaries) is still prose-only; the linter was never added.",
+      },
+      right: {
+        label: "Prabina's side (ai-workflows)",
+        body: "“Protect shared state with append-only contracts” — named the same way in the harness's own roadmap. No rule or field yet stops an agent from silently rewriting a shared contract entry.",
+      },
+    } satisfies TwoColumnContent,
+  },
+  {
+    kind: "static",
+    id: "s20c",
+    section: 8,
+    navLabel: "The reviewer's problem",
+    slideKind: "two-column",
+    content: {
+      heading: "The reviewer's problem",
+      left: {
+        label: "PRs at scale",
+        body: "Regularly exceed 20 files / 1,000+ lines. Code volume up 30%. (Salesforce Engineering, on their own data.)",
+      },
+      right: {
+        label: "Review coverage",
+        body: "61% of agent-authored PRs get no recorded human review at all. (Industry PR-review study — full sourcing in 10-external-problems.md §4.)",
+      },
+    } satisfies TwoColumnContent,
+  },
+  {
+    kind: "static",
+    id: "s20d",
+    section: 8,
+    navLabel: "Structured change summary",
+    slideKind: "table",
+    content: {
+      heading: "Structured change summary — not just a diff",
+      columns: ["Acceptance criterion", "Test", "Result"],
+      rows: [
+        ["AC-1: ...", "test_...", "✅ pass"],
+        ["AC-2: ...", "test_...", "✅ pass"],
+      ],
+    } satisfies TableContent,
+  },
+  {
+    kind: "static",
     id: "s21",
     section: 9,
     navLabel: "5 principles",
@@ -448,12 +598,13 @@ export const DECK: DeckItem[] = [
     revealMode: "sequential",
     content: {
       heading: "5 principles for any team",
+      subheading: "Merged from both projects",
       items: [
-        "Earn every rule. Every instruction should trace to a real past failure.",
-        "The codebase wins. When a guideline and the code disagree, the agent follows the code.",
-        "Structure in, structure out. Real file paths and real symbol names in, correct code out.",
-        "Sub-agents are context firewalls, not personas.",
-        "Treat the harness as software. Version it, review it, refactor it when it drifts.",
+        "Earn every rule. Every instruction should trace to a real past failure — hand-written, never auto-generated.",
+        "Gate only the irreversible. Human confirmation on decisions with real blast radius; a sensible default everywhere else.",
+        "Ground the agent in what's real. Structure in, structure out, and reuse before you create — the codebase, and confirmed inputs, win over guesswork.",
+        "Sub-agents are single-purpose firewalls, not personas. Isolate context or responsibility, return a condensed result.",
+        "Treat the harness as software. Version it, review it, refactor it when it drifts, and make what it produces auditable.",
       ],
       style: "numbered",
     } satisfies ListContent,
@@ -486,7 +637,8 @@ export const DECK: DeckItem[] = [
     slideKind: "close",
     content: {
       quote: "You can't prompt your way to a reliable AI coding agent. You have to engineer the harness around it.",
-      recapLine: "Model plus harness. Guides before, sensors after. Treat both as software, not as a one-time setup.",
+      recapLine:
+        "Model plus harness. Guides before, sensors after, and make what comes out the other end auditable. Two of us, two completely different codebases, and we converged on the same principles.",
       qrUrl: undefined, // [PLACEHOLDER] fill in the takeaway-doc link before the talk
     } satisfies CloseContent,
   },

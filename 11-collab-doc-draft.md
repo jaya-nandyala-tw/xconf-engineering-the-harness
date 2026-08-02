@@ -1,6 +1,6 @@
 # Engineering the Harness — Joint Talk Working Doc
 
-**Speakers:** Jaya (brownfield, multi-repo/multi-service platform) + Prabina (greenfield — `ai-workflows`, an in-house agentic SDLC tool built on MCP, connected to Figma/Jira/GitHub)
+**Speakers:** Jaya (brownfield, multi-repo/multi-service platform) + Prabina (greenfield — `ai-workflows`, multi-repo/multi-service agentic SDLC tool.)
 
 `[Jaya — note: prior planning-meeting recap described Prabina's project as "single-repo," but both her talk-outline.md drafts describe a "multi-repo confirmation gate" and an agent that "touches multiple repositories in a single run." Now confirmed consistent across two independent drafts, so I'm treating "multi-repo" as accurate and the planning-meeting note as stale — but flagging so Prabina can correct if I'm wrong.]`
 **Guide:** Kumar
@@ -15,7 +15,7 @@
 
 - Focus on **shareable skills/practices**, not specific internal configs — the audience should leave with something they can apply regardless of tool or company.
 - Use **external, citable examples** (Anthropic, Thoughtworks/Böckeler, etc.) to back claims where possible.
-- **Anonymize** client/production specifics — placeholder names, no real company/tool/ticket data. (We already have a sanitization convention from Jaya's side — happy to share.)
+- **Anonymize** client/production specifics — placeholder names, no real company/tool/ticket data, no service/repo names *—* describe repo topology by role (e.g. 'the repo that owns a shared field') never by name, even placeholder names — the talk's focus is harnessing principles, not architecture. (We already have a sanitization convention from Jaya's side — happy to share.)
 - Flag anything that might overlap with the **"knowledge fabric / context engineering"** talk in the same track — share this doc into the AIFSD shared drive once Kumar/Sanyam set it up, so both talks can de-conflict early.
 
 ---
@@ -24,9 +24,7 @@
 
 > **Agent = Model + Harness.** The model provides intelligence. The harness — guides that steer it before it acts, and sensors that catch it after — is what makes it reliable in a real codebase.
 
-Both of our experiences should slot into this same frame, even though our projects are structurally different (brownfield multi-repo vs. greenfield/single-repo). That contrast is actually useful on stage: it shows the pattern generalizes rather than being one team's fix for one team's mess.
-
-`[Jaya — drafted from Prabina's talk-outline.md: her narrative (assistant-era limits → agentic shift → capability-level automation → production problems → guardrails → V2 architecture) fits this frame well. Her "guardrails" (human confirmation gates, structured input collection) read as guides; her "reviewability" and per-layer testing read as sensors. Prabina — please confirm or correct.]`
+Both of our experiences should slot into this same frame, even though our projects are structurally different (brownfield multi-repo vs. greenfield multi-repo). That contrast is actually useful on stage: it shows the pattern generalizes rather than being one team's fix for one team's mess.
 
 ---
 
@@ -34,55 +32,64 @@ Both of our experiences should slot into this same frame, even though our projec
 
 ### Jaya's (from ssi-ai-kit, multi-repo/multi-service platform)
 
-| Problem | Pattern / Solution | Status |
-|---|---|---|
-| AI only sees the open file/repo, defaults to the most common internet pattern, not our convention | Scope instructions by file path — load only what's relevant to the files being touched | ✅ Verified in production |
-| Broad tool access lets a "helpful" agent push code or touch unrelated repos | Least-privilege agents — some agents are read-only or execute-only by tool restriction | ⚠️ Partially — real but inconsistent |
-| Agent claims "done" whether or not code actually compiles/lints/passes tests | Sensors — automated checks after agent actions, failures fed back for self-correction | ⚠️ Partially — real but not fully automatic yet, still human-triggered |
-| Docs/specs drift from what the code actually does | "Codebase wins" — when guideline and code disagree, follow the code | ✅ Verified, with a real drift example (docs said 28 lambdas, actual count was 26) |
-| Agents grade their own work too generously | Independent evaluator agent with no edit access; sensor output overrides self-assessment | ✅ Verified in production |
-| Sub-agents used as "personas" instead of context tools | Sub-agents as context firewalls — isolate context, return a condensed answer | ✅ Verified in production |
-| Rules written once, never revisited | Treat the harness as versioned software | ⚠️ Partially — versioned, but not yet peer-reviewed like code |
-| Bloated/generic rule sets dilute what matters | Every rule traces to a real past failure, hand-written | ✅ Verified, strong example |
+
+| Problem                                                                                           | Pattern / Solution                                                                       | Status                                                                            |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| AI only sees the open file/repo, defaults to the most common internet pattern, not our convention | Scope instructions by file path — load only what's relevant to the files being touched   | ✅ Verified in production                                                          |
+| Broad tool access lets a "helpful" agent push code or touch unrelated repos                       | Least-privilege agents — some agents are read-only or execute-only by tool restriction   | ⚠️ Partially — real but inconsistent                                              |
+| Agent claims "done" whether or not code actually compiles/lints/passes tests                      | Sensors — automated checks after agent actions, failures fed back for self-correction    | ⚠️ Partially — real but not fully automatic yet, still human-triggered            |
+| Docs/specs drift from what the code actually does                                                 | "Codebase wins" — when guideline and code disagree, follow the code                      | ✅ Verified, with a real drift example (docs said 28 lambdas, actual count was 26) |
+| Agents grade their own work too generously                                                        | Independent evaluator agent with no edit access; sensor output overrides self-assessment | ✅ Verified in production                                                          |
+| Sub-agents used as "personas" instead of context tools                                            | Sub-agents as context firewalls — isolate context, return a condensed answer             | ✅ Verified in production                                                          |
+| Rules written once, never revisited                                                               | Treat the harness as versioned software                                                  | ⚠️ Partially — versioned, but not yet peer-reviewed like code                     |
+| Bloated/generic rule sets dilute what matters                                                     | Every rule traces to a real past failure, hand-written                                   | ✅ Verified, strong example                                                        |
+
 
 *(Full verification detail in a companion doc if useful — happy to share.)*
 
 ### Prabina's (from `ai-workflows`, greenfield agentic workflow)
 
-`[Jaya — updated from Prabina's refined talk-outline.md (2), which now names 10 explicit "Core Principles" mapped to sections/anti-patterns — a cleaner source than my earlier guesswork off the first draft. Two are genuinely new vs. the first draft: sensible defaults at ungated steps, and structured change summaries (a sharper, separate fix for reviewability than the "input propagation" I'd previously conflated it with). Status column still reflects her outline's own framing, not independent verification — Prabina, please correct/confirm.]`
 
-| Problem | Principle (her numbering) | Pattern / Solution | Status |
-|---|---|---|---|
-| Context understood in one repo wasn't reliably carried to the next; same story interpreted differently depending on which repo picked it up first | #2 Analyze once, execute independently per unit of ownership | Shared analysis, separate execution — analyze the story once, then each affected repo designs/builds/tests independently from that shared analysis | Per her outline: found in production |
-| Nothing stopped the agent from making significant cross-service/architectural changes without sign-off | #3 Gate irreversible/cross-cutting decisions on explicit human confirmation | Multi-repo confirmation gate — a human explicitly confirms which repositories are affected before any code is written | Per her outline: found in production |
-| Gating every step causes fatigue and stalls the pipeline | #4 Apply a sensible default at every step that isn't gated | Low-stakes/optional inputs resolve to a defined default (e.g. skip → "None — confirmed") instead of blocking or silently guessing | New in refined outline — keeps the gates in #3 meaningful |
-| Downstream steps silently dropped or assumed source material | #5 Make inputs traceable end to end | Input propagation — every downstream step must cite which original inputs it used | Per her outline: found in production |
-| Agents rebuilding things that already exist | #6 Default to reuse-before-create | Check for existing components/contracts before building new ones | Per her outline: adopted in V2 |
-| Shared contracts (API shapes, data models) rewritten silently | #7 Protect shared state with append-only contracts | Append-only shared docs — changing an existing entry requires a separate, human-approved step | Per her outline: anti-pattern → corrected |
-| Large, cross-cutting diffs with no summary for reviewers (low reviewability) | #8 Make reviews easier, not just changes correct | Structured change summaries — every change ships with a generated summary tracing the diff back to acceptance criteria/blueprint decisions | New in refined outline — this is the actual fix for reviewability, distinct from input propagation (#5) |
-| One agent writing both tests and the code it's tested against | #9 Give each agent a single responsibility | Split into separate agents, each with a single responsibility | Per her outline: anti-pattern → corrected |
-| Agent built layers out of order | #10 Enforce incremental, bottom-up build order | One layer at a time, tests passing before moving on | Per her outline: anti-pattern → corrected |
+| Problem                                                                                                                                           | Principle (her numbering)                                                   | Pattern / Solution                                                                                                                                 | Status                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Context understood in one repo wasn't reliably carried to the next; same story interpreted differently depending on which repo picked it up first | #2 Analyze once, execute independently per unit of ownership                | Shared analysis, separate execution — analyze the story once, then each affected repo designs/builds/tests independently from that shared analysis | ⚠️ Partially — shared analysis is real; "independent execution" is one repo-tagged pipeline, not forked parallel runs |
+| Nothing stopped the agent from making significant cross-service/architectural changes without sign-off                                            | #3 Gate irreversible/cross-cutting decisions on explicit human confirmation | Multi-repo confirmation gate — a human explicitly confirms which repositories are affected before any code is written                              | ✅ Verified as a mandatory blocking process step                                                                       |
+| Gating every step causes fatigue and stalls the pipeline                                                                                          | #4 Apply a sensible default at every step that isn't gated                  | Low-stakes/optional inputs resolve to a defined default (e.g. skip → "None — confirmed") instead of blocking or silently guessing                  | ✅ Verified — explicit skip → defined default value, visible in the confirmation table                                 |
+| Downstream steps silently dropped or assumed source material                                                                                      | #5 Make inputs traceable end to end                                         | Input propagation — every downstream step must cite which original inputs it used                                                                  | ✅ Verified — every phase template has a header table naming consumed inputs                                           |
+| Agents rebuilding things that already exist                                                                                                       | #6 Default to reuse-before-create                                           | Check for existing components/contracts before building new ones                                                                                   | ✅ Verified — mandatory field in the design artifact + named agent rule                                                |
+| Shared contracts (API shapes, data models) rewritten silently                                                                                     | #7 Protect shared state with append-only contracts                          | Append-only shared docs — changing an existing entry requires a separate, human-approved step                                                      | ❌ **Overstated** — only appears as a stated intent in the outline itself; no enforcement mechanism found              |
+| Large, cross-cutting diffs with no summary for reviewers (low reviewability)                                                                      | #8 Make reviews easier, not just changes correct                            | Structured change summaries — every change ships with a generated summary tracing the diff back to acceptance criteria/blueprint decisions         | anti-pattern → corrected ✅ Verified — coverage table + risk assessment + rollback steps, consistently specified       |
+| One agent writing both tests and the code it's tested against                                                                                     | #9 Give each agent a single responsibility                                  | Split into separate agents, each with a single responsibility                                                                                      | anti-pattern → corrected ✅ Verified — in Production                                                                   |
+| Agent built layers out of order                                                                                                                   | #10 Enforce incremental, bottom-up build order                              | One layer at a time, tests passing before moving on                                                                                                | ⚠️ Partially — verified within one implementation unit, not demonstrated as a cross-repo layering rule                |
+
 
 ---
 
 ## 3. Demos
 
 **Jaya's two planned clips:**
+
 1. **Guides in action** — same request, same model, run once with no scoped context (wrong pattern) and once with scoped instructions loaded (correct pattern). ~90 sec, pre-recorded.
 2. **Sensors in action** — agent makes a mistake, claims done, a sensor catches it, agent self-corrects with no human involved. ~90 sec, pre-recorded.
 
-`[Jaya — drafted from Prabina's talk-outline.md Section 7, which only specifies "live or recorded walkthrough of one real story through the pipeline" without detail. Proposed cut: one story walked end-to-end through her V2 pipeline — structured input collection → multi-repo confirmation gate → shared analysis → per-repo bottom-up build — landing on a guardrail catching something the agent would otherwise have gotten wrong. This covers a third angle (multi-service orchestration + human checkpoints) distinct from Jaya's two demos (scoped context, self-correcting sensors). Prabina — confirm this matches what you actually have recorded/available.]`
+**Prabina's Demo**
+
+*A generic, scripted walkthrough  of: structured input collection → confirmation gate → shared analysis → per-repo build order, using placeholder story/repo names throughout.*
+
+***Note :** it may be more efficient to lean on the visualizer scene instead of a live/recorded clip, since the visualizer is already built to this abstraction level.*
 
 ---
 
 ## 4. Metrics (need real numbers before we can commit to any of these on stage)
 
-| Metric | Jaya's number | Prabina's number | Source / confidence |
-|---|---|---|---|
-| Small story completion time | *(mentioned in planning meeting: 1–2 hrs — confirm this is real, not aspirational)* | | `[fill in]` |
-| Larger feature completion time | *(mentioned: ~1 day)* | | `[fill in]` |
-| Bug/defect reduction | | | `[fill in]` |
-| Review time / PR size change | | | `[fill in]` |
+
+| Metric                         | Jaya's number                                                                       | Prabina's number | Source / confidence |
+| ------------------------------ | ----------------------------------------------------------------------------------- | ---------------- | ------------------- |
+| Small story completion time    | *(mentioned in planning meeting: 1–2 hrs — confirm this is real, not aspirational)* |                  | `[fill in]`         |
+| Larger feature completion time | *(mentioned: ~1 day)*                                                               |                  | `[fill in]`         |
+| Bug/defect reduction           |                                                                                     |                  | `[fill in]`         |
+| Review time / PR size change   |                                                                                     |                  | `[fill in]`         |
+
 
 **Open question:** we'd previously decided to keep our own numbers directional/illustrative rather than presented as measured data (to avoid overclaiming without a controlled comparison). The planning meeting mentioned wanting to show real metrics instead. Need to align on which stance we're taking before finalizing slides — `[Kumar — any guidance on how rigorous these need to be?]`
 
@@ -91,6 +98,7 @@ Both of our experiences should slot into this same frame, even though our projec
 ## 5. Cookbook — "5 things to try this week" (the slide people photograph)
 
 Jaya's draft (from ssi-ai-kit generalization):
+
 1. Earn every rule — trace it to a real past failure, hand-written, never auto-generated.
 2. The codebase wins — when a guideline and the code disagree, follow the code.
 3. Structure in, structure out — ground the agent in real files/paths before it starts, don't let it start from a vague ask.
@@ -110,14 +118,16 @@ Jaya's draft (from ssi-ai-kit generalization):
 
 ## 6. Jargon glossary (build this live as we write — define every term before first use on stage)
 
-| Term | One-line definition |
-|---|---|
-| Harness | Everything around the model — orchestration, tool permissions, guardrails, feedback loops — that turns raw model output into reliable behavior in your codebase |
-| Guide | Anything that steers the agent *before* it acts — scoped instructions, specs, restricted agents, skills |
-| Sensor | Anything that checks the agent's work *after* it acts — linters, type checks, tests, an independent review step |
-| Context rot | Quality degradation as a session runs long, or as the knowledge base an agent trusts drifts from reality |
-| Blast radius | The set of other repos/services/files a change silently affects, beyond the one being edited |
-| Least privilege (for agents) | An agent's tool access is restricted to only what its role needs — enforced by tooling, not just requested in a prompt |
+
+| Term                         | One-line definition                                                                                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Harness                      | Everything around the model — orchestration, tool permissions, guardrails, feedback loops — that turns raw model output into reliable behavior in your codebase |
+| Guide                        | Anything that steers the agent *before* it acts — scoped instructions, specs, restricted agents, skills                                                         |
+| Sensor                       | Anything that checks the agent's work *after* it acts — linters, type checks, tests, an independent review step                                                 |
+| Context rot                  | Quality degradation as a session runs long, or as the knowledge base an agent trusts drifts from reality                                                        |
+| Blast radius                 | The set of other repos/services/files a change silently affects, beyond the one being edited                                                                    |
+| Least privilege (for agents) | An agent's tool access is restricted to only what its role needs — enforced by tooling, not just requested in a prompt                                          |
+
 
 `[Jaya — added from Prabina's talk-outline.md; confirm definitions match her intent.]`
 
@@ -132,18 +142,20 @@ Jaya's draft (from ssi-ai-kit generalization):
 
 ## 7. Section ownership (draft split — adjust freely)
 
-| Section | Owner (draft) |
-|---|---|
-| Hook / cold open | `[TBD]` |
-| Core idea (Agent = Model + Harness) | `[TBD — shared]` |
-| The problem, generalized | `[TBD — both, different examples]` |
-| Guides | Jaya (unless Prabina wants to co-narrate) |
-| Demo 1 | Jaya |
-| Sensors | `[TBD]` |
-| Demo 2 | `[TBD]` |
-| Honest gaps / what's still unsolved | `[TBD — both]` |
-| 5 principles / cookbook | Shared close |
-| Recap + close | `[TBD]` |
+
+| Section                             | Owner (draft)                             |
+| ----------------------------------- | ----------------------------------------- |
+| Hook / cold open                    | `[TBD]`                                   |
+| Core idea (Agent = Model + Harness) | `[TBD — shared]`                          |
+| The problem, generalized            | `[TBD — both, different examples]`        |
+| Guides                              | Jaya (unless Prabina wants to co-narrate) |
+| Demo 1                              | Jaya                                      |
+| Sensors                             | `[TBD]`                                   |
+| Demo 2                              | `[TBD]`                                   |
+| Honest gaps / what's still unsolved | `[TBD — both]`                            |
+| 5 principles / cookbook             | Shared close                              |
+| Recap + close                       | `[TBD]`                                   |
+
 
 ---
 
