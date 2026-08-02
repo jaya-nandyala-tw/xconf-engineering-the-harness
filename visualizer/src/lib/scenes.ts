@@ -63,6 +63,14 @@ export const scenes: SceneMeta[] = [
     status: "ready",
   },
   {
+    slug: "guides-visualizer",
+    title: "Guides via ai-workflows",
+    concept: "Structured intake → confirmation gate → sensible default",
+    description:
+      "The greenfield mirror of Guides: a fixed intake sequence, a blocking confirmation gate presented and answered live, and a skipped optional input resolving to a visible default instead of a silent guess. Used live in Section 6 of the talk instead of a recorded clip.",
+    status: "backlog",
+  },
+  {
     slug: "principles-checklist",
     title: "5 Principles",
     concept: "Flip-card grid",

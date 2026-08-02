@@ -27,6 +27,8 @@ export const SECTIONS: DeckSection[] = [
   { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
   { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
   { id: 6, title: "Layer 2 — Sensors", timeLabel: "13:00–17:00" },
+  { id: 7, title: "Visualizer beat — Guides via ai-workflows", timeLabel: "13:00–15:30" },
+  { id: 8, title: "Traceability — the reviewer's problem", timeLabel: "23:30–25:30" },
   { id: 9, title: "5 principles for any team", timeLabel: "17:00–19:30" },
   { id: 10, title: "Self-score + recap + close", timeLabel: "19:30–21:00" },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
@@ -145,7 +147,8 @@ export interface InteractiveDeckItem {
 export type DeckItem = StaticDeckItem | InteractiveDeckItem;
 
 // Full talk order — mirrors 04-slide-outline.md, cross-checked against 01-talk-outline.md.
-// Placeholders below ([PLACEHOLDER]) mark content not yet collected — see plan doc.
+// Placeholders below ([PLACEHOLDER] / [BACKLOG]) mark content or scenes not yet built —
+// see the sync notes at the top of 01-talk-outline.md / 04-slide-outline.md for what's pending.
 export const DECK: DeckItem[] = [
   {
     kind: "static",
@@ -218,6 +221,7 @@ export const DECK: DeckItem[] = [
         { icon: "layers", label: "What a harness is" },
         { icon: "compass", label: "Guides" },
         { icon: "loop", label: "Sensors" },
+        { icon: "checklist", label: "Make it reviewable" },
         { icon: "flag", label: "Take this home" },
       ],
     } satisfies AgendaContent,
@@ -245,7 +249,9 @@ export const DECK: DeckItem[] = [
         "Engineers work across many repos in separate windows — no single view of the system.",
         "The AI assistant only sees the one open file — it suggests the internet's pattern, not your team's.",
         "The AI never checks its own work — it says “done” whether or not it lints, type-checks, or passes tests.",
-        "Planning misses cross-repo blast radius — a “small” change quietly needs three more PRs elsewhere.",
+        "Planning misses cross-repo blast radius — a “small” change quietly needs three more PRs elsewhere, or, on a greenfield build, ships a cross-service change with no sign-off at all.",
+        "Gating everything isn't the fix either — a pipeline that stops for a human at every step just trades silent wrong changes for nothing finishing.",
+        "Large, fast AI-generated diffs turn review into the bottleneck — a human misses something buried in a 40-file change, or rubber-stamps it.",
       ],
       style: "bullet",
     } satisfies ListContent,
@@ -318,10 +324,10 @@ export const DECK: DeckItem[] = [
     kind: "static",
     id: "s11",
     section: 4,
-    navLabel: "Six primitives",
+    navLabel: "Seven primitives",
     slideKind: "table",
     content: {
-      heading: "Six primitives",
+      heading: "Seven primitives",
       columns: ["Primitive", "What it does", "When it loads"],
       rows: [
         ["Global instructions", "Rules that always apply", "Every interaction"],
@@ -330,6 +336,7 @@ export const DECK: DeckItem[] = [
         ["Skills", "Repeatable multi-step workflows", "When explicitly invoked"],
         ["Prompts", "Single-task focused templates", "When explicitly invoked"],
         ["Specs", "The architecture knowledge base", "When referenced by the above"],
+        ["Confirmation gates", "Blocks on irreversible/cross-cutting decisions until a human confirms", "When scope is ambiguous or blast radius crosses repos"],
       ],
     } satisfies TableContent,
   },
@@ -370,6 +377,38 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "s13b",
+    section: 4,
+    navLabel: "Gate only what's irreversible",
+    slideKind: "statement",
+    content: {
+      eyebrow: "Gate only what's irreversible",
+      title: "Default everything else.",
+      subtitle:
+        "A confirmation gate on repo scope and cross-service changes — the decisions you can't cheaply undo. Everything else resolves to a visible, explicit default instead of stopping the pipeline.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "static",
+    id: "s14b",
+    section: 7,
+    navLabel: "Visualizer beat — Guides via ai-workflows",
+    slideKind: "list",
+    revealMode: "sequential",
+    content: {
+      heading: "Visualizer beat — Guides via ai-workflows",
+      subheading:
+        "[BACKLOG] Live interactive walkthrough, presented from the app rather than a recording — see lib/scenes.ts \"guides-visualizer\" for the not-yet-built scene. This list stands in as a placeholder slide until then.",
+      items: [
+        "Structured intake — a fixed sequence of inputs collected before any exploration or coding starts, not left to agent judgment.",
+        "Confirmation gate — the agent stops, presents which repos are affected, and waits for an explicit human answer before writing anything to disk.",
+        "Sensible defaults — a skipped optional input resolves to a visible, explicit default, not a silent guess.",
+      ],
+      style: "numbered",
+    } satisfies ListContent,
+  },
+  {
+    kind: "static",
     id: "s15",
     section: 6,
     navLabel: "Sensors",
@@ -402,7 +441,7 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s17a",
-    section: 6,
+    section: 7,
     navLabel: "Rule 1",
     slideKind: "statement",
     content: {
@@ -414,13 +453,35 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s17b",
-    section: 6,
+    section: 7,
     navLabel: "Rule 2",
     slideKind: "statement",
     content: {
       title: "Promote rules from docs into code.",
       subtitle:
         "If you keep writing the same instruction in prose and the agent keeps ignoring it, escalate it to a linter or a structural test.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "static",
+    id: "s17c",
+    section: 7,
+    navLabel: "Phase gates",
+    slideKind: "statement",
+    content: {
+      eyebrow: "Phase gates",
+      title: "An automatic pass/fail verdict before the next phase is even allowed to start.",
+      subtitle: "RED → GREEN → REFACTOR → REVIEW — “silent success, verbose failure” running as the actual pipeline, not just a design rule.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "static",
+    id: "s19",
+    section: 6,
+    navLabel: "Honesty beat",
+    slideKind: "statement",
+    content: {
+      title: "Bigger context windows don't fix this — they just make the haystack bigger.",
     } satisfies StatementContent,
   },
   {
@@ -441,6 +502,57 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "s20b",
+    section: 8,
+    navLabel: "Two teams, same shape of gap",
+    slideKind: "two-column",
+    content: {
+      heading: "Two teams, same shape of gap",
+      left: {
+        label: "Jaya's side (ssi-ai-kit)",
+        body: "“Promote rules from docs into code” — stated in the harness's own docs. The flagship candidate (import/architecture boundaries) is still prose-only; the linter was never added.",
+      },
+      right: {
+        label: "Prabina's side (ai-workflows)",
+        body: "“Protect shared state with append-only contracts” — named the same way in the harness's own roadmap. No rule or field yet stops an agent from silently rewriting a shared contract entry.",
+      },
+    } satisfies TwoColumnContent,
+  },
+  {
+    kind: "static",
+    id: "s20c",
+    section: 8,
+    navLabel: "The reviewer's problem",
+    slideKind: "two-column",
+    content: {
+      heading: "The reviewer's problem",
+      left: {
+        label: "PRs at scale",
+        body: "Regularly exceed 20 files / 1,000+ lines. Code volume up 30%. (Salesforce Engineering, on their own data.)",
+      },
+      right: {
+        label: "Review coverage",
+        body: "61% of agent-authored PRs get no recorded human review at all. (Industry PR-review study — full sourcing in 10-external-problems.md §4.)",
+      },
+    } satisfies TwoColumnContent,
+  },
+  {
+    kind: "static",
+    id: "s20d",
+    section: 8,
+    navLabel: "Structured change summary",
+    slideKind: "table",
+    content: {
+      heading: "Structured change summary — not just a diff",
+      columns: ["Acceptance criterion", "Test", "Result"],
+      rows: [
+        ["AC-1: ...", "test_...", "✅ pass"],
+        ["AC-2: ...", "test_...", "✅ pass"],
+      ],
+    } satisfies TableContent,
+  },
+  {
+    kind: "static",
     id: "s21",
     section: 9,
     navLabel: "5 principles",
@@ -448,12 +560,13 @@ export const DECK: DeckItem[] = [
     revealMode: "sequential",
     content: {
       heading: "5 principles for any team",
+      subheading: "Merged from both projects",
       items: [
-        "Earn every rule. Every instruction should trace to a real past failure.",
-        "The codebase wins. When a guideline and the code disagree, the agent follows the code.",
-        "Structure in, structure out. Real file paths and real symbol names in, correct code out.",
-        "Sub-agents are context firewalls, not personas.",
-        "Treat the harness as software. Version it, review it, refactor it when it drifts.",
+        "Earn every rule. Every instruction should trace to a real past failure — hand-written, never auto-generated.",
+        "Gate only the irreversible. Human confirmation on decisions with real blast radius; a sensible default everywhere else.",
+        "Ground the agent in what's real. Structure in, structure out, and reuse before you create — the codebase, and confirmed inputs, win over guesswork.",
+        "Sub-agents are single-purpose firewalls, not personas. Isolate context or responsibility, return a condensed result.",
+        "Treat the harness as software. Version it, review it, refactor it when it drifts, and make what it produces auditable.",
       ],
       style: "numbered",
     } satisfies ListContent,
@@ -486,7 +599,8 @@ export const DECK: DeckItem[] = [
     slideKind: "close",
     content: {
       quote: "You can't prompt your way to a reliable AI coding agent. You have to engineer the harness around it.",
-      recapLine: "Model plus harness. Guides before, sensors after. Treat both as software, not as a one-time setup.",
+      recapLine:
+        "Model plus harness. Guides before, sensors after, and make what comes out the other end auditable. Two of us, two completely different codebases, and we converged on the same principles.",
       qrUrl: undefined, // [PLACEHOLDER] fill in the takeaway-doc link before the talk
     } satisfies CloseContent,
   },
