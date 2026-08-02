@@ -24,17 +24,11 @@ interface SceneChromeProps {
   nextLabel?: string;
 }
 
-export function SceneChrome({
-  label,
-  totalBeats,
-  currentBeat,
-  caption,
-  children,
-  sidebar,
-  nextHref,
-  nextLabel,
-}: SceneChromeProps) {
-  const isLast = currentBeat === totalBeats - 1;
+// nextHref/nextLabel stay in the props type so every scene can keep passing them
+// (they still document the forward-chain target), but the visual "Next" button and
+// keyboard-hint row that used to render them are hidden in the live presentation view —
+// audience-facing, not a rehearsal aid.
+export function SceneChrome({ label, totalBeats, currentBeat, caption, children, sidebar }: SceneChromeProps) {
   return (
     <div className="relative flex h-screen w-screen bg-wave text-white overflow-hidden">
       <div className="flex h-full min-w-0 flex-1 flex-col">
@@ -43,7 +37,7 @@ export function SceneChrome({
             <img src={thoughtworksLogo} alt="Thoughtworks" className="h-7 w-auto" />
             <span className="text-[16px] leading-none tracking-[0.2em] text-white/50">XConf 2026</span>
           </Link>
-          <span>{label}</span>
+          <span className="sr-only">{label}</span>
           <span>
             {currentBeat + 1} / {totalBeats}
           </span>
@@ -71,23 +65,6 @@ export function SceneChrome({
             </div>
           )}
           <BeatIndicator total={totalBeats} current={currentBeat} />
-
-          {isLast && nextHref ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-              <Link
-                to={nextHref}
-                className="rounded-full border border-white/20 bg-white/[0.04] px-5 py-2 text-xs uppercase tracking-[0.15em] text-white/70 transition-colors hover:border-white/40 hover:text-white"
-              >
-                {nextLabel ?? "Next →"}
-              </Link>
-            </motion.div>
-          ) : null}
-
-          <p className="text-[11px] uppercase tracking-[0.15em] text-white/30">
-            {isLast && nextHref
-              ? <>→ / space next flow &nbsp;·&nbsp; ← back &nbsp;·&nbsp; r restart &nbsp;·&nbsp; esc gallery</>
-              : <>→ / space next &nbsp;·&nbsp; ← back &nbsp;·&nbsp; r restart &nbsp;·&nbsp; esc gallery</>}
-          </p>
         </footer>
       </div>
 

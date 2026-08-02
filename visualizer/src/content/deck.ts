@@ -17,20 +17,22 @@ export interface DeckSection {
 // on the actual chrome (confirmed in review: section numbers and borders in it washed out).
 const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
 
-// Timings recomputed to a continuous run-of-show across only the sections that still
-// have content — demo clips 1/2 and the (already-merged-away) context rot section
-// dropped out entirely rather than leaving dead gaps in the schedule. `id` values are
-// kept as the original 01-talk-outline.md numbers since DeckItems reference them by id.
+// Renumbered sequentially (1-10) to match final array/chronological order. Context rot's
+// two solution scenes (sub-agents, progressive disclosure) now live inside its own section
+// instead of Guides/Sensors — they were appearing as "the fix" before the audience had
+// seen "the problem," and it restores scenes.ts's own native Problem -> Solution 1 ->
+// Solution 2 grouping. Guides/Sensors shrink back down and Context Rot grows to absorb them.
 export const SECTIONS: DeckSection[] = [
   { id: 1, title: "Title + hook + agenda", timeLabel: "0:00–1:30" },
   { id: 2, title: "The core idea", timeLabel: "1:30–5:00" },
   { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
   { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
-  { id: 6, title: "Layer 2 — Sensors", timeLabel: "13:00–17:00" },
-  { id: 7, title: "Visualizer beat — Guides via ai-workflows", timeLabel: "13:00–15:30" },
-  { id: 8, title: "Traceability — the reviewer's problem", timeLabel: "23:30–25:30" },
-  { id: 9, title: "5 principles for any team", timeLabel: "17:00–19:30" },
-  { id: 10, title: "Self-score + recap + close", timeLabel: "19:30–21:00" },
+  { id: 5, title: "Visualizer beat — Guides via ai-workflows", timeLabel: "13:00–15:30" },
+  { id: 6, title: "Layer 2 — Sensors", timeLabel: "15:30–19:30" },
+  { id: 7, title: "Context rot — the open problem", timeLabel: "19:30–24:00" },
+  { id: 8, title: "Layer 3 — Make it reviewable", timeLabel: "24:00–26:30" },
+  { id: 9, title: "5 principles for any team", timeLabel: "26:30–29:00" },
+  { id: 10, title: "Self-score + recap + close", timeLabel: "29:00–30:00" },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =
@@ -44,6 +46,7 @@ export type SlideKind =
   | "video-placeholder"
   | "close"
   | "confession-crawl"
+  | "divider"
   | "bespoke";
 
 export interface CoverContent {
@@ -109,6 +112,15 @@ export interface ConfessionCrawlContent {
   lines: string[];
 }
 
+// A chapter card between major sections — see SlideDivider. Content is authored inline
+// per divider rather than derived from SECTIONS at render time, same as every other
+// static slide in this file.
+export interface DividerContent {
+  title: string;
+  subtitle?: string;
+  accent: Accent;
+}
+
 export type SlideContent =
   | CoverContent
   | PresentersContent
@@ -119,7 +131,8 @@ export type SlideContent =
   | TwoColumnContent
   | VideoPlaceholderContent
   | CloseContent
-  | ConfessionCrawlContent;
+  | ConfessionCrawlContent
+  | DividerContent;
 
 export interface StaticDeckItem {
   kind: "static";
@@ -146,9 +159,9 @@ export interface InteractiveDeckItem {
 
 export type DeckItem = StaticDeckItem | InteractiveDeckItem;
 
-// Full talk order — mirrors 04-slide-outline.md, cross-checked against 01-talk-outline.md.
-// Placeholders below ([PLACEHOLDER] / [BACKLOG]) mark content or scenes not yet built —
-// see the sync notes at the top of 01-talk-outline.md / 04-slide-outline.md for what's pending.
+// Full talk order — mirrors 04-slide-outline.md, cross-checked against 01-talk-outline.md
+// and the joint-talk collab docs (11-collab-doc-draft.md, 12-ai-workflows-potential-content.md).
+// Placeholders below ([PLACEHOLDER] / [BACKLOG]) mark content or scenes not yet built.
 export const DECK: DeckItem[] = [
   {
     kind: "static",
@@ -237,6 +250,18 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "divider-problem",
+    section: 3,
+    navLabel: "Section: The problem",
+    slideKind: "divider",
+    content: {
+      title: "The problem, generalized",
+      subtitle: "Not one team's mess — the shape any multi-repo (or multi-service) codebase runs into.",
+      accent: "turmeric",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
     id: "s7",
     section: 3,
     navLabel: "The shape of the problem",
@@ -264,27 +289,6 @@ export const DECK: DeckItem[] = [
     route: "/workspace-wrapper",
     sceneSlug: "workspace-wrapper",
     coversSlides: [],
-  },
-  // Context rot content merged in here (was its own section 8) — this is a live
-  // demonstration of exactly the pain point "the problem, generalized" is describing.
-  {
-    kind: "static",
-    id: "s19",
-    section: 3,
-    navLabel: "Honesty beat",
-    slideKind: "statement",
-    content: {
-      title: "Bigger context windows don't fix this — they just make the haystack bigger.",
-    } satisfies StatementContent,
-  },
-  {
-    kind: "interactive",
-    id: "context-rot-problem",
-    section: 3,
-    navLabel: "Context Rot — Problem",
-    route: "/context-rot-problem",
-    sceneSlug: "context-rot-problem",
-    coversSlides: ["S19", "S20"],
   },
   {
     kind: "static",
@@ -352,17 +356,6 @@ export const DECK: DeckItem[] = [
     } satisfies StatementContent,
     bespokeComponent: SlideFilePathMatch,
   },
-  // Context rot's "Solution 2" is the deep-dive proof of this exact progressive-
-  // disclosure idea — merged in right after the concept slide above.
-  {
-    kind: "interactive",
-    id: "progressive-disclosure",
-    section: 4,
-    navLabel: "Context Rot — Progressive Disclosure",
-    route: "/progressive-disclosure",
-    sceneSlug: "progressive-disclosure",
-    coversSlides: ["S19", "S20"],
-  },
   {
     kind: "static",
     id: "s13",
@@ -391,7 +384,7 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s14b",
-    section: 7,
+    section: 5,
     navLabel: "Visualizer beat — Guides via ai-workflows",
     slideKind: "list",
     revealMode: "sequential",
@@ -427,21 +420,10 @@ export const DECK: DeckItem[] = [
     sceneSlug: "guides-sensors",
     coversSlides: ["S16"],
   },
-  // Context rot's "Solution 1" — sub-agents as context firewalls — is another
-  // corrective mechanism in the same spirit as the guides/sensors loop above.
-  {
-    kind: "interactive",
-    id: "context-rot-solution-1",
-    section: 6,
-    navLabel: "Context Rot — Sub-Agents",
-    route: "/context-rot-solution-1",
-    sceneSlug: "context-rot-solution-1",
-    coversSlides: ["S19", "S20"],
-  },
   {
     kind: "static",
     id: "s17a",
-    section: 7,
+    section: 6,
     navLabel: "Rule 1",
     slideKind: "statement",
     content: {
@@ -453,7 +435,7 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s17b",
-    section: 7,
+    section: 6,
     navLabel: "Rule 2",
     slideKind: "statement",
     content: {
@@ -465,7 +447,7 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s17c",
-    section: 7,
+    section: 6,
     navLabel: "Phase gates",
     slideKind: "statement",
     content: {
@@ -476,8 +458,20 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "divider-context-rot",
+    section: 7,
+    navLabel: "Section: Context rot",
+    slideKind: "divider",
+    content: {
+      title: "Context rot — the open problem",
+      subtitle: "Guides and sensors both still run inside a context window. Now, the honest part.",
+      accent: "turmeric",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
     id: "s19",
-    section: 6,
+    section: 7,
     navLabel: "Honesty beat",
     slideKind: "statement",
     content: {
@@ -485,9 +479,41 @@ export const DECK: DeckItem[] = [
     } satisfies StatementContent,
   },
   {
+    kind: "interactive",
+    id: "context-rot-problem",
+    section: 7,
+    navLabel: "Context Rot — Problem",
+    route: "/context-rot-problem",
+    sceneSlug: "context-rot-problem",
+    coversSlides: ["S19", "S20"],
+  },
+  // Sub-agents (Solution 1) and progressive disclosure (Solution 2) now live here, right
+  // after the problem they fix, instead of inside Guides/Sensors — restoring scenes.ts's
+  // own native Problem -> Solution 1 -> Solution 2 grouping. This is also a capstone: both
+  // techniques reuse mechanisms (restricted sub-agents, scoped loading) already introduced
+  // in Guides, so it reads as "here's those tools applied to a genuinely hard problem."
+  {
+    kind: "interactive",
+    id: "context-rot-solution-1",
+    section: 7,
+    navLabel: "Context Rot — Sub-Agents",
+    route: "/context-rot-solution-1",
+    sceneSlug: "context-rot-solution-1",
+    coversSlides: ["S19", "S20"],
+  },
+  {
+    kind: "interactive",
+    id: "progressive-disclosure",
+    section: 7,
+    navLabel: "Context Rot — Progressive Disclosure",
+    route: "/progressive-disclosure",
+    sceneSlug: "progressive-disclosure",
+    coversSlides: ["S19", "S20"],
+  },
+  {
     kind: "static",
     id: "s20",
-    section: 6,
+    section: 7,
     navLabel: "Context rot recap",
     slideKind: "table",
     content: {
@@ -499,6 +525,18 @@ export const DECK: DeckItem[] = [
         ["Self-verification bias", "Computational sensors override the agent's own “I'm done” claim"],
       ],
     } satisfies TableContent,
+  },
+  {
+    kind: "static",
+    id: "divider-reviewable",
+    section: 8,
+    navLabel: "Section: Make it reviewable",
+    slideKind: "divider",
+    content: {
+      title: "Layer 3 — Make it reviewable",
+      subtitle: "Guides steer it, sensors catch it — but can a human still tell what happened? Two teams hit the same gap.",
+      accent: "amethyst",
+    } satisfies DividerContent,
   },
   {
     kind: "static",

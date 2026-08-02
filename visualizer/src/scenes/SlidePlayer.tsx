@@ -8,6 +8,7 @@ import type {
   CloseContent,
   ConfessionCrawlContent,
   CoverContent,
+  DividerContent,
   ListContent,
   PresentersContent,
   StatementContent,
@@ -25,6 +26,7 @@ import { SlideTable } from "../components/slides/SlideTable";
 import { SlideTwoColumn } from "../components/slides/SlideTwoColumn";
 import { SlideVideoPlaceholder } from "../components/slides/SlideVideoPlaceholder";
 import { SlideClose } from "../components/slides/SlideClose";
+import { SlideDivider } from "../components/slides/SlideDivider";
 import { ConfessionCrawl } from "../components/slides/ConfessionCrawl";
 
 function totalBeatsFor(item: StaticDeckItem): number {
@@ -67,6 +69,8 @@ function SlideBody({ item, beat, next }: { item: StaticDeckItem; beat: number; n
       return <SlideClose content={item.content as CloseContent} />;
     case "confession-crawl":
       return <ConfessionCrawl content={item.content as ConfessionCrawlContent} beat={beat} next={next} />;
+    case "divider":
+      return <SlideDivider content={item.content as DividerContent} />;
     case "bespoke": {
       const Bespoke = item.bespokeComponent;
       return Bespoke ? <Bespoke content={item.content as StatementContent} /> : null;
