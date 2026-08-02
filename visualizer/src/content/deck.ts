@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import type { IconName } from "../components/slides/Icon";
 import { SlideFilePathMatch } from "../components/slides/bespoke/SlideFilePathMatch";
 import { SlideAgentPersonas } from "../components/slides/bespoke/SlideAgentPersonas";
+import presenterJayaPhoto from "../assets/brand/presenter-jaya.jpeg";
 
 export type Accent = "flamingo" | "sapphire" | "jade" | "turmeric" | "amethyst";
 
@@ -16,18 +17,18 @@ export interface DeckSection {
 // on the actual chrome (confirmed in review: section numbers and borders in it washed out).
 const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
 
-// 10 sections, timings from 01-talk-outline.md's run-of-show table.
+// Timings recomputed to a continuous run-of-show across only the sections that still
+// have content — demo clips 1/2 and the (already-merged-away) context rot section
+// dropped out entirely rather than leaving dead gaps in the schedule. `id` values are
+// kept as the original 01-talk-outline.md numbers since DeckItems reference them by id.
 export const SECTIONS: DeckSection[] = [
-  { id: 1, title: "Cold open + hook + agenda", timeLabel: "0:00–1:30" },
+  { id: 1, title: "Title + hook + agenda", timeLabel: "0:00–1:30" },
   { id: 2, title: "The core idea", timeLabel: "1:30–5:00" },
   { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
   { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
-  { id: 5, title: "Demo clip 1", timeLabel: "13:00–16:00" },
-  { id: 6, title: "Layer 2 — Sensors", timeLabel: "16:00–20:00" },
-  { id: 7, title: "Demo clip 2", timeLabel: "20:00–23:00" },
-  { id: 8, title: "Context rot — the open problem", timeLabel: "23:00–26:00" },
-  { id: 9, title: "5 principles for any team", timeLabel: "26:00–28:30" },
-  { id: 10, title: "Self-score + recap + close", timeLabel: "28:30–30:00" },
+  { id: 6, title: "Layer 2 — Sensors", timeLabel: "13:00–17:00" },
+  { id: 9, title: "5 principles for any team", timeLabel: "17:00–19:30" },
+  { id: 10, title: "Self-score + recap + close", timeLabel: "19:30–21:00" },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =
@@ -185,6 +186,7 @@ export const DECK: DeckItem[] = [
           name: "Jaya Simha Reddy Nandyala",
           title: "Senior Consultant | Full Stack Engineer",
           bio: "7+ years building enterprise apps across React, Python, and Java Spring Boot — now designing harness-engineering systems that make AI coding agents reliable across large, multi-repo codebases.",
+          photo: presenterJayaPhoto,
         },
         {
           name: "Prabina Pani",
@@ -368,22 +370,6 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
-    id: "s14",
-    section: 5,
-    navLabel: "Demo — Guides in action",
-    slideKind: "video-placeholder",
-    content: {
-      heading: "Demo 1 — Guides in action",
-      setupLine: "Watch what happens to the same request, once with no scoped context, once with it.",
-      callouts: [
-        "No scoped context → generic pattern",
-        "Scoped instructions load automatically by file path",
-        "Same model. Same prompt. Different harness.",
-      ],
-    } satisfies VideoPlaceholderContent,
-  },
-  {
-    kind: "static",
     id: "s15",
     section: 6,
     navLabel: "Sensors",
@@ -452,18 +438,6 @@ export const DECK: DeckItem[] = [
         ["Self-verification bias", "Computational sensors override the agent's own “I'm done” claim"],
       ],
     } satisfies TableContent,
-  },
-  {
-    kind: "static",
-    id: "s18",
-    section: 7,
-    navLabel: "Demo — Sensors in action",
-    slideKind: "video-placeholder",
-    content: {
-      heading: "Demo 2 — Sensors in action",
-      setupLine: "Now watch the agent make a mistake — and catch it itself before a human ever sees it.",
-      callouts: ["Agent claims: done", "Sensor disagrees", "Agent self-corrects — no human review yet", "Silent on pass"],
-    } satisfies VideoPlaceholderContent,
   },
   {
     kind: "static",

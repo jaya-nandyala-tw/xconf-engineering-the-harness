@@ -3,11 +3,13 @@ import type { ReactNode } from "react";
 import { useBeats } from "../lib/useBeats";
 import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
+import { Icon } from "../components/slides/Icon";
 
 type RepoId = "billing" | "checkout" | "invoicing";
 type RepoState = "neutral" | "active" | "synced" | "drift";
 type Field = "pct" | "percentage";
 type GateState = "pending" | "approved";
+type FolderType = "skills" | "agents" | "specs" | "plans";
 
 interface Repo {
   id: RepoId;
@@ -26,27 +28,45 @@ const REPOS: Repo[] = [
 
 const REQUEST = "Rename the discount field from pct to percentage.";
 
+const FOLDER_TYPES: FolderType[] = ["skills", "agents", "specs", "plans"];
+
 // Domain-scoped specs are real (specs/portal, specs/lambdas, specs/product in the
-// actual system) — every repo starts with its own, isolated. "Skills" mirrors that same
-// local-vs-shared split for reusable practice, not just rules.
-const LOCAL_SPECS: Record<RepoId, string> = {
-  billing: "specs/billing/constitution.md",
-  checkout: "specs/checkout/constitution.md",
-  invoicing: "specs/invoicing/constitution.md",
+// actual system) — every repo starts with its own copy of all four kinds of AI config,
+// isolated. Once ai-kit exists these paths are deleted from the repo entirely, not left
+// behind — ai-kit becomes the one place they live.
+const LOCAL_PATHS: Record<RepoId, Record<FolderType, string>> = {
+  billing: {
+    skills: "skills/billing-conventions.md",
+    agents: "agents/billing-rename-agent.md",
+    specs: "specs/billing/constitution.md",
+    plans: "plans/billing/migration.md",
+  },
+  checkout: {
+    skills: "skills/checkout-conventions.md",
+    agents: "agents/checkout-rename-agent.md",
+    specs: "specs/checkout/constitution.md",
+    plans: "plans/checkout/migration.md",
+  },
+  invoicing: {
+    skills: "skills/invoicing-conventions.md",
+    agents: "agents/invoicing-rename-agent.md",
+    specs: "specs/invoicing/constitution.md",
+    plans: "plans/invoicing/migration.md",
+  },
 };
-const LOCAL_SKILLS: Record<RepoId, string> = {
-  billing: "skills/billing-conventions.md",
-  checkout: "skills/checkout-conventions.md",
-  invoicing: "skills/invoicing-conventions.md",
+
+const SHARED_PATHS: Record<FolderType, string> = {
+  skills: "ai-kit/skills/safe-rename.md",
+  agents: "ai-kit/agents/rename-agent.md",
+  specs: "ai-kit/conventions.md",
+  plans: "ai-kit/plans/migration.md",
 };
-const SHARED_SPEC = "workspace/conventions.md";
-const SHARED_SKILL = "workspace/skills/safe-rename.md";
 
 interface Beat {
   request: string | null;
   showWrapper: boolean;
-  // Once true, all 3 repos inherit the workspace's shared spec + skill instead of their
-  // own local copies — a standing structural fact, unlike the per-request analysis/gate.
+  // Once true, ai-kit holds the canonical folders and each repo's local copies have
+  // been deleted — a standing structural fact, unlike the per-request analysis/gate.
   sharedDocsShown?: boolean;
   analysisShown?: boolean;
   gateState?: GateState;
@@ -66,7 +86,7 @@ const BEATS: Beat[] = [
     showWrapper: false,
     repoStates: ALL_NEUTRAL,
     repoField: ALL_PCT,
-    caption: "Three repos. Three separate specs, three separate skills. Nothing connects them.",
+    caption: "Three repos. Each with its own skills, agents, specs, and plans. Nothing connects them.",
   },
   {
     request: REQUEST,
@@ -96,7 +116,7 @@ const BEATS: Beat[] = [
     showWrapper: true,
     repoStates: ALL_NEUTRAL,
     repoField: ALL_PCT,
-    caption: "Same 3 repos. Now wrapped in one shared workspace.",
+    caption: "Same 3 repos. Now wrapped inside one repo — ai-kit — each one gitignored there, not re-committed.",
   },
   {
     request: null,
@@ -104,7 +124,7 @@ const BEATS: Beat[] = [
     sharedDocsShown: true,
     repoStates: ALL_NEUTRAL,
     repoField: ALL_PCT,
-    caption: "The workspace also holds shared specs and skills — conventions every repo inherits, instead of drifting on its own.",
+    caption: "ai-kit holds the one canonical skills, agents, specs, and plans. Deleted from every repo — moved, not duplicated.",
   },
   {
     request: REQUEST,
@@ -112,7 +132,7 @@ const BEATS: Beat[] = [
     sharedDocsShown: true,
     repoStates: ALL_NEUTRAL,
     repoField: ALL_PCT,
-    caption: "The request hits the workspace first — not a repo.",
+    caption: "The request hits ai-kit first — not a repo.",
   },
   {
     request: REQUEST,
@@ -152,15 +172,20 @@ const BEATS: Beat[] = [
     repoStates: { billing: "synced", checkout: "synced", invoicing: "synced" },
     repoField: { billing: "percentage", checkout: "percentage", invoicing: "percentage" },
     syncCallout: true,
-    caption: "All three update together, using the shared rename-safely skill. Nobody drifts.",
+    caption: "All three update together, using the shared skill in ai-kit. Nobody drifts.",
   },
 ];
 
+// Violet/flamingo/green/red — same brand-accent family used across the rest of the
+// visualizer, none of them teal-adjacent, so every state stays legible on the wave bg.
+// Neutral's border/text are bumped a notch brighter than a typical "inactive" tone —
+// at true low-alpha they read as almost invisible against the wave background, and the
+// resting-state cards need to look like cards even before anything happens to them.
 const STATE_TONE: Record<RepoState, { border: string; bg: string; text: string; icon: string }> = {
-  neutral: { border: "rgba(255,255,255,0.12)", bg: "rgba(255,255,255,0.02)", text: "rgba(255,255,255,0.4)", icon: "·" },
-  active: { border: "rgba(96,165,250,0.65)", bg: "rgba(96,165,250,0.1)", text: "#c4b5fd", icon: "…" },
-  synced: { border: "rgba(52,211,153,0.65)", bg: "rgba(52,211,153,0.12)", text: "#86efac", icon: "✓" },
-  drift: { border: "rgba(248,113,113,0.65)", bg: "rgba(248,113,113,0.12)", text: "#fca5a5", icon: "✗" },
+  neutral: { border: "rgba(255,255,255,0.22)", bg: "rgba(255,255,255,0.03)", text: "rgba(255,255,255,0.55)", icon: "·" },
+  active: { border: "rgba(167,139,250,0.7)", bg: "rgba(167,139,250,0.12)", text: "#c4b5fd", icon: "…" },
+  synced: { border: "rgba(74,222,128,0.7)", bg: "rgba(74,222,128,0.14)", text: "#86efac", icon: "✓" },
+  drift: { border: "rgba(248,113,113,0.7)", bg: "rgba(248,113,113,0.14)", text: "#fca5a5", icon: "✗" },
 };
 
 function RequestBubble({ text }: { text: string | null }) {
@@ -185,17 +210,30 @@ function RequestBubble({ text }: { text: string | null }) {
   );
 }
 
-function DocRow({ label, shared, path }: { label: string; shared: boolean; path: string }) {
-  const color = shared ? "#c4b5fd" : "rgba(255,255,255,0.35)";
+// Local copy, before ai-kit exists — plain path, still on disk in this repo.
+function FolderRow({ type, path }: { type: FolderType; path: string }) {
   return (
-    <div className="flex items-center gap-1.5 overflow-hidden">
-      <motion.span animate={{ color }} className="shrink-0 text-[9px] uppercase tracking-wide">
-        {label}
-      </motion.span>
-      <motion.span animate={{ color }} className="truncate font-mono text-[9px]">
-        {path}
-      </motion.span>
+    <div className="flex items-center gap-1.5 overflow-hidden text-white/75">
+      <Icon name="folder" className="h-3 w-3 shrink-0" />
+      <span className="shrink-0 text-[10px] uppercase tracking-wide">{type}</span>
+      <span className="truncate font-mono text-[10px] text-white/55">{path}</span>
     </div>
+  );
+}
+
+// Once ai-kit holds the canonical copy, the four local folders are deleted from the
+// repo outright — this replaces the FolderRow list entirely, not a struck-through
+// remnant of it.
+function MovedNotice() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex items-center gap-1.5 text-[11px] font-medium text-flamingo"
+    >
+      <Icon name="folder" className="h-3.5 w-3.5 shrink-0" />
+      <span>skills, agents, specs, plans — deleted, moved to ai-kit</span>
+    </motion.div>
   );
 }
 
@@ -211,14 +249,12 @@ function RepoCard({
   docsShared: boolean;
 }) {
   const tone = STATE_TONE[state];
-  const specPath = docsShared ? SHARED_SPEC : LOCAL_SPECS[repo.id];
-  const skillPath = docsShared ? SHARED_SKILL : LOCAL_SKILLS[repo.id];
   return (
     <motion.div
       layout
       animate={{ borderColor: tone.border, backgroundColor: tone.bg }}
       transition={{ type: "spring", stiffness: 160, damping: 22 }}
-      className="flex w-[220px] flex-col gap-2 rounded-2xl border-2 p-4"
+      className="flex w-[240px] flex-col gap-2 rounded-2xl border-2 p-4"
     >
       <div className="flex items-center justify-between">
         <span className="font-mono text-[13px] font-semibold text-white/85">{repo.name}</span>
@@ -226,11 +262,18 @@ function RepoCard({
           {tone.icon}
         </motion.span>
       </div>
-      <span className="text-[10px] uppercase tracking-wide text-white/30">{repo.role}</span>
-      <div className="flex flex-col gap-1">
-        <DocRow label="specs" shared={docsShared} path={specPath} />
-        <DocRow label="skills" shared={docsShared} path={skillPath} />
-      </div>
+      <span className="text-[10px] uppercase tracking-wide text-white/40">{repo.role}</span>
+      <AnimatePresence mode="popLayout">
+        {docsShared ? (
+          <MovedNotice key="moved" />
+        ) : (
+          <motion.div key="local" layout className="flex flex-col gap-1">
+            {FOLDER_TYPES.map((type) => (
+              <FolderRow key={type} type={type} path={LOCAL_PATHS[repo.id][type]} />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.div
         animate={{ borderColor: tone.border, color: tone.text }}
         className="rounded-lg border px-2.5 py-1.5 font-mono text-xs"
@@ -241,17 +284,23 @@ function RepoCard({
   );
 }
 
-function SharedDocsPanel() {
+// Lives inside the ai-kit wrapper, above the repo row — the one canonical copy of each
+// folder type, now that every repo's local copy has been deleted.
+function SharedFoldersPanel() {
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="w-full rounded-xl border border-blue-400/25 bg-blue-400/[0.06] px-4 py-3 text-sm text-blue-200"
+      className="grid w-full grid-cols-2 gap-x-4 gap-y-1.5 rounded-xl border border-flamingo/40 bg-flamingo/10 px-4 py-3 sm:grid-cols-4"
     >
-      <span className="mr-2 font-mono text-[10px] uppercase tracking-wide text-blue-300/60">shared specs &amp; skills</span>
-      {SHARED_SPEC} · {SHARED_SKILL} — inherited by all 3 repos
+      {FOLDER_TYPES.map((type) => (
+        <div key={type} className="flex items-center gap-1.5 overflow-hidden text-flamingo">
+          <Icon name="folder" className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate font-mono text-[10px] font-medium">{SHARED_PATHS[type]}</span>
+        </div>
+      ))}
     </motion.div>
   );
 }
@@ -263,9 +312,9 @@ function AnalysisPanel() {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="w-full rounded-xl border border-blue-400/25 bg-blue-400/[0.06] px-4 py-3 text-sm text-blue-200"
+      className="w-full rounded-xl border border-violet-400/40 bg-violet-400/10 px-4 py-3 text-sm text-violet-100"
     >
-      <span className="mr-2 font-mono text-[10px] uppercase tracking-wide text-blue-300/60">impact analysis</span>
+      <span className="mr-2 font-mono text-[10px] uppercase tracking-wide text-violet-300">impact analysis</span>
       billing-service (owner) · checkout-service (consumer) · invoicing-service (consumer)
     </motion.div>
   );
@@ -281,7 +330,7 @@ function GatePanel({ state }: { state: GateState }) {
       animate={{ opacity: 1, y: 0, borderColor: color }}
       exit={{ opacity: 0 }}
       className="flex w-full items-center gap-2.5 rounded-xl border px-4 py-3 text-sm"
-      style={{ backgroundColor: approved ? "rgba(52,211,153,0.08)" : "rgba(96,165,250,0.08)" }}
+      style={{ backgroundColor: approved ? "rgba(74,222,128,0.08)" : "rgba(167,139,250,0.08)" }}
     >
       <span style={{ color }}>{approved ? "✓" : "⏸"}</span>
       <span style={{ color }}>
@@ -329,31 +378,37 @@ export function WorkspaceWrapper() {
       <div className="flex w-full max-w-4xl flex-col items-center gap-6">
         <RequestBubble text={config.request} />
 
+        {/* ai-kit wraps the repos — a single bordered container the 3 repo cards render
+            inside, not a peer box beside them, so "one shared repo enclosing three
+            services" reads directly from the layout. */}
         <motion.div
           layout
           animate={{
-            borderColor: config.showWrapper ? "rgba(96,165,250,0.35)" : "rgba(255,255,255,0)",
-            backgroundColor: config.showWrapper ? "rgba(96,165,250,0.03)" : "rgba(255,255,255,0)",
+            borderColor: config.showWrapper ? "rgba(242,97,122,0.45)" : "rgba(255,255,255,0)",
+            backgroundColor: config.showWrapper ? "rgba(242,97,122,0.05)" : "rgba(255,255,255,0)",
           }}
           transition={{ type: "spring", stiffness: 120, damping: 22 }}
           className="flex flex-col items-center gap-4 rounded-[32px] border-2 p-6"
         >
           <AnimatePresence>
             {config.showWrapper && (
-              <motion.span
-                key="workspace-label"
+              <motion.div
+                key="ai-kit-label"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="self-start font-mono text-[11px] uppercase tracking-[0.2em] text-blue-300/70"
+                className="flex flex-col items-start gap-1 self-start"
               >
-                Workspace
-              </motion.span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-flamingo">ai-kit</span>
+                <span className="font-mono text-[10px] text-white/45">
+                  .gitignore: billing-service/, checkout-service/, invoicing-service/
+                </span>
+              </motion.div>
             )}
           </AnimatePresence>
 
           <AnimatePresence>
-            {docsShared && <SharedDocsPanel key="shared-docs" />}
+            {docsShared && <SharedFoldersPanel key="shared-folders" />}
             {config.analysisShown && <AnalysisPanel key="analysis" />}
             {config.gateState && <GatePanel key="gate" state={config.gateState} />}
           </AnimatePresence>

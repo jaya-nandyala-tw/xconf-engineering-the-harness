@@ -8,7 +8,8 @@ export type IconName =
   | "sparkle"
   | "lock"
   | "map"
-  | "person";
+  | "person"
+  | "folder";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -74,6 +75,7 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" />
     </>
   ),
+  folder: <path d="M3 6.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2h9a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z" />,
 };
 
 export function Icon({ name, className = "h-6 w-6" }: { name: IconName; className?: string }) {
