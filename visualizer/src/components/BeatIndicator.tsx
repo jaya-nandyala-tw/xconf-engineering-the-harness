@@ -10,7 +10,7 @@ export function BeatIndicator({ total, current }: BeatIndicatorProps) {
         <div
           key={i}
           className={`h-1.5 rounded-full transition-all duration-300 ${
-            i === current ? "w-8 bg-white" : "w-1.5 bg-white/25"
+            i === current ? "w-8 bg-ink" : "w-1.5 bg-ink/25"
           }`}
         />
       ))}

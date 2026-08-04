@@ -8,11 +8,14 @@ import "@fontsource/inter/700.css";
 import "@fontsource/bitter/700.css";
 import "./index.css";
 import App from "./App.tsx";
+import { ThemeProvider } from "./lib/theme.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <App />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );

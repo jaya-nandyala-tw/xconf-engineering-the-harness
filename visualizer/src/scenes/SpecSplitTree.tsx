@@ -5,6 +5,7 @@ import { useBeats } from "../lib/useBeats";
 import { useSceneNav } from "../lib/useSceneNav";
 import { useSpringNumber } from "../lib/useSpringNumber";
 import { SceneChrome } from "../components/SceneChrome";
+import { useTheme, inkRgba, inkTextRgba } from "../lib/theme";
 
 const MONOLITH = { name: "business-workflows.md", lines: 6000 };
 
@@ -219,17 +220,26 @@ function FileIcon({ color }: { color: string }) {
   );
 }
 
-const NODE_TONE_ACTIVE = { bg: "rgba(251, 191, 36, 0.16)", border: "rgba(251, 191, 36, 0.65)", text: "#fde68a" };
+function nodeToneActive(isLight: boolean) {
+  return {
+    bg: "rgba(251, 191, 36, 0.16)",
+    border: "rgba(251, 191, 36, 0.65)",
+    text: isLight ? "#92400e" : "#fde68a",
+  };
+}
 
 // Inactive nodes recede the deeper they sit in the tree — a depth-cueing fade that
 // reinforces "this hierarchy actually goes several levels down" independent of the
 // links/layout, purely through how dim a not-yet-visited node looks.
-function offToneForDepth(depth: number) {
+function offToneForDepth(depth: number, isLight: boolean) {
   const t = MAX_DEPTH > 0 ? depth / MAX_DEPTH : 0;
   return {
-    bg: `rgba(255, 255, 255, ${(0.05 - t * 0.03).toFixed(3)})`,
-    border: `rgba(255, 255, 255, ${(0.14 - t * 0.08).toFixed(3)})`,
-    text: `rgba(255, 255, 255, ${(0.46 - t * 0.22).toFixed(3)})`,
+    bg: inkRgba(isLight, +(0.05 - t * 0.03).toFixed(3)),
+    border: inkRgba(isLight, +(0.14 - t * 0.08).toFixed(3)),
+    // Floor kept shallower than the bg/border fade (0.32 vs. a possible 0.24) — even the
+    // most deeply-receded node's filename should still clear a legible contrast floor,
+    // measured, not just visually "a bit dimmer than its neighbor."
+    text: inkTextRgba(isLight, +(0.46 - t * 0.14).toFixed(3)),
   };
 }
 
@@ -238,13 +248,15 @@ function NodeCard({
   active,
   depth,
   hasChildren,
+  isLight,
 }: {
   node: SpecNode;
   active: boolean;
   depth: number;
   hasChildren: boolean;
+  isLight: boolean;
 }) {
-  const tone = active ? NODE_TONE_ACTIVE : offToneForDepth(depth);
+  const tone = active ? nodeToneActive(isLight) : offToneForDepth(depth, isLight);
   const tokens = tokensFor(node.lines);
   const sizeRatio = MAX_NODE_TOKENS > 0 ? tokens / MAX_NODE_TOKENS : 0;
 
@@ -279,8 +291,8 @@ function NodeCard({
       )}
       <motion.span
         animate={{
-          backgroundColor: active ? "rgba(251, 191, 36, 0.28)" : "rgba(255, 255, 255, 0.06)",
-          color: active ? "#fde68a" : "rgba(255, 255, 255, 0.4)",
+          backgroundColor: active ? "rgba(251, 191, 36, 0.28)" : inkRgba(isLight, 0.06),
+          color: active ? (isLight ? "#92400e" : "#fde68a") : inkTextRgba(isLight, 0.48),
         }}
         transition={{ type: "spring", stiffness: 280, damping: 16 }}
         className="ml-auto shrink-0 rounded-[4px] px-1.5 py-0.5 font-mono text-[9px] font-semibold"
@@ -301,7 +313,7 @@ function NodeCard({
   );
 }
 
-function SpecTree({ activeIds }: { activeIds: Set<string> }) {
+function SpecTree({ activeIds, isLight }: { activeIds: Set<string>; isLight: boolean }) {
   const svgW = LAYOUT_W + MARGIN_X * 2;
   const svgH = LAYOUT_H + MARGIN_Y * 2;
   return (
@@ -317,7 +329,7 @@ function SpecTree({ activeIds }: { activeIds: Set<string> }) {
                 d={linkPath(link) ?? undefined}
                 fill="none"
                 animate={{
-                  stroke: isActive ? "rgba(251, 191, 36, 0.75)" : "rgba(255, 255, 255, 0.09)",
+                  stroke: isActive ? "rgba(251, 191, 36, 0.75)" : inkRgba(isLight, 0.09),
                   strokeWidth: isActive ? 2.5 : 1.2,
                 }}
                 transition={{ type: "spring", stiffness: 160, damping: 24 }}
@@ -339,6 +351,7 @@ function SpecTree({ activeIds }: { activeIds: Set<string> }) {
                 active={activeIds.has(node.data.id)}
                 depth={node.depth}
                 hasChildren={!!node.data.children?.length}
+                isLight={isLight}
               />
             </foreignObject>
           ))}
@@ -348,7 +361,7 @@ function SpecTree({ activeIds }: { activeIds: Set<string> }) {
   );
 }
 
-function Monolith() {
+function Monolith({ isLight }: { isLight: boolean }) {
   return (
     <motion.div
       key="monolith"
@@ -358,16 +371,22 @@ function Monolith() {
       transition={{ duration: 0.45 }}
       className="flex w-[360px] flex-col items-center gap-3 rounded-2xl border-2 border-red-400/40 bg-red-400/[0.06] px-8 py-10"
     >
-      <span className="text-xs uppercase tracking-[0.2em] text-red-300/70">one giant file</span>
-      <span className="font-mono text-lg text-white/80">{MONOLITH.name}</span>
-      <span className="font-mono text-5xl font-semibold text-red-300">{MONOLITH_TOKENS.toLocaleString()}</span>
-      <span className="text-sm text-red-300/70">tokens — every flow, every time</span>
-      <span className="text-xs text-red-300/40">{MONOLITH.lines.toLocaleString()} lines</span>
+      <span className={`text-xs uppercase tracking-[0.2em] ${isLight ? "text-red-800/80" : "text-red-300/70"}`}>
+        one giant file
+      </span>
+      <span className="font-mono text-lg text-ink/80">{MONOLITH.name}</span>
+      <span className={`font-mono text-5xl font-semibold ${isLight ? "text-red-700" : "text-red-300"}`}>
+        {MONOLITH_TOKENS.toLocaleString()}
+      </span>
+      <span className={`text-sm ${isLight ? "text-red-800/80" : "text-red-300/70"}`}>tokens — every flow, every time</span>
+      <span className={`text-xs ${isLight ? "text-red-800/70" : "text-red-300/40"}`}>
+        {MONOLITH.lines.toLocaleString()} lines
+      </span>
     </motion.div>
   );
 }
 
-function TokensLoadedBar({ linesLoaded }: { linesLoaded: number }) {
+function TokensLoadedBar({ linesLoaded, isLight }: { linesLoaded: number; isLight: boolean }) {
   const tokensLoaded = tokensFor(linesLoaded);
   const { spring, display } = useSpringNumber(tokensLoaded, { stiffness: 90, damping: 20, mass: 0.7 });
   const width = useTransform(spring, (v) => `${Math.min((v / MONOLITH_TOKENS) * 100, 100)}%`);
@@ -375,13 +394,13 @@ function TokensLoadedBar({ linesLoaded }: { linesLoaded: number }) {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <span className="text-sm uppercase tracking-wide text-white/50">tokens loaded</span>
-        <span className="font-mono text-2xl text-amber-300">{display}</span>
+        <span className="text-sm uppercase tracking-wide text-ink/50">tokens loaded</span>
+        <span className={`font-mono text-2xl ${isLight ? "text-amber-700" : "text-amber-300"}`}>{display}</span>
       </div>
-      <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-ink/10">
         <motion.div className="h-full rounded-full bg-amber-400" style={{ width }} />
       </div>
-      <p className="mt-1.5 text-sm text-white/30">
+      <p className="mt-1.5 text-sm text-ink/30">
         vs. {MONOLITH_TOKENS.toLocaleString()} tokens ({MONOLITH.lines.toLocaleString()} lines) if it stayed one file
       </p>
     </div>
@@ -394,6 +413,7 @@ export function SpecSplitTree() {
     BEATS.length,
   );
   const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
+  const { isLight } = useTheme();
   const config = BEATS[beat];
   const activeIds = new Set(config.activeIds);
 
@@ -409,21 +429,29 @@ export function SpecSplitTree() {
       <div className="flex w-full max-w-[1400px] items-center gap-6">
         <div className="flex flex-1 items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait">
-            {config.phase === "monolith" ? <Monolith /> : <SpecTree activeIds={activeIds} />}
+            {config.phase === "monolith" ? (
+              <Monolith isLight={isLight} />
+            ) : (
+              <SpecTree activeIds={activeIds} isLight={isLight} />
+            )}
           </AnimatePresence>
         </div>
 
-        <div className="flex w-60 shrink-0 flex-col gap-5 rounded-xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="text-xs uppercase tracking-[0.15em] text-white/40">Agent task</p>
+        <div className="flex w-60 shrink-0 flex-col gap-5 rounded-xl border border-ink/10 bg-ink/[0.03] p-5">
+          <p className="text-xs uppercase tracking-[0.15em] text-ink/40">Agent task</p>
 
-          <div className="rounded-lg border border-white/10 bg-black/30 px-4 py-3">
+          {/* Fixed dark "terminal" backdrop regardless of theme (bg-wave, not the
+              translucent bg-black/30 this used to be — that composited to a washed-out
+              gray over light mist) — so the text inside must stay fixed-light too,
+              not text-ink, which would flip to dark-on-dark in light theme. */}
+          <div className="rounded-lg border border-ink/10 bg-wave px-4 py-3">
             <p className="text-[10px] uppercase tracking-wide text-white/30">question</p>
             <p className="mt-1 text-base leading-snug text-white/80">
               {config.task ?? "no task yet"}
             </p>
           </div>
 
-          <TokensLoadedBar linesLoaded={config.linesLoaded} />
+          <TokensLoadedBar linesLoaded={config.linesLoaded} isLight={isLight} />
 
           <AnimatePresence>
             {config.showPayoff && (
@@ -433,9 +461,13 @@ export function SpecSplitTree() {
                 transition={{ duration: 0.5, delay: 0.15 }}
                 className="rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3"
               >
-                <p className="font-mono text-3xl font-semibold text-emerald-300">{SAVINGS_PCT}%</p>
-                <p className="mt-1 text-sm text-emerald-300/80">less loaded for the same answer</p>
-                <p className="mt-1.5 font-mono text-xs text-emerald-300/60">
+                <p className={`font-mono text-3xl font-semibold ${isLight ? "text-emerald-700" : "text-emerald-300"}`}>
+                  {SAVINGS_PCT}%
+                </p>
+                <p className={`mt-1 text-sm ${isLight ? "text-emerald-800/90" : "text-emerald-300/80"}`}>
+                  less loaded for the same answer
+                </p>
+                <p className={`mt-1.5 font-mono text-xs ${isLight ? "text-emerald-800/70" : "text-emerald-300/60"}`}>
                   {MONOLITH_TOKENS.toLocaleString()} → {FULL_TRAVERSAL_TOKENS.toLocaleString()} tokens
                 </p>
               </motion.div>

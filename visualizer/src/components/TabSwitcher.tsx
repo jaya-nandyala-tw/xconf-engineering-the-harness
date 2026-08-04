@@ -7,7 +7,7 @@ const TABS = [
 
 export function TabSwitcher() {
   return (
-    <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
+    <div className="inline-flex rounded-full border border-ink/10 bg-ink/[0.03] p-1">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
@@ -15,7 +15,7 @@ export function TabSwitcher() {
           end={tab.end}
           className={({ isActive }) =>
             `rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors ${
-              isActive ? "bg-flamingo text-white" : "text-white/50 hover:text-white/80"
+              isActive ? "bg-flamingo text-white" : "text-ink/50 hover:text-ink/80"
             }`
           }
         >

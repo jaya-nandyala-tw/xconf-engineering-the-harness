@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
 import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
+import { useTheme, diagramTextHex } from "../lib/theme";
 
 interface Layer {
   id: "harness" | "context" | "prompt";
@@ -123,7 +124,7 @@ function Ring({ layer, isFocused, isDimmed, pulse }: { layer: Layer; isFocused: 
   );
 }
 
-function InfoPanel({ layer }: { layer: Layer }) {
+function InfoPanel({ layer, isLight }: { layer: Layer; isLight: boolean }) {
   return (
     <motion.div
       key={layer.id}
@@ -133,10 +134,13 @@ function InfoPanel({ layer }: { layer: Layer }) {
       transition={{ duration: 0.3 }}
       className="flex flex-col items-center gap-3 text-center"
     >
-      <p className="text-sm uppercase tracking-[0.2em]" style={{ color: layer.color }}>
+      {/* Ring uses layer.color at full saturation for its border/glow (fine as a bold
+          decorative shape either theme) — but as body text on light mist that same
+          violet/orange/pale-yellow drops to ~1.5-2.4:1, so text gets the darkened swap. */}
+      <p className="text-sm uppercase tracking-[0.2em]" style={{ color: diagramTextHex(layer.color, isLight) }}>
         {layer.title} — {layer.level}-level · {layer.metaphor}
       </p>
-      <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-lg text-white/70">
+      <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-lg text-ink/70">
         {layer.bullets.map((bullet) => (
           <li key={bullet} className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: layer.color }} />
@@ -156,8 +160,8 @@ function AgentTitle() {
       transition={{ duration: 0.4 }}
       className="flex flex-col items-center gap-4 text-center"
     >
-      <p className="font-display text-5xl font-bold text-white sm:text-6xl">Agent = Model + Harness.</p>
-      <p className="max-w-xl text-xl text-white/50">The model provides intelligence. The harness makes it useful.</p>
+      <p className="font-display text-5xl font-bold text-ink sm:text-6xl">Agent = Model + Harness.</p>
+      <p className="max-w-xl text-xl text-ink/50">The model provides intelligence. The harness makes it useful.</p>
     </motion.div>
   );
 }
@@ -165,6 +169,7 @@ function AgentTitle() {
 export function NestedLayers() {
   const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("nested-layers", BEATS.length);
   const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
+  const { isLight } = useTheme();
   const config = BEATS[beat];
   const focusedLayer = config.focused ? LAYERS.find((l) => l.id === config.focused)! : null;
   const scale = focusedLayer ? HARNESS_SIZE / focusedLayer.size : 1;
@@ -192,7 +197,7 @@ export function NestedLayers() {
               className="flex flex-col items-center gap-6"
             >
               <div
-                className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02]"
+                className="relative overflow-hidden rounded-3xl border border-ink/10 bg-ink/[0.02]"
                 style={{ width: VIEWPORT, height: VIEWPORT }}
               >
                 <motion.div
@@ -214,7 +219,9 @@ export function NestedLayers() {
               </div>
 
               <div className="min-h-[92px]">
-                <AnimatePresence mode="wait">{focusedLayer && <InfoPanel key={focusedLayer.id} layer={focusedLayer} />}</AnimatePresence>
+                <AnimatePresence mode="wait">
+                  {focusedLayer && <InfoPanel key={focusedLayer.id} layer={focusedLayer} isLight={isLight} />}
+                </AnimatePresence>
               </div>
             </motion.div>
           )}

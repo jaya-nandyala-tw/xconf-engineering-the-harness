@@ -4,6 +4,7 @@ import { useBeats } from "../lib/useBeats";
 import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
 import { Icon } from "../components/slides/Icon";
+import { useTheme, inkRgba, inkTextRgba, toneText } from "../lib/theme";
 
 type RepoId = "billing" | "checkout" | "invoicing";
 type RepoState = "neutral" | "active" | "synced" | "drift";
@@ -181,12 +182,33 @@ const BEATS: Beat[] = [
 // Neutral's border/text are bumped a notch brighter than a typical "inactive" tone —
 // at true low-alpha they read as almost invisible against the wave background, and the
 // resting-state cards need to look like cards even before anything happens to them.
-const STATE_TONE: Record<RepoState, { border: string; bg: string; text: string; icon: string }> = {
-  neutral: { border: "rgba(255,255,255,0.22)", bg: "rgba(255,255,255,0.03)", text: "rgba(255,255,255,0.55)", icon: "·" },
-  active: { border: "rgba(167,139,250,0.7)", bg: "rgba(167,139,250,0.12)", text: "#c4b5fd", icon: "…" },
-  synced: { border: "rgba(74,222,128,0.7)", bg: "rgba(74,222,128,0.14)", text: "#86efac", icon: "✓" },
-  drift: { border: "rgba(248,113,113,0.7)", bg: "rgba(248,113,113,0.14)", text: "#fca5a5", icon: "✗" },
-};
+function stateTone(state: RepoState, isLight: boolean): { border: string; bg: string; text: string; icon: string } {
+  switch (state) {
+    case "neutral":
+      return { border: inkRgba(isLight, 0.22), bg: inkRgba(isLight, 0.03), text: inkTextRgba(isLight, 0.55), icon: "·" };
+    case "active":
+      return {
+        border: "rgba(167,139,250,0.7)",
+        bg: "rgba(167,139,250,0.12)",
+        text: isLight ? "#5b21b6" : "#c4b5fd",
+        icon: "…",
+      };
+    case "synced":
+      return {
+        border: "rgba(74,222,128,0.7)",
+        bg: "rgba(74,222,128,0.14)",
+        text: isLight ? "#0f766e" : "#86efac",
+        icon: "✓",
+      };
+    case "drift":
+      return {
+        border: "rgba(248,113,113,0.7)",
+        bg: "rgba(248,113,113,0.14)",
+        text: isLight ? "#b91c1c" : "#fca5a5",
+        icon: "✗",
+      };
+  }
+}
 
 function RequestBubble({ text }: { text: string | null }) {
   return (
@@ -199,9 +221,9 @@ function RequestBubble({ text }: { text: string | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.3 }}
-            className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-base text-white/80"
+            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-5 py-2.5 text-base text-ink/80"
           >
-            <span className="mr-2 font-mono text-xs uppercase tracking-wide text-white/40">request</span>
+            <span className="mr-2 font-mono text-xs uppercase tracking-wide text-ink/40">request</span>
             {text}
           </motion.div>
         )}
@@ -213,10 +235,10 @@ function RequestBubble({ text }: { text: string | null }) {
 // Local copy, before ai-kit exists — plain path, still on disk in this repo.
 function FolderRow({ type, path }: { type: FolderType; path: string }) {
   return (
-    <div className="flex items-center gap-1.5 overflow-hidden text-white/75">
+    <div className="flex items-center gap-1.5 overflow-hidden text-ink/75">
       <Icon name="folder" className="h-3 w-3 shrink-0" />
       <span className="shrink-0 text-[10px] uppercase tracking-wide">{type}</span>
-      <span className="truncate font-mono text-[10px] text-white/55">{path}</span>
+      <span className="truncate font-mono text-[10px] text-ink/55">{path}</span>
     </div>
   );
 }
@@ -242,13 +264,15 @@ function RepoCard({
   state,
   field,
   docsShared,
+  isLight,
 }: {
   repo: Repo;
   state: RepoState;
   field: Field;
   docsShared: boolean;
+  isLight: boolean;
 }) {
-  const tone = STATE_TONE[state];
+  const tone = stateTone(state, isLight);
   return (
     <motion.div
       layout
@@ -257,12 +281,12 @@ function RepoCard({
       className="flex w-[240px] flex-col gap-2 rounded-2xl border-2 p-4"
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[13px] font-semibold text-white/85">{repo.name}</span>
+        <span className="font-mono text-[13px] font-semibold text-ink/85">{repo.name}</span>
         <motion.span animate={{ color: tone.text }} className="text-base">
           {tone.icon}
         </motion.span>
       </div>
-      <span className="text-[10px] uppercase tracking-wide text-white/40">{repo.role}</span>
+      <span className="text-[10px] uppercase tracking-wide text-ink/40">{repo.role}</span>
       <AnimatePresence mode="popLayout">
         {docsShared ? (
           <MovedNotice key="moved" />
@@ -305,24 +329,28 @@ function SharedFoldersPanel() {
   );
 }
 
-function AnalysisPanel() {
+function AnalysisPanel({ isLight }: { isLight: boolean }) {
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="w-full rounded-xl border border-violet-400/40 bg-violet-400/10 px-4 py-3 text-sm text-violet-100"
+      className={`w-full rounded-xl border border-violet-400/40 bg-violet-400/10 px-4 py-3 text-sm ${
+        isLight ? "text-violet-900" : "text-violet-100"
+      }`}
     >
-      <span className="mr-2 font-mono text-[10px] uppercase tracking-wide text-violet-300">impact analysis</span>
+      <span className={`mr-2 font-mono text-[10px] uppercase tracking-wide ${toneText(isLight, "violet")}`}>
+        impact analysis
+      </span>
       billing-service (owner) · checkout-service (consumer) · invoicing-service (consumer)
     </motion.div>
   );
 }
 
-function GatePanel({ state }: { state: GateState }) {
+function GatePanel({ state, isLight }: { state: GateState; isLight: boolean }) {
   const approved = state === "approved";
-  const color = approved ? "#4ade80" : "#a78bfa";
+  const color = approved ? (isLight ? "#0f766e" : "#4ade80") : isLight ? "#5b21b6" : "#a78bfa";
   return (
     <motion.div
       layout
@@ -342,11 +370,11 @@ function GatePanel({ state }: { state: GateState }) {
   );
 }
 
-function Callout({ tone, children }: { tone: "red" | "green"; children: ReactNode }) {
+function Callout({ tone, isLight, children }: { tone: "red" | "green"; isLight: boolean; children: ReactNode }) {
   const cls =
     tone === "red"
-      ? "border-red-400/30 bg-red-400/10 text-red-300"
-      : "border-emerald-400/30 bg-emerald-400/10 text-emerald-300";
+      ? `border-red-400/30 bg-red-400/10 ${toneText(isLight, "red")}`
+      : `border-emerald-400/30 bg-emerald-400/10 ${toneText(isLight, "emerald")}`;
   return (
     <motion.div
       initial={{ opacity: 0, y: -6 }}
@@ -363,6 +391,7 @@ function Callout({ tone, children }: { tone: "red" | "green"; children: ReactNod
 export function WorkspaceWrapper() {
   const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("workspace-wrapper", BEATS.length);
   const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
+  const { isLight } = useTheme();
   const config = BEATS[beat];
   const docsShared = config.sharedDocsShown ?? false;
 
@@ -400,7 +429,7 @@ export function WorkspaceWrapper() {
                 className="flex flex-col items-start gap-1 self-start"
               >
                 <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-flamingo">ai-kit</span>
-                <span className="font-mono text-[10px] text-white/45">
+                <span className="font-mono text-[10px] text-ink/45">
                   .gitignore: billing-service/, checkout-service/, invoicing-service/
                 </span>
               </motion.div>
@@ -409,8 +438,8 @@ export function WorkspaceWrapper() {
 
           <AnimatePresence>
             {docsShared && <SharedFoldersPanel key="shared-folders" />}
-            {config.analysisShown && <AnalysisPanel key="analysis" />}
-            {config.gateState && <GatePanel key="gate" state={config.gateState} />}
+            {config.analysisShown && <AnalysisPanel key="analysis" isLight={isLight} />}
+            {config.gateState && <GatePanel key="gate" state={config.gateState} isLight={isLight} />}
           </AnimatePresence>
 
           <div className="flex items-center gap-5">
@@ -421,6 +450,7 @@ export function WorkspaceWrapper() {
                 state={config.repoStates[repo.id]}
                 field={config.repoField[repo.id]}
                 docsShared={docsShared}
+                isLight={isLight}
               />
             ))}
           </div>
@@ -428,12 +458,12 @@ export function WorkspaceWrapper() {
 
         <AnimatePresence>
           {config.driftCallout && (
-            <Callout key="drift" tone="red">
+            <Callout key="drift" tone="red" isLight={isLight}>
               ✗ Same request, interpreted differently depending on which repo picked it up first.
             </Callout>
           )}
           {config.syncCallout && (
-            <Callout key="sync" tone="green">
+            <Callout key="sync" tone="green" isLight={isLight}>
               ✓ One shared analysis, one confirmation, zero drift.
             </Callout>
           )}

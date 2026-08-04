@@ -29,7 +29,7 @@ export function ConfessionCrawl({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
-          className="font-display text-3xl font-bold text-white/90 sm:text-4xl"
+          className="font-display text-3xl font-bold text-ink/90 sm:text-4xl"
         >
           {content.lines[beat]}
         </motion.p>

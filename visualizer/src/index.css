@@ -14,6 +14,14 @@
   --color-talc: #ffffff;
   --color-onyx: #000000;
 
+  /* Semantic tokens the whole app themes off — dark values below are the
+     defaults (matching the original wave/white-only look); [data-theme="light"]
+     repoints them to the light palette. Every bg-surface/text-ink/etc. utility
+     Tailwind generates references the CSS var, so retheming is just reassigning
+     these two custom properties, not touching each component. */
+  --color-surface: var(--color-wave);
+  --color-ink: var(--color-talc);
+
   --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
   --font-display: "Bitter", Georgia, serif;
 }
@@ -22,12 +30,55 @@
   color-scheme: dark;
 }
 
+[data-theme="light"] {
+  color-scheme: light;
+  --color-surface: var(--color-mist);
+  --color-ink: var(--color-wave);
+
+  /* The 5 brand accents were tuned to pop against the dark wave background —
+     used bare (as text, or as a fill with white text on top) they fall under
+     ~3:1 contrast against light mist (confirmed by measuring actual rendered
+     contrast, not eyeballing). Deepened, same-hue variants restore >4.5:1 in
+     both roles without touching every component that references them.
+     Amethyst is intentionally untouched — it was already dark enough to read
+     well on mist. */
+  --color-flamingo: #d81234;
+  --color-turmeric: #976207;
+  --color-jade: #4e7658;
+  --color-sapphire: #34767e;
+}
+
+/* text-ink/NN opacity utilities are systemically weaker in light mode than they
+   were in dark mode at the same NN: blending a light color toward transparent
+   over a dark background gains contrast fast, but blending a dark color toward
+   transparent over a light background gains contrast slowly (WCAG's contrast
+   ratio isn't symmetric under that inversion). Measured every ink/NN value
+   actually used in this app and solved for the light-mode percentage that
+   reproduces the ORIGINAL dark-mode contrast at each tier, so "muted" text
+   reads exactly as muted-but-legible in both themes instead of nearly
+   invisible in light mode. See /tmp/contrast_scan.mjs-style audits if this
+   ever needs re-deriving after a palette change. */
+[data-theme="light"] .text-ink\/15 { color: color-mix(in oklab, var(--color-ink) 24%, transparent); }
+[data-theme="light"] .text-ink\/25 { color: color-mix(in oklab, var(--color-ink) 38%, transparent); }
+[data-theme="light"] .text-ink\/30 { color: color-mix(in oklab, var(--color-ink) 45%, transparent); }
+[data-theme="light"] .text-ink\/35 { color: color-mix(in oklab, var(--color-ink) 51%, transparent); }
+[data-theme="light"] .text-ink\/40 { color: color-mix(in oklab, var(--color-ink) 57%, transparent); }
+[data-theme="light"] .text-ink\/45 { color: color-mix(in oklab, var(--color-ink) 62%, transparent); }
+[data-theme="light"] .text-ink\/50 { color: color-mix(in oklab, var(--color-ink) 67%, transparent); }
+[data-theme="light"] .text-ink\/55 { color: color-mix(in oklab, var(--color-ink) 71%, transparent); }
+[data-theme="light"] .text-ink\/60 { color: color-mix(in oklab, var(--color-ink) 76%, transparent); }
+[data-theme="light"] .text-ink\/70 { color: color-mix(in oklab, var(--color-ink) 84%, transparent); }
+[data-theme="light"] .text-ink\/75 { color: color-mix(in oklab, var(--color-ink) 88%, transparent); }
+[data-theme="light"] .text-ink\/80 { color: color-mix(in oklab, var(--color-ink) 91%, transparent); }
+[data-theme="light"] .text-ink\/85 { color: color-mix(in oklab, var(--color-ink) 95%, transparent); }
+[data-theme="light"] .text-ink\/90 { color: color-mix(in oklab, var(--color-ink) 95%, transparent); }
+
 html,
 body,
 #root {
   margin: 0;
   height: 100%;
-  background: var(--color-wave);
+  background: var(--color-surface);
 }
 
 body {

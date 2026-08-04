@@ -2,7 +2,10 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { BeatIndicator } from "./BeatIndicator";
-import thoughtworksLogo from "../assets/brand/thoughtworks-wordmark-light.png";
+import { ThemeToggle } from "./ThemeToggle";
+import { useTheme } from "../lib/theme";
+import thoughtworksLogoLight from "../assets/brand/thoughtworks-wordmark-light.png";
+import thoughtworksLogoDark from "../assets/brand/thoughtworks-wordmark-dark.png";
 
 interface SceneChromeProps {
   label: string;
@@ -29,18 +32,23 @@ interface SceneChromeProps {
 // keyboard-hint row that used to render them are hidden in the live presentation view —
 // audience-facing, not a rehearsal aid.
 export function SceneChrome({ label, totalBeats, currentBeat, caption, children, sidebar }: SceneChromeProps) {
+  const { isLight } = useTheme();
+
   return (
-    <div className="relative flex h-screen w-screen bg-wave text-white overflow-hidden">
+    <div className="relative flex h-screen w-screen bg-surface text-ink overflow-hidden">
       <div className="flex h-full min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between px-8 pt-6 text-xs uppercase tracking-[0.2em] text-white/40">
+        <header className="flex items-center justify-between px-8 pt-6 text-xs uppercase tracking-[0.2em] text-ink/40">
           <Link to="/" className="flex items-center gap-3 opacity-90 transition-opacity hover:opacity-100">
-            <img src={thoughtworksLogo} alt="Thoughtworks" className="h-7 w-auto" />
-            <span className="text-[16px] leading-none tracking-[0.2em] text-white/50">XConf 2026</span>
+            <img src={isLight ? thoughtworksLogoDark : thoughtworksLogoLight} alt="Thoughtworks" className="h-7 w-auto" />
+            <span className="text-[16px] leading-none tracking-[0.2em] text-ink/50">XConf 2026</span>
           </Link>
           <span className="sr-only">{label}</span>
-          <span>
-            {currentBeat + 1} / {totalBeats}
-          </span>
+          <div className="flex items-center gap-4">
+            <span>
+              {currentBeat + 1} / {totalBeats}
+            </span>
+            <ThemeToggle />
+          </div>
         </header>
 
         <main className="flex min-h-0 flex-1 items-center justify-center px-12">
@@ -57,7 +65,7 @@ export function SceneChrome({ label, totalBeats, currentBeat, caption, children,
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
-                  className="font-display text-5xl font-bold leading-tight text-white/90"
+                  className="font-display text-5xl font-bold leading-tight text-ink/90"
                 >
                   {caption}
                 </motion.p>
@@ -69,7 +77,7 @@ export function SceneChrome({ label, totalBeats, currentBeat, caption, children,
       </div>
 
       {sidebar && (
-        <div className="h-full w-80 shrink-0 border-l border-white/10 bg-white/[0.015] p-4">
+        <div className="h-full w-80 shrink-0 border-l border-ink/10 bg-ink/[0.015] p-4">
           {sidebar}
         </div>
       )}

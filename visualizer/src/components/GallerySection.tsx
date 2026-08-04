@@ -26,8 +26,8 @@ export function GallerySection({ group, groupIndex, activeItemIndex, onHoverItem
           <span className={`font-display text-sm font-bold ${ACCENT_TEXT[section.accent]}`}>
             {String(section.id).padStart(2, "0")}
           </span>
-          <h2 className="text-base font-semibold text-white/85">{section.title}</h2>
-          <span className="text-xs uppercase tracking-[0.15em] text-white/30">{section.timeLabel}</span>
+          <h2 className="text-base font-semibold text-ink/85">{section.title}</h2>
+          <span className="text-xs uppercase tracking-[0.15em] text-ink/30">{section.timeLabel}</span>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-3">
@@ -41,12 +41,12 @@ export function GallerySection({ group, groupIndex, activeItemIndex, onHoverItem
                 onMouseEnter={() => onHoverItem(i)}
                 className={`min-w-[180px] flex-1 rounded-xl border px-4 py-3 transition-colors ${
                   isActive
-                    ? `${ACCENT_BORDER[section.accent]} bg-white/[0.06]`
-                    : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                    ? `${ACCENT_BORDER[section.accent]} bg-ink/[0.06]`
+                    : "border-ink/10 bg-ink/[0.02] hover:border-ink/25"
                 }`}
               >
-                <p className="font-display text-sm font-bold leading-snug text-white">{item.navLabel}</p>
-                <p className="mt-1 text-[11px] uppercase tracking-[0.15em] text-white/35">
+                <p className="font-display text-sm font-bold leading-snug text-ink">{item.navLabel}</p>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.15em] text-ink/35">
                   {item.kind === "interactive" ? "▶ interactive" : "slide"}
                 </p>
               </Link>

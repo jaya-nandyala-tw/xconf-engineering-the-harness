@@ -15,12 +15,12 @@ export function SlideAgenda({ content, revealCount }: { content: AgendaContent; 
             initial={false}
             animate={{ opacity: visible ? 1 : 0.15, y: visible ? 0 : 8, scale: visible ? 1 : 0.96 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 p-8 text-center"
+            className="flex flex-col items-center gap-4 rounded-2xl border border-ink/10 p-8 text-center"
           >
             <div className={`flex h-20 w-20 items-center justify-center rounded-2xl text-white ${ACCENT_BG[accent]}`}>
               <Icon name={item.icon} className="h-10 w-10" />
             </div>
-            <p className="font-display text-2xl font-bold text-white">{item.label}</p>
+            <p className="font-display text-2xl font-bold text-ink">{item.label}</p>
           </motion.div>
         );
       })}

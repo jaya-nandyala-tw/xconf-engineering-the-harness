@@ -3,6 +3,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useBeats } from "../lib/useBeats";
 import { useSceneNav } from "../lib/useSceneNav";
 import { SceneChrome } from "../components/SceneChrome";
+import { useTheme, inkHex, inkRgba, inkTextRgba, toneText, diagramTextHex } from "../lib/theme";
+
+// STAGES' "#e5e7eb" is a near-white neutral — fine on the dark wave backdrop, invisible
+// on light mist, so it swaps for the dark-slate equivalent. The violet/green stage colors
+// are vivid enough to read fine on wave (4.3-6.8:1) but drop to ~1.5-2.4:1 on light mist —
+// diagramTextHex has the measured, darkened replacements for those.
+function resolveStageColor(hex: string, isLight: boolean): string {
+  if (hex === "#e5e7eb") return inkHex(isLight);
+  return diagramTextHex(hex, isLight);
+}
 
 type StageId = "guides" | "agent" | "sensors" | "outcome";
 type SensorState = "pending" | "pass" | "fail";
@@ -232,14 +242,17 @@ function StageNode({
   color,
   status,
   beat,
+  isLight,
 }: {
   id: StageId;
   label: string;
   color: string;
   status: "pending" | "active" | "done";
   beat: Beat;
+  isLight: boolean;
 }) {
   const isActive = status === "active";
+  const resolvedColor = resolveStageColor(color, isLight);
   const dotColor =
     id === "sensors" && beat.sensors
       ? beat.sensors.some((s) => s === "fail")
@@ -251,15 +264,15 @@ function StageNode({
     <foreignObject x={0} y={STAGE_Y[id]} width={CARD_W} height={CARD_H}>
       <motion.div
         animate={{
-          borderColor: isActive ? color : status === "done" ? `${color}50` : "rgba(255,255,255,0.08)",
-          backgroundColor: isActive ? `${color}14` : "rgba(255,255,255,0.02)",
-          boxShadow: isActive ? `0 0 22px ${color}30` : "0 0 0px rgba(0,0,0,0)",
+          borderColor: isActive ? resolvedColor : status === "done" ? `${resolvedColor}50` : inkRgba(isLight, 0.08),
+          backgroundColor: isActive ? `${resolvedColor}14` : inkRgba(isLight, 0.02),
+          boxShadow: isActive ? `0 0 22px ${resolvedColor}30` : "0 0 0px rgba(0,0,0,0)",
           opacity: status === "pending" ? 0.35 : 1,
         }}
         transition={{ type: "spring", stiffness: 160, damping: 22 }}
         className="flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 text-center"
       >
-        <span className="text-[11px] font-semibold uppercase tracking-[0.13em]" style={{ color }}>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.13em]" style={{ color: resolvedColor }}>
           {label}
         </span>
         {id === "sensors" && isActive && beat.sensors && (
@@ -269,7 +282,7 @@ function StageNode({
                 key={i}
                 className="h-1.5 w-1.5 rounded-full"
                 style={{
-                  backgroundColor: s === "pass" ? "#4ade80" : s === "fail" ? "#f87171" : "rgba(255,255,255,0.15)",
+                  backgroundColor: s === "pass" ? "#4ade80" : s === "fail" ? "#f87171" : inkRgba(isLight, 0.15),
                 }}
               />
             ))}
@@ -279,9 +292,9 @@ function StageNode({
           <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
         )}
         {id === "agent" && isActive && beat.code && (
-          <span className="font-mono text-[10px] text-white/40">{beat.code.length} file{beat.code.length > 1 ? "s" : ""}</span>
+          <span className="font-mono text-[10px] text-ink/40">{beat.code.length} file{beat.code.length > 1 ? "s" : ""}</span>
         )}
-        {id === "outcome" && beat.outcomePass && <span className="text-lg text-emerald-300">✓</span>}
+        {id === "outcome" && beat.outcomePass && <span className={`text-lg ${toneText(isLight, "emerald")}`}>✓</span>}
       </motion.div>
     </foreignObject>
   );
@@ -294,13 +307,13 @@ const STAGE_Y: Record<StageId, number> = {
   outcome: OUTCOME_Y,
 };
 
-function MainConnector({ from, to, lit }: { from: number; to: number; lit: boolean }) {
+function MainConnector({ from, to, lit, isLight }: { from: number; to: number; lit: boolean; isLight: boolean }) {
   const x = CARD_W / 2;
   return (
     <motion.path
       d={`M ${x} ${from} L ${x} ${to}`}
       fill="none"
-      animate={{ stroke: lit ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.1)" }}
+      animate={{ stroke: lit ? inkRgba(isLight, 0.45) : inkRgba(isLight, 0.1) }}
       strokeWidth={2}
       markerEnd={lit ? "url(#main-arrow)" : undefined}
       transition={{ duration: 0.3 }}
@@ -367,26 +380,26 @@ function FeedbackLoop({ loop }: { loop: LoopKind }) {
   );
 }
 
-function WorkflowDiagram({ config, activeIndex }: { config: Beat; activeIndex: number }) {
+function WorkflowDiagram({ config, activeIndex, isLight }: { config: Beat; activeIndex: number; isLight: boolean }) {
   const arcColor = config.loop === "confirm-resume" ? "#4ade80" : "#a78bfa";
   return (
-    <div className="relative rounded-[28px] border-2 border-white/10 bg-white/[0.02] px-7 pb-7 pt-11">
-      <span className="absolute left-7 top-4 font-mono text-[11px] uppercase tracking-[0.2em] text-white/35">
+    <div className="relative rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-7 pt-11">
+      <span className="absolute left-7 top-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/35">
         Agentic Workflow
       </span>
       <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="overflow-visible">
         <defs>
           <marker id="main-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-            <path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(255,255,255,0.45)" />
+            <path d="M0,0 L7,3.5 L0,7 Z" fill={inkRgba(isLight, 0.45)} />
           </marker>
           <marker id="loop-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
             <path d="M0,0 L8,4 L0,8 Z" fill={arcColor} />
           </marker>
         </defs>
 
-        <MainConnector from={CARD_H} to={AGENT_Y} lit={activeIndex >= 1} />
-        <MainConnector from={AGENT_Y + CARD_H} to={SENSORS_Y} lit={activeIndex >= 2} />
-        <MainConnector from={SENSORS_Y + CARD_H} to={OUTCOME_Y} lit={activeIndex >= 3} />
+        <MainConnector from={CARD_H} to={AGENT_Y} lit={activeIndex >= 1} isLight={isLight} />
+        <MainConnector from={AGENT_Y + CARD_H} to={SENSORS_Y} lit={activeIndex >= 2} isLight={isLight} />
+        <MainConnector from={SENSORS_Y + CARD_H} to={OUTCOME_Y} lit={activeIndex >= 3} isLight={isLight} />
 
         <FeedbackLoop loop={config.loop} />
 
@@ -398,6 +411,7 @@ function WorkflowDiagram({ config, activeIndex }: { config: Beat; activeIndex: n
             color={stage.color}
             status={i === activeIndex ? "active" : i < activeIndex ? "done" : "pending"}
             beat={config}
+            isLight={isLight}
           />
         ))}
       </svg>
@@ -416,9 +430,9 @@ function RequestBubble({ text }: { text: string | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.3 }}
-            className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-lg text-white/80"
+            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-5 py-3 text-lg text-ink/80"
           >
-            <span className="mr-2 font-mono text-xs uppercase tracking-wide text-white/40">request</span>
+            <span className="mr-2 font-mono text-xs uppercase tracking-wide text-ink/40">request</span>
             {text}
           </motion.div>
         )}
@@ -427,13 +441,13 @@ function RequestBubble({ text }: { text: string | null }) {
   );
 }
 
-function SensorRow({ label, state }: { label: string; state: SensorState }) {
+function SensorRow({ label, state, isLight }: { label: string; state: SensorState; isLight: boolean }) {
   const tone =
     state === "pass"
-      ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: "#86efac" }
+      ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: isLight ? "#0f766e" : "#86efac" }
       : state === "fail"
-        ? { bg: "rgba(248,113,113,0.16)", border: "rgba(248,113,113,0.65)", text: "#fca5a5" }
-        : { bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.1)", text: "rgba(255,255,255,0.35)" };
+        ? { bg: "rgba(248,113,113,0.16)", border: "rgba(248,113,113,0.65)", text: isLight ? "#b91c1c" : "#fca5a5" }
+        : { bg: inkRgba(isLight, 0.03), border: inkRgba(isLight, 0.1), text: inkTextRgba(isLight, 0.35) };
   return (
     <motion.div
       animate={{ backgroundColor: tone.bg, borderColor: tone.border }}
@@ -446,7 +460,7 @@ function SensorRow({ label, state }: { label: string; state: SensorState }) {
   );
 }
 
-function DetailPanel({ config }: { config: Beat }) {
+function DetailPanel({ config, isLight }: { config: Beat; isLight: boolean }) {
   const stage = STAGES.find((s) => s.id === config.active);
 
   return (
@@ -461,14 +475,17 @@ function DetailPanel({ config }: { config: Beat }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6"
+            className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6"
           >
-            <span className="text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: stage.color }}>
+            <span
+              className="text-xs font-semibold uppercase tracking-[0.15em]"
+              style={{ color: resolveStageColor(stage.color, isLight) }}
+            >
               {stage.label}
             </span>
 
             {config.active === "guides" && config.showGuideDetail && (
-              <ul className="flex flex-col gap-1.5 text-base text-white/70">
+              <ul className="flex flex-col gap-1.5 text-base text-ink/70">
                 {GUIDE_DETAIL.map((d) => (
                   <li key={d} className="flex items-center gap-2">
                     <span className="h-1 w-1 shrink-0 rounded-full bg-blue-300" />
@@ -479,7 +496,11 @@ function DetailPanel({ config }: { config: Beat }) {
             )}
 
             {config.active === "agent" && config.code && (
-              <ul className="flex flex-col gap-1 font-mono text-sm leading-relaxed text-emerald-300/85">
+              <ul
+                className={`flex flex-col gap-1 font-mono text-sm leading-relaxed ${
+                  isLight ? "text-emerald-800/90" : "text-emerald-300/85"
+                }`}
+              >
                 {config.code.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
@@ -490,14 +511,27 @@ function DetailPanel({ config }: { config: Beat }) {
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap gap-2">
                   {SENSOR_LABELS.map((label, i) => (
-                    <SensorRow key={label} label={label} state={config.sensors![i]} />
+                    <SensorRow key={label} label={label} state={config.sensors![i]} isLight={isLight} />
                   ))}
                 </div>
-                {config.errorText && <p className="text-sm leading-snug text-red-300/85">{config.errorText}</p>}
+                {config.errorText && (
+                  <p className={`text-sm leading-snug ${isLight ? "text-red-800/90" : "text-red-300/85"}`}>
+                    {config.errorText}
+                  </p>
+                )}
                 {config.loopNote && (
                   <p
                     className="text-sm leading-snug"
-                    style={{ color: config.loop === "confirm-resume" ? "#86efac" : "#c4b5fd" }}
+                    style={{
+                      color:
+                        config.loop === "confirm-resume"
+                          ? isLight
+                            ? "#0f766e"
+                            : "#86efac"
+                          : isLight
+                            ? "#5b21b6"
+                            : "#c4b5fd",
+                    }}
                   >
                     {config.loopNote}
                   </p>
@@ -507,8 +541,10 @@ function DetailPanel({ config }: { config: Beat }) {
 
             {config.active === "outcome" && config.outcomePass && (
               <div className="flex items-center gap-3">
-                <span className="text-3xl text-emerald-300">✓</span>
-                <span className="text-lg text-emerald-300/85">silent — ready for review</span>
+                <span className={`text-3xl ${toneText(isLight, "emerald")}`}>✓</span>
+                <span className={`text-lg ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
+                  silent — ready for review
+                </span>
               </div>
             )}
           </motion.div>
@@ -521,6 +557,7 @@ function DetailPanel({ config }: { config: Beat }) {
 export function GuidesSensorsPipeline() {
   const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav("guides-sensors", BEATS.length);
   const { beat } = useBeats({ total: BEATS.length, initialBeat, onPastEnd, onPastStart });
+  const { isLight } = useTheme();
   const config = BEATS[beat];
   const activeIndex = config.active ? STAGE_ORDER.indexOf(config.active) : -1;
 
@@ -534,8 +571,8 @@ export function GuidesSensorsPipeline() {
       nextLabel={nextLabel}
     >
       <div className="flex w-full max-w-5xl items-start gap-12">
-        <WorkflowDiagram config={config} activeIndex={activeIndex} />
-        <DetailPanel config={config} />
+        <WorkflowDiagram config={config} activeIndex={activeIndex} isLight={isLight} />
+        <DetailPanel config={config} isLight={isLight} />
       </div>
     </SceneChrome>
   );

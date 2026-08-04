@@ -10,9 +10,9 @@ export function Gallery() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <p className="max-w-xl text-sm text-white/50">
-          The whole talk, in order. <kbd className="rounded bg-white/10 px-1.5 py-0.5">↑↓←→</kbd> to browse,{" "}
-          <kbd className="rounded bg-white/10 px-1.5 py-0.5">enter</kbd> to play. Esc always brings you back here.
+        <p className="max-w-xl text-sm text-ink/50">
+          The whole talk, in order. <kbd className="rounded bg-ink/10 px-1.5 py-0.5">↑↓←→</kbd> to browse,{" "}
+          <kbd className="rounded bg-ink/10 px-1.5 py-0.5">enter</kbd> to play. Esc always brings you back here.
         </p>
         {firstHref && (
           <Link

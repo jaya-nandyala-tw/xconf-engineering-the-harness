@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { scenes, type SceneMeta } from "../lib/scenes";
+import { useTheme, toneText } from "../lib/theme";
 
 const GROUP_META: Record<string, { title: string; blurb: string }> = {
   "context-rot": {
@@ -32,11 +33,14 @@ function buildBlocks(list: SceneMeta[]): Block[] {
   return blocks;
 }
 
+// "ready" was a fixed text-emerald-300 (a pastel meant to pop on the dark wave
+// background) on a light emerald tint — 1.16:1 on light mist, essentially invisible.
 function StatusBadge({ isReady }: { isReady: boolean }) {
+  const { isLight } = useTheme();
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
-        isReady ? "bg-emerald-400/15 text-emerald-300" : "bg-white/10 text-white/40"
+        isReady ? `bg-emerald-400/15 ${toneText(isLight, "emerald")}` : "bg-ink/10 text-ink/55"
       }`}
     >
       {isReady ? "ready" : "backlog"}
@@ -44,22 +48,25 @@ function StatusBadge({ isReady }: { isReady: boolean }) {
   );
 }
 
+// Backlog cards used to layer a container-wide opacity-50 on top of already-reduced
+// text opacities (text-ink/40, text-ink/60) — the two compound multiplicatively, so body
+// text landed around 1.5-2:1 contrast (borderline invisible in light theme, marginal even
+// in dark). Setting each text opacity directly, once, keeps backlog cards visibly
+// de-emphasized vs. ready ones without dropping below a legible contrast floor.
 function SceneCard({ scene }: { scene: SceneMeta }) {
   const isReady = scene.status === "ready";
   const card = (
     <div
       className={`h-full rounded-xl border p-5 transition-colors ${
-        isReady
-          ? "border-white/15 bg-white/[0.03] hover:border-white/40 hover:bg-white/[0.06]"
-          : "border-white/5 bg-white/[0.01] opacity-50"
+        isReady ? "border-ink/15 bg-ink/[0.03] hover:border-ink/40 hover:bg-ink/[0.06]" : "border-ink/5 bg-ink/[0.01]"
       }`}
     >
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">{scene.title}</h2>
+        <h2 className={`text-lg font-medium ${isReady ? "text-ink" : "text-ink/70"}`}>{scene.title}</h2>
         <StatusBadge isReady={isReady} />
       </div>
-      <p className="mt-1 text-sm text-white/40">{scene.concept}</p>
-      <p className="mt-3 text-sm text-white/60">{scene.description}</p>
+      <p className={`mt-1 text-sm ${isReady ? "text-ink/55" : "text-ink/45"}`}>{scene.concept}</p>
+      <p className={`mt-3 text-sm ${isReady ? "text-ink/70" : "text-ink/55"}`}>{scene.description}</p>
     </div>
   );
 
@@ -69,12 +76,12 @@ function SceneCard({ scene }: { scene: SceneMeta }) {
 function GroupSection({ group, items }: { group: string; items: SceneMeta[] }) {
   const meta = GROUP_META[group] ?? { title: group, blurb: "" };
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.015] p-5">
+    <div className="rounded-2xl border border-ink/10 bg-ink/[0.015] p-5">
       <div className="flex items-baseline justify-between">
-        <h2 className="text-base font-semibold uppercase tracking-[0.1em] text-white/70">{meta.title}</h2>
-        <span className="text-xs uppercase tracking-wider text-white/30">{items.length}-part flow</span>
+        <h2 className="text-base font-semibold uppercase tracking-[0.1em] text-ink/70">{meta.title}</h2>
+        <span className="text-xs uppercase tracking-wider text-ink/30">{items.length}-part flow</span>
       </div>
-      {meta.blurb && <p className="mt-1 text-sm text-white/40">{meta.blurb}</p>}
+      {meta.blurb && <p className="mt-1 text-sm text-ink/40">{meta.blurb}</p>}
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {items.map((scene, i) => {
@@ -83,17 +90,19 @@ function GroupSection({ group, items }: { group: string; items: SceneMeta[] }) {
             <div
               className={`h-full rounded-lg border p-4 transition-colors ${
                 isReady
-                  ? "border-white/15 bg-white/[0.03] hover:border-white/40 hover:bg-white/[0.07]"
-                  : "border-white/5 bg-white/[0.01] opacity-50"
+                  ? "border-ink/15 bg-ink/[0.03] hover:border-ink/40 hover:bg-ink/[0.07]"
+                  : "border-ink/5 bg-ink/[0.01]"
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-white/30">{i + 1}</span>
+                <span className={`font-mono text-xs ${isReady ? "text-ink/50" : "text-ink/35"}`}>{i + 1}</span>
                 <StatusBadge isReady={isReady} />
               </div>
-              <h3 className="mt-1.5 text-sm font-medium">{scene.title}</h3>
-              <p className="mt-1 text-xs text-white/40">{scene.concept}</p>
-              <p className="mt-2 text-xs leading-relaxed text-white/55">{scene.description}</p>
+              <h3 className={`mt-1.5 text-sm font-medium ${isReady ? "text-ink" : "text-ink/70"}`}>{scene.title}</h3>
+              <p className={`mt-1 text-xs ${isReady ? "text-ink/55" : "text-ink/45"}`}>{scene.concept}</p>
+              <p className={`mt-2 text-xs leading-relaxed ${isReady ? "text-ink/70" : "text-ink/55"}`}>
+                {scene.description}
+              </p>
             </div>
           );
           return (
@@ -106,7 +115,7 @@ function GroupSection({ group, items }: { group: string; items: SceneMeta[] }) {
                 <div className="min-w-0 flex-1">{card}</div>
               )}
               {i < items.length - 1 && (
-                <span className="hidden shrink-0 text-white/15 sm:block">→</span>
+                <span className="hidden shrink-0 text-ink/15 sm:block">→</span>
               )}
             </div>
           );
@@ -121,11 +130,11 @@ export function Visualizer() {
 
   return (
     <div>
-      <p className="max-w-2xl text-white/60">
+      <p className="max-w-2xl text-ink/60">
         Out-of-order practice — jump straight to any interactive concept. Open one, then use{" "}
-        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">→</kbd> /{" "}
-        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">space</kbd> to advance beats,{" "}
-        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-sm">esc</kbd> for the Gallery.
+        <kbd className="rounded bg-ink/10 px-1.5 py-0.5 text-sm">→</kbd> /{" "}
+        <kbd className="rounded bg-ink/10 px-1.5 py-0.5 text-sm">space</kbd> to advance beats,{" "}
+        <kbd className="rounded bg-ink/10 px-1.5 py-0.5 text-sm">esc</kbd> for the Gallery.
       </p>
 
       <div className="mt-8 flex flex-col gap-4">
