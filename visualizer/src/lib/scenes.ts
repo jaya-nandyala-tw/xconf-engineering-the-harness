@@ -22,9 +22,9 @@ export const scenes: SceneMeta[] = [
   {
     slug: "guides-sensors",
     title: "Guides → Sensors",
-    concept: "Flowchart with two feedback loops",
+    concept: "ai-workflows's real 6-phase pipeline, one multi-service story",
     description:
-      "A 3-file rename ripples into a dependent test failure — the agent closes that loop itself. A 3-file policy change breaks a now-outdated test — that loop routes through a human-confirm checkpoint before the agent touches it. Same pipeline, two different feedback paths, drawn as an actual flowchart.",
+      "One story that touches UI, BFF, and domain layers runs the actual ANALYZE → BLUEPRINT → RED → GREEN → REFACTOR → REVIEW pipeline. Guides show up as the Multi-Repo Confirmation Gate blocking Blueprint until a human signs off on the 3-repo blast radius. Sensors show up as each phase's own pass/fail verdict — including Review finding a coverage gap and looping back to Red on its own, no human needed.",
     status: "ready",
   },
   {
@@ -63,12 +63,12 @@ export const scenes: SceneMeta[] = [
     status: "ready",
   },
   {
-    slug: "guides-visualizer",
-    title: "Guides via ai-workflows",
+    slug: "input-collection-gate",
+    title: "Input Collection Gate",
     concept: "Structured intake → confirmation gate → sensible default",
     description:
-      "The greenfield mirror of Guides: a fixed intake sequence, a blocking confirmation gate presented and answered live, and a skipped optional input resolving to a visible default instead of a silent guess. Used live in Section 6 of the talk instead of a recorded clip.",
-    status: "backlog",
+      "The greenfield mirror of Guides: a fixed intake sequence, a blocking confirmation gate, and a skipped optional input resolving to a visible default instead of a silent guess. A live click-through of story-analysis-agent's real Input Collection Gate — follows the \"Ask Before Deciding\" intro slide in Section 5 of the talk.",
+    status: "ready",
   },
   {
     slug: "principles-checklist",

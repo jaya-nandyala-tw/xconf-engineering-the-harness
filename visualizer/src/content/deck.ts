@@ -3,6 +3,7 @@ import type { IconName } from "../components/slides/Icon";
 import { SlideFilePathMatch } from "../components/slides/bespoke/SlideFilePathMatch";
 import { SlideAgentPersonas } from "../components/slides/bespoke/SlideAgentPersonas";
 import presenterJayaPhoto from "../assets/brand/presenter-jaya.jpeg";
+import presenterPrabinaPhoto from "../assets/brand/presenter-prabina.jpeg";
 
 export type Accent = "flamingo" | "sapphire" | "jade" | "turmeric" | "amethyst";
 
@@ -27,7 +28,7 @@ export const SECTIONS: DeckSection[] = [
   { id: 2, title: "The core idea", timeLabel: "1:30–5:00" },
   { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
   { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
-  { id: 5, title: "Visualizer beat — Guides via ai-workflows", timeLabel: "13:00–15:30" },
+  { id: 5, title: "Ask Before Deciding", timeLabel: "13:00–15:30" },
   { id: 6, title: "Layer 2 — Sensors", timeLabel: "15:30–19:30" },
   { id: 7, title: "Context rot — the open problem", timeLabel: "19:30–24:00" },
   { id: 8, title: "Layer 3 — Make it reviewable", timeLabel: "24:00–26:30" },
@@ -208,6 +209,7 @@ export const DECK: DeckItem[] = [
           name: "Prabina Pani",
           title: "Tech Lead | AIFSD Practitioner",
           bio: "10 years in software development — designs and maintains agentic SDLC tooling, and the practical guardrails needed to run AI agents safely on production, multi-repo codebases.",
+          photo: presenterPrabinaPhoto,
         },
       ],
     } satisfies PresentersContent,
@@ -383,22 +385,25 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "s14a",
+    section: 5,
+    navLabel: "Ask Before Deciding",
+    slideKind: "statement",
+    content: {
+      eyebrow: "Reduce hallucinations",
+      title: "Ask Before Deciding",
+      subtitle:
+        "Guide with input gates. A structured intake, a blocking gate, a visible default — applied before any codebase exists to constrain the agent.",
+    } satisfies StatementContent,
+  },
+  {
+    kind: "interactive",
     id: "s14b",
     section: 5,
-    navLabel: "Visualizer beat — Guides via ai-workflows",
-    slideKind: "list",
-    revealMode: "sequential",
-    content: {
-      heading: "Visualizer beat — Guides via ai-workflows",
-      subheading:
-        "[BACKLOG] Live interactive walkthrough, presented from the app rather than a recording — see lib/scenes.ts \"guides-visualizer\" for the not-yet-built scene. This list stands in as a placeholder slide until then.",
-      items: [
-        "Structured intake — a fixed sequence of inputs collected before any exploration or coding starts, not left to agent judgment.",
-        "Confirmation gate — the agent stops, presents which repos are affected, and waits for an explicit human answer before writing anything to disk.",
-        "Sensible defaults — a skipped optional input resolves to a visible, explicit default, not a silent guess.",
-      ],
-      style: "numbered",
-    } satisfies ListContent,
+    navLabel: "Input Collection Gate",
+    route: "/input-collection-gate",
+    sceneSlug: "input-collection-gate",
+    coversSlides: ["S14b"],
   },
   {
     kind: "static",

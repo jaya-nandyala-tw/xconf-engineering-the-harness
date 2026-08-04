@@ -20,6 +20,10 @@ interface SceneChromeProps {
   // column. Only Context Rot uses this today; omitting it keeps every other scene's
   // layout exactly as before.
   sidebar?: ReactNode;
+  // Width of the sidebar wrapper, as a Tailwind width class. Defaults to the original
+  // fixed w-80 so every existing consumer (e.g. ContextRotProblem) renders unchanged —
+  // only scenes that explicitly opt in get a different width.
+  sidebarClassName?: string;
   // Deep-links this scene to the next one in a sequence (e.g. Context Rot's Problem ->
   // Solution 1 -> Solution 2). Only rendered on the last beat, alongside the keyboard
   // hint that -> also chains forward via useBeats' onPastEnd.
@@ -31,7 +35,15 @@ interface SceneChromeProps {
 // (they still document the forward-chain target), but the visual "Next" button and
 // keyboard-hint row that used to render them are hidden in the live presentation view —
 // audience-facing, not a rehearsal aid.
-export function SceneChrome({ label, totalBeats, currentBeat, caption, children, sidebar }: SceneChromeProps) {
+export function SceneChrome({
+  label,
+  totalBeats,
+  currentBeat,
+  caption,
+  children,
+  sidebar,
+  sidebarClassName = "w-80",
+}: SceneChromeProps) {
   const { isLight } = useTheme();
 
   return (
@@ -77,7 +89,7 @@ export function SceneChrome({ label, totalBeats, currentBeat, caption, children,
       </div>
 
       {sidebar && (
-        <div className="h-full w-80 shrink-0 border-l border-ink/10 bg-ink/[0.015] p-4">
+        <div className={`h-full ${sidebarClassName} shrink-0 border-l border-ink/10 bg-ink/[0.015] p-4`}>
           {sidebar}
         </div>
       )}

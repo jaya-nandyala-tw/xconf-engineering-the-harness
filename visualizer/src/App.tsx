@@ -9,6 +9,7 @@ import { SpecSplitTree } from "./scenes/SpecSplitTree";
 import { NestedLayers } from "./scenes/NestedLayers";
 import { GuidesSensorsPipeline } from "./scenes/GuidesSensorsPipeline";
 import { WorkspaceWrapper } from "./scenes/WorkspaceWrapper";
+import { GreenfieldIntake } from "./scenes/GreenfieldIntake";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/nested-layers" element={<NestedLayers />} />
       <Route path="/guides-sensors" element={<GuidesSensorsPipeline />} />
       <Route path="/workspace-wrapper" element={<WorkspaceWrapper />} />
+      <Route path="/input-collection-gate" element={<GreenfieldIntake />} />
     </Routes>
   );
 }

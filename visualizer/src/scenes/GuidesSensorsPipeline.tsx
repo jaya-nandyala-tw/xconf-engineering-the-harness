@@ -14,254 +14,271 @@ function resolveStageColor(hex: string, isLight: boolean): string {
   return diagramTextHex(hex, isLight);
 }
 
-type StageId = "guides" | "agent" | "sensors" | "outcome";
-type SensorState = "pending" | "pass" | "fail";
-type LoopKind = "none" | "autofix" | "confirm-wait" | "confirm-resume";
+// The real ai-workflows 6-phase pipeline (ai-dev-workflow.md) instead of one generic
+// "agent performs task" step — ANALYZE/BLUEPRINT are the Guides half (steer before code
+// exists), RED/GREEN/REFACTOR/REVIEW are the Sensors half (a pass/fail verdict gates every
+// phase). One story runs the whole thing once; both feedback loops occur inside it.
+type StageId = "analyze" | "blueprint" | "red" | "green" | "refactor" | "review" | "outcome";
+type LoopKind = "none" | "confirm-wait" | "confirm-resume" | "gap-loop";
+type Verdict = "pass" | "fail";
 
-const STAGES: { id: StageId; label: string; color: string }[] = [
-  { id: "guides", label: "Guides", color: "#a78bfa" },
-  { id: "agent", label: "Perform Task", color: "#e5e7eb" },
-  { id: "sensors", label: "Sensors", color: "#4ade80" },
-  { id: "outcome", label: "Outcome", color: "#e5e7eb" },
+const STAGES: { id: StageId; label: string; agent: string; color: string }[] = [
+  { id: "analyze", label: "Analyze", agent: "Story Analysis", color: "#a78bfa" },
+  { id: "blueprint", label: "Blueprint", agent: "Architect", color: "#a78bfa" },
+  { id: "red", label: "Red", agent: "/quality", color: "#4ade80" },
+  { id: "green", label: "Green", agent: "/implementer", color: "#4ade80" },
+  { id: "refactor", label: "Refactor", agent: "/refactor-cleaner", color: "#4ade80" },
+  { id: "review", label: "Review", agent: "/quality verify", color: "#4ade80" },
+  { id: "outcome", label: "Outcome", agent: "", color: "#e5e7eb" },
 ];
-const STAGE_ORDER: StageId[] = ["guides", "agent", "sensors", "outcome"];
+const STAGE_ORDER: StageId[] = STAGES.map((s) => s.id);
 
-// type check -> lint -> test -> architecture rule, straight from the talk's own
-// mini feedback-loop diagram: Guides -> agent generates code -> Sensors -> pass/fail.
-const SENSOR_LABELS = ["type check", "lint", "test", "arch rule"];
-
-const GUIDE_DETAIL = ["scoped instructions loaded", "least-privilege agent selected"];
-
-// Vertical flow geometry — hardcoded so the SVG (straight connectors + curved feedback
-// loop) can line up exactly with the foreignObject stage nodes drawn inside it.
-const CARD_W = 170;
-const CARD_H = 80;
-const STRIDE = 150; // card height + vertical gap for the connector arrow
-const GUIDES_Y = 0;
-const AGENT_Y = STRIDE;
-const SENSORS_Y = STRIDE * 2;
-const OUTCOME_Y = STRIDE * 3;
-const AGENT_CENTER_Y = AGENT_Y + CARD_H / 2;
-const SENSORS_CENTER_Y = SENSORS_Y + CARD_H / 2;
-const WAYPOINT_X = CARD_W + 100;
-const WAYPOINT_Y = (AGENT_CENTER_Y + SENSORS_CENTER_Y) / 2;
-const SVG_W = WAYPOINT_X + 30;
-const SVG_H = OUTCOME_Y + CARD_H;
-
-const PATH_A = `M ${CARD_W} ${SENSORS_CENTER_Y} C ${CARD_W + 70} ${SENSORS_CENTER_Y}, ${WAYPOINT_X} ${WAYPOINT_Y + 70}, ${WAYPOINT_X} ${WAYPOINT_Y}`;
-const PATH_B = `M ${WAYPOINT_X} ${WAYPOINT_Y} C ${WAYPOINT_X} ${WAYPOINT_Y - 70}, ${CARD_W + 70} ${AGENT_CENTER_Y}, ${CARD_W} ${AGENT_CENTER_Y}`;
+interface RepoRow {
+  repo: string;
+  role: string;
+}
 
 interface Beat {
   request: string | null;
   active: StageId | null;
-  showGuideDetail?: boolean;
-  code?: string[];
-  sensors?: SensorState[];
-  errorText?: string;
-  outcomePass?: boolean;
+  pass?: 2;
+  verdict?: Verdict;
+  guideDetail?: string[];
+  repoTable?: RepoRow[];
+  confirmState?: "draft" | "waiting" | "approved";
+  filesLabel?: string;
+  files?: string[];
+  note?: string;
+  gapFile?: string;
+  gapNote?: string;
+  outcomeLines?: [string, string];
   loop: LoopKind;
   loopNote?: string;
   caption: string;
 }
 
-const REQUEST_1 = "Add pagination to the settings list";
-const REQUEST_2 = "Rename userId to accountId across the billing service";
-const REQUEST_3 = "Round discounts up instead of down (finance policy change)";
+const REQUEST = "Let customers save a card and reuse it at checkout";
+
+const REPO_TABLE: RepoRow[] = [
+  { repo: "storefront-web", role: "UI" },
+  { repo: "checkout-bff", role: "BFF" },
+  { repo: "payments-service", role: "Domain" },
+];
 
 const BEATS: Beat[] = [
   {
     request: null,
     active: null,
     loop: "none",
-    caption: "Guides steer before. Sensors check after. Not every failure gets fixed the same way.",
-  },
-  // --- Run 1: simple, single-file, silent pass ---
-  { request: REQUEST_1, active: null, loop: "none", caption: "A request comes in." },
-  {
-    request: REQUEST_1,
-    active: "guides",
-    showGuideDetail: true,
-    loop: "none",
-    caption: "Guides fire first — before a token of code exists.",
+    caption: "Guides before, sensors after — now watch a real 6-phase pipeline run one story end to end.",
   },
   {
-    request: REQUEST_1,
-    active: "agent",
-    code: ["~ settings/list.tsx"],
-    loop: "none",
-    caption: "The agent performs the task, working inside whatever the guides allowed.",
-  },
-  {
-    request: REQUEST_1,
-    active: "sensors",
-    sensors: ["pass", "pass", "pass", "pass"],
-    loop: "none",
-    caption: "Sensors check after — type check, lint, test, architecture rule.",
-  },
-  {
-    request: REQUEST_1,
-    active: "outcome",
-    outcomePass: true,
-    loop: "none",
-    caption: "Silent success — nothing left to manually steer before it reaches review.",
-  },
-  // --- Run 2: multi-file change, a real cross-file bug, auto-fix loop ---
-  {
-    request: REQUEST_2,
+    request: REQUEST,
     active: null,
     loop: "none",
-    caption: "A bigger change: 3 files, one rename, rippling outward.",
+    caption: "One story — but it touches three layers: the storefront UI, the checkout BFF, and the payments domain service.",
   },
+  // --- Phase 1: ANALYZE (Guides) ---
   {
-    request: REQUEST_2,
-    active: "guides",
-    showGuideDetail: true,
+    request: REQUEST,
+    active: "analyze",
+    guideDetail: [
+      "Input Collection Gate confirmed — Jira: yes, UI design: skipped → default recorded",
+      "Cross-referenced the architecture overview — flags all 3 layers",
+    ],
+    verdict: "pass",
     loop: "none",
-    caption: "Same guides, every time — the change being bigger doesn't skip them.",
+    caption: "Guides fire immediately — a structured intake before a single file is touched.",
   },
+  // --- Phase 2: BLUEPRINT (Guides) — human-confirm loop ---
   {
-    request: REQUEST_2,
-    active: "agent",
-    code: ["~ billing/handler.ts", "~ billing/serializer.ts", "~ billing/types.ts"],
+    request: REQUEST,
+    active: "blueprint",
+    repoTable: REPO_TABLE,
+    confirmState: "draft",
     loop: "none",
-    caption: "Three files touched. A field renamed everywhere the agent could see it.",
+    caption: "The Architect traces the story through the codebase — and finds three repos, not one.",
   },
   {
-    request: REQUEST_2,
-    active: "sensors",
-    sensors: ["pass", "pass", "fail", "pending"],
-    errorText:
-      "invoicing/invoice-builder.test.ts — Cannot read 'userId': billing payload renamed, downstream consumer wasn't updated",
-    loop: "none",
-    caption: "A test fails — but not one of the 3 files the agent touched.",
-  },
-  {
-    request: REQUEST_2,
-    active: "sensors",
-    sensors: ["pass", "pass", "fail", "pending"],
-    errorText:
-      "invoicing/invoice-builder.test.ts — Cannot read 'userId': billing payload renamed, downstream consumer wasn't updated",
-    loop: "autofix",
-    loopNote: "Auto-fix — same bug class, safe to self-correct.",
-    caption: "This is still just code consistency, not a judgment call — the agent can close this loop itself.",
-  },
-  {
-    request: REQUEST_2,
-    active: "agent",
-    code: ["~ billing/handler.ts", "~ billing/serializer.ts", "~ billing/types.ts", "+ invoicing/invoice-builder.ts"],
-    loop: "none",
-    caption: "The agent finds the downstream file it missed and updates it too.",
-  },
-  {
-    request: REQUEST_2,
-    active: "sensors",
-    sensors: ["pass", "pass", "pass", "pass"],
-    loop: "none",
-    caption: "Sensors run again — the rename is now consistent everywhere.",
-  },
-  {
-    request: REQUEST_2,
-    active: "outcome",
-    outcomePass: true,
-    loop: "none",
-    caption: "Closed on its own. No policy decision was needed, just completeness.",
-  },
-  // --- Run 3: multi-file change, an outdated test, human-confirm loop ---
-  {
-    request: REQUEST_3,
-    active: null,
-    loop: "none",
-    caption: "A different kind of change: not a bug fix, a policy change.",
-  },
-  {
-    request: REQUEST_3,
-    active: "guides",
-    showGuideDetail: true,
-    loop: "none",
-    caption: "Guides fire the same way, regardless of what kind of change this is.",
-  },
-  {
-    request: REQUEST_3,
-    active: "agent",
-    code: ["~ pricing/discount.ts", "~ pricing/calculator.ts", "~ pricing/constants.ts"],
-    loop: "none",
-    caption: "Three files touched again — this time, implementing a real finance requirement.",
-  },
-  {
-    request: REQUEST_3,
-    active: "sensors",
-    sensors: ["pass", "pass", "fail", "pending"],
-    errorText: "checkout/checkout.test.ts — expected 18.00, got 17.99: assertion still encodes the old rounding rule",
-    loop: "none",
-    caption: "A test fails again — but read the error. The code isn't wrong. The test is stale.",
-  },
-  {
-    request: REQUEST_3,
-    active: "sensors",
-    sensors: ["pass", "pass", "fail", "pending"],
-    errorText: "checkout/checkout.test.ts — expected 18.00, got 17.99: assertion still encodes the old rounding rule",
+    request: REQUEST,
+    active: "blueprint",
+    repoTable: REPO_TABLE,
+    confirmState: "waiting",
     loop: "confirm-wait",
-    loopNote: "Human confirm — awaiting sign-off. Overriding what a test expects changes what \"correct\" means.",
-    caption: "That doesn't get to auto-fix — a person has to look at this one.",
+    loopNote: "Multi-Repo Confirmation Gate — blocking. Nothing gets written until a human answers.",
+    caption: "Touching three repos at once is exactly what this gate exists to catch.",
   },
   {
-    request: REQUEST_3,
-    active: "sensors",
-    sensors: ["pass", "pass", "fail", "pending"],
-    errorText: "checkout/checkout.test.ts — expected 18.00, got 17.99: assertion still encodes the old rounding rule",
+    request: REQUEST,
+    active: "blueprint",
+    repoTable: REPO_TABLE,
+    confirmState: "approved",
     loop: "confirm-resume",
-    loopNote: "Human confirm — approved, resuming. The test was outdated, not the code.",
-    caption: "A person confirms it. Only then does the agent touch the test.",
+    loopNote: "Confirmed — 3 repos, file plan drafted for each.",
+    caption: "Confirmed. Only now does the blueprint get written.",
   },
+  // --- Phase 3: RED (Sensors, pass 1) ---
   {
-    request: REQUEST_3,
-    active: "agent",
-    code: ["~ pricing/discount.ts", "~ pricing/calculator.ts", "~ pricing/constants.ts", "~ checkout/checkout.test.ts"],
+    request: REQUEST,
+    active: "red",
+    filesLabel: "Tests written — one per AC",
+    files: [
+      "+ storefront-web/checkout/SavedPaymentMethods.test.tsx",
+      "+ checkout-bff/checkout/payment-methods.resolver.test.ts",
+      "+ payments-service/payment-methods/service.test.ts",
+    ],
+    verdict: "pass",
     loop: "none",
-    caption: "With sign-off in hand, the agent updates the test to match the new, approved rule.",
+    caption: "The first phase gate: tests get written before any production code exists — and all of them fail. That's the correct verdict here.",
   },
+  // --- Phase 4: GREEN (Sensors, pass 1) ---
   {
-    request: REQUEST_3,
-    active: "sensors",
-    sensors: ["pass", "pass", "pass", "pass"],
+    request: REQUEST,
+    active: "green",
+    filesLabel: "Production code",
+    files: [
+      "+ storefront-web/checkout/SavedPaymentMethods.tsx",
+      "+ checkout-bff/checkout/payment-methods.resolver.ts",
+      "+ payments-service/payment-methods/service.ts",
+      "+ payments-service/payment-methods/migrations/002_add_payment_methods.ts",
+    ],
+    verdict: "pass",
     loop: "none",
-    caption: "Sensors run again — clean, and nothing was overridden without a person saying so.",
+    caption: "The implementer writes just enough code to turn every test green — the tests themselves are never touched.",
+  },
+  // --- Phase 5: REFACTOR (Sensors) ---
+  {
+    request: REQUEST,
+    active: "refactor",
+    note: "Extracted shared card-validation helper into payments-service/payment-methods/validation.ts — no behavior change.",
+    verdict: "pass",
+    loop: "none",
+    caption: "Structure improves, behavior doesn't — tests re-run after every small change.",
+  },
+  // --- Phase 6: REVIEW (Sensors, pass 1) — coverage gap, auto-fix loop ---
+  {
+    request: REQUEST,
+    active: "review",
+    gapFile: "checkout-bff/checkout/payment-methods.resolver.ts",
+    gapNote: "AC-4 (graceful decline when payments-service is unreachable) has no covering test.",
+    verdict: "fail",
+    loop: "none",
+    caption: "One more gate before a PR exists — coverage, lint, and types, all checked together. This time it finds a gap.",
   },
   {
-    request: REQUEST_3,
+    request: REQUEST,
+    active: "review",
+    gapFile: "checkout-bff/checkout/payment-methods.resolver.ts",
+    gapNote: "AC-4 (graceful decline when payments-service is unreachable) has no covering test.",
+    verdict: "fail",
+    loop: "gap-loop",
+    loopNote: "Coverage gap — not a bug, a missing test. Safe to close without a person.",
+    caption: "This doesn't need a human — it's still just completeness, so the loop closes itself.",
+  },
+  // --- Loop back: RED / GREEN, pass 2 (condensed) ---
+  {
+    request: REQUEST,
+    active: "red",
+    pass: 2,
+    filesLabel: "Test added — the missing edge case",
+    files: ["+ checkout-bff/checkout/payment-methods.resolver.test.ts — edge case: payments-service unreachable"],
+    verdict: "pass",
+    loop: "none",
+    caption: "/quality adds the one missing test — just the error path.",
+  },
+  {
+    request: REQUEST,
+    active: "green",
+    pass: 2,
+    filesLabel: "Handling added",
+    files: ["~ checkout-bff/checkout/payment-methods.resolver.ts — graceful decline on domain-service failure"],
+    verdict: "pass",
+    loop: "none",
+    caption: "/implementer adds the missing handling — nothing else changes.",
+  },
+  // --- Phase 6: REVIEW, pass 2 ---
+  {
+    request: REQUEST,
+    active: "review",
+    pass: 2,
+    verdict: "pass",
+    loop: "none",
+    caption: "Sensors run again — coverage, lint, and types all clean.",
+  },
+  // --- Outcome ---
+  {
+    request: REQUEST,
     active: "outcome",
-    outcomePass: true,
+    outcomeLines: ["PR opened — AC coverage table across all 3 repos", "ready for human review"],
     loop: "none",
-    caption: "Two failures, two different loops. One closed itself. One waited for a person — on purpose.",
+    caption:
+      "Two different loops, closed two different ways. A person confirmed the blast radius. The agent closed the coverage gap itself. Only then does it stop — for a human.",
   },
 ];
 
+// Horizontal row of 7 stage cards — a 7-node vertical stack would run too tall for a
+// wide slide, and a row also mirrors ai-dev-workflow.md's own left-to-right phase diagram.
+const CARD_W = 128;
+const CARD_H = 76;
+const GAP_X = 34;
+const STRIDE_X = CARD_W + GAP_X;
+const ROW_Y = 54; // headroom for the Blueprint confirm badge above the row
+const LOOP_ARC_DEPTH = 86;
+const SVG_W = (STAGES.length - 1) * STRIDE_X + CARD_W;
+const SVG_H = ROW_Y + CARD_H + LOOP_ARC_DEPTH + 16;
+
+function stageX(index: number): number {
+  return index * STRIDE_X;
+}
+function stageCenterX(index: number): number {
+  return stageX(index) + CARD_W / 2;
+}
+
+const BLUEPRINT_INDEX = STAGE_ORDER.indexOf("blueprint");
+const RED_INDEX = STAGE_ORDER.indexOf("red");
+const REVIEW_INDEX = STAGE_ORDER.indexOf("review");
+
+const ROW_MID_Y = ROW_Y + CARD_H / 2;
+const ROW_BOTTOM_Y = ROW_Y + CARD_H;
+const GAP_LOOP_PATH = `M ${stageCenterX(REVIEW_INDEX)} ${ROW_BOTTOM_Y} C ${stageCenterX(REVIEW_INDEX)} ${
+  ROW_BOTTOM_Y + LOOP_ARC_DEPTH
+}, ${stageCenterX(RED_INDEX)} ${ROW_BOTTOM_Y + LOOP_ARC_DEPTH}, ${stageCenterX(RED_INDEX)} ${ROW_BOTTOM_Y}`;
+
+// Latest known verdict per stage, folded up to (and including) the current beat — so a
+// phase's pass/fail dot keeps reading once the pipeline has moved on, giving the row a
+// scoreboard feel by the time it reaches Outcome instead of losing history as it advances.
+function computeVerdicts(uptoBeat: number): Partial<Record<StageId, Verdict>> {
+  const acc: Partial<Record<StageId, Verdict>> = {};
+  for (let i = 0; i <= uptoBeat; i++) {
+    const b = BEATS[i];
+    if (b.active && b.verdict) acc[b.active] = b.verdict;
+  }
+  return acc;
+}
+
 function StageNode({
-  id,
+  index,
   label,
+  agent,
   color,
   status,
-  beat,
+  verdict,
   isLight,
 }: {
-  id: StageId;
+  index: number;
   label: string;
+  agent: string;
   color: string;
   status: "pending" | "active" | "done";
-  beat: Beat;
+  verdict?: Verdict;
   isLight: boolean;
 }) {
   const isActive = status === "active";
   const resolvedColor = resolveStageColor(color, isLight);
-  const dotColor =
-    id === "sensors" && beat.sensors
-      ? beat.sensors.some((s) => s === "fail")
-        ? "#f87171"
-        : "#4ade80"
-      : undefined;
+  const dotColor = verdict ? (verdict === "pass" ? "#4ade80" : "#f87171") : undefined;
 
   return (
-    <foreignObject x={0} y={STAGE_Y[id]} width={CARD_W} height={CARD_H}>
+    <foreignObject x={stageX(index)} y={ROW_Y} width={CARD_W} height={CARD_H}>
       <motion.div
         animate={{
           borderColor: isActive ? resolvedColor : status === "done" ? `${resolvedColor}50` : inkRgba(isLight, 0.08),
@@ -270,48 +287,25 @@ function StageNode({
           opacity: status === "pending" ? 0.35 : 1,
         }}
         transition={{ type: "spring", stiffness: 160, damping: 22 }}
-        className="flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 text-center"
+        className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl border px-2 text-center"
       >
-        <span className="text-[11px] font-semibold uppercase tracking-[0.13em]" style={{ color: resolvedColor }}>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: resolvedColor }}>
           {label}
         </span>
-        {id === "sensors" && isActive && beat.sensors && (
-          <div className="flex items-center gap-1">
-            {beat.sensors.map((s, i) => (
-              <span
-                key={i}
-                className="h-1.5 w-1.5 rounded-full"
-                style={{
-                  backgroundColor: s === "pass" ? "#4ade80" : s === "fail" ? "#f87171" : inkRgba(isLight, 0.15),
-                }}
-              />
-            ))}
-          </div>
-        )}
-        {id === "sensors" && !isActive && dotColor && (
-          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
-        )}
-        {id === "agent" && isActive && beat.code && (
-          <span className="font-mono text-[10px] text-ink/40">{beat.code.length} file{beat.code.length > 1 ? "s" : ""}</span>
-        )}
-        {id === "outcome" && beat.outcomePass && <span className={`text-lg ${toneText(isLight, "emerald")}`}>✓</span>}
+        {agent && <span className="font-mono text-[9px] text-ink/40">{agent}</span>}
+        {dotColor && <span className="h-2 w-2 rounded-full" style={{ backgroundColor: dotColor }} />}
       </motion.div>
     </foreignObject>
   );
 }
 
-const STAGE_Y: Record<StageId, number> = {
-  guides: GUIDES_Y,
-  agent: AGENT_Y,
-  sensors: SENSORS_Y,
-  outcome: OUTCOME_Y,
-};
-
-function MainConnector({ from, to, lit, isLight }: { from: number; to: number; lit: boolean; isLight: boolean }) {
-  const x = CARD_W / 2;
+function MainConnector({ index, lit, isLight }: { index: number; lit: boolean; isLight: boolean }) {
+  const y = ROW_MID_Y;
+  const x1 = stageX(index) + CARD_W;
+  const x2 = stageX(index + 1);
   return (
     <motion.path
-      d={`M ${x} ${from} L ${x} ${to}`}
+      d={`M ${x1} ${y} L ${x2} ${y}`}
       fill="none"
       animate={{ stroke: lit ? inkRgba(isLight, 0.45) : inkRgba(isLight, 0.1) }}
       strokeWidth={2}
@@ -321,13 +315,17 @@ function MainConnector({ from, to, lit, isLight }: { from: number; to: number; l
   );
 }
 
-function WaypointIcon({ state }: { state: "wait" | "approved" }) {
+function ConfirmBadge({ state }: { state: "waiting" | "approved" }) {
   const color = state === "approved" ? "#4ade80" : "#a78bfa";
+  const size = 32;
+  const x = stageCenterX(BLUEPRINT_INDEX) - size / 2;
+  const y = ROW_Y - size - 12;
   return (
-    <foreignObject x={WAYPOINT_X - 20} y={WAYPOINT_Y - 20} width={40} height={40}>
+    <foreignObject x={x} y={y} width={size} height={size}>
       <motion.div
         initial={{ opacity: 0, scale: 0.7 }}
         animate={{ opacity: 1, scale: 1, borderColor: color }}
+        exit={{ opacity: 0, scale: 0.7 }}
         transition={{ type: "spring", stiffness: 240, damping: 20 }}
         className="flex h-full w-full items-center justify-center rounded-full border-2 text-sm"
         style={{ backgroundColor: state === "approved" ? "rgba(52,211,153,0.15)" : "rgba(96,165,250,0.12)", color }}
@@ -338,79 +336,80 @@ function WaypointIcon({ state }: { state: "wait" | "approved" }) {
   );
 }
 
-function FeedbackLoop({ loop }: { loop: LoopKind }) {
-  const visible = loop !== "none";
-  const arcColor = loop === "confirm-resume" ? "#4ade80" : "#a78bfa";
-  const pathBTarget = loop === "autofix" || loop === "confirm-resume" ? 1 : 0;
-  const showWaypoint = loop === "confirm-wait" || loop === "confirm-resume";
-
+function GapLoopArc({ visible }: { visible: boolean }) {
   const [arrowReady, setArrowReady] = useState(false);
   useEffect(() => {
-    if (pathBTarget === 0) setArrowReady(false);
-  }, [pathBTarget]);
+    if (!visible) setArrowReady(false);
+  }, [visible]);
 
   return (
-    <>
-      <motion.path
-        d={PATH_A}
-        fill="none"
-        stroke={arcColor}
-        strokeWidth={2.5}
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: visible ? 1 : 0, opacity: visible ? 1 : 0 }}
-        transition={{ duration: 0.7, ease: "easeInOut" }}
-      />
-      <motion.path
-        d={PATH_B}
-        fill="none"
-        stroke={arcColor}
-        strokeWidth={2.5}
-        markerEnd={arrowReady ? "url(#loop-arrow)" : undefined}
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: pathBTarget, opacity: visible ? 1 : 0 }}
-        transition={{ duration: 0.7, ease: "easeInOut", delay: loop === "confirm-resume" ? 0.15 : 0 }}
-        onAnimationComplete={() => {
-          if (pathBTarget === 1) setArrowReady(true);
-        }}
-      />
-      <AnimatePresence>
-        {showWaypoint && <WaypointIcon key="waypoint" state={loop === "confirm-resume" ? "approved" : "wait"} />}
-      </AnimatePresence>
-    </>
+    <motion.path
+      d={GAP_LOOP_PATH}
+      fill="none"
+      stroke="#a78bfa"
+      strokeWidth={2.5}
+      markerEnd={arrowReady ? "url(#loop-arrow)" : undefined}
+      initial={{ pathLength: 0, opacity: 0 }}
+      animate={{ pathLength: visible ? 1 : 0, opacity: visible ? 1 : 0 }}
+      transition={{ duration: 0.7, ease: "easeInOut" }}
+      onAnimationComplete={() => {
+        if (visible) setArrowReady(true);
+      }}
+    />
   );
 }
 
-function WorkflowDiagram({ config, activeIndex, isLight }: { config: Beat; activeIndex: number; isLight: boolean }) {
-  const arcColor = config.loop === "confirm-resume" ? "#4ade80" : "#a78bfa";
+function WorkflowDiagram({
+  config,
+  beat,
+  activeIndex,
+  isLight,
+}: {
+  config: Beat;
+  beat: number;
+  activeIndex: number;
+  isLight: boolean;
+}) {
+  const showConfirmBadge = config.loop === "confirm-wait" || config.loop === "confirm-resume";
+  const showGapLoop = config.loop === "gap-loop";
+  const verdicts = computeVerdicts(beat);
+
   return (
-    <div className="relative rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-7 pt-11">
+    <div className="relative w-full overflow-x-auto rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-7 pt-11">
       <span className="absolute left-7 top-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/35">
-        Agentic Workflow
+        ai-workflows — 6-Phase Pipeline
       </span>
-      <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="overflow-visible">
+      <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto block overflow-visible">
         <defs>
           <marker id="main-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
             <path d="M0,0 L7,3.5 L0,7 Z" fill={inkRgba(isLight, 0.45)} />
           </marker>
           <marker id="loop-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8 Z" fill={arcColor} />
+            <path d="M0,0 L8,4 L0,8 Z" fill="#a78bfa" />
           </marker>
         </defs>
 
-        <MainConnector from={CARD_H} to={AGENT_Y} lit={activeIndex >= 1} isLight={isLight} />
-        <MainConnector from={AGENT_Y + CARD_H} to={SENSORS_Y} lit={activeIndex >= 2} isLight={isLight} />
-        <MainConnector from={SENSORS_Y + CARD_H} to={OUTCOME_Y} lit={activeIndex >= 3} isLight={isLight} />
+        {STAGES.slice(0, -1).map((_, i) => (
+          <MainConnector key={i} index={i} lit={activeIndex >= i + 1} isLight={isLight} />
+        ))}
 
-        <FeedbackLoop loop={config.loop} />
+        <GapLoopArc visible={showGapLoop} />
+
+        <AnimatePresence>
+          {showConfirmBadge && (
+            <ConfirmBadge key="confirm-badge" state={config.loop === "confirm-resume" ? "approved" : "waiting"} />
+          )}
+        </AnimatePresence>
 
         {STAGES.map((stage, i) => (
           <StageNode
             key={stage.id}
-            id={stage.id}
+            index={i}
             label={stage.label}
+            agent={stage.agent}
             color={stage.color}
             status={i === activeIndex ? "active" : i < activeIndex ? "done" : "pending"}
-            beat={config}
+            verdict={verdicts[stage.id]}
             isLight={isLight}
           />
         ))}
@@ -441,96 +440,98 @@ function RequestBubble({ text }: { text: string | null }) {
   );
 }
 
-function SensorRow({ label, state, isLight }: { label: string; state: SensorState; isLight: boolean }) {
+function ConfirmStateBadge({ state, isLight }: { state: "draft" | "waiting" | "approved"; isLight: boolean }) {
   const tone =
-    state === "pass"
+    state === "approved"
       ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: isLight ? "#0f766e" : "#86efac" }
-      : state === "fail"
-        ? { bg: "rgba(248,113,113,0.16)", border: "rgba(248,113,113,0.65)", text: isLight ? "#b91c1c" : "#fca5a5" }
-        : { bg: inkRgba(isLight, 0.03), border: inkRgba(isLight, 0.1), text: inkTextRgba(isLight, 0.35) };
+      : state === "waiting"
+        ? { bg: "rgba(167,139,250,0.16)", border: "rgba(167,139,250,0.6)", text: isLight ? "#5b21b6" : "#c4b5fd" }
+        : { bg: inkRgba(isLight, 0.03), border: inkRgba(isLight, 0.1), text: inkTextRgba(isLight, 0.45) };
+  const labelText = state === "approved" ? "confirmed ✓" : state === "waiting" ? "awaiting confirmation" : "drafting…";
   return (
-    <motion.div
-      animate={{ backgroundColor: tone.bg, borderColor: tone.border }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-xs"
+    <span
+      className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs"
+      style={{ backgroundColor: tone.bg, borderColor: tone.border, color: tone.text }}
     >
-      <span style={{ color: tone.text }}>{state === "pass" ? "✓" : state === "fail" ? "✗" : "·"}</span>
-      <span style={{ color: tone.text }}>{label}</span>
-    </motion.div>
+      {labelText}
+    </span>
   );
 }
 
-function DetailPanel({ config, isLight }: { config: Beat; isLight: boolean }) {
+function VerdictBadge({ verdict, label, isLight }: { verdict: Verdict; label: string; isLight: boolean }) {
+  const tone =
+    verdict === "pass"
+      ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: isLight ? "#0f766e" : "#86efac" }
+      : { bg: "rgba(248,113,113,0.16)", border: "rgba(248,113,113,0.65)", text: isLight ? "#b91c1c" : "#fca5a5" };
+  return (
+    <span
+      className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs"
+      style={{ backgroundColor: tone.bg, borderColor: tone.border, color: tone.text }}
+    >
+      {verdict === "pass" ? "✓" : "✗"} {label}
+    </span>
+  );
+}
+
+function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; isLight: boolean }) {
   const stage = STAGES.find((s) => s.id === config.active);
 
   return (
-    <div className="flex min-h-[420px] w-full flex-col gap-5 text-left">
+    <div className="flex w-full flex-col gap-5 text-left">
       <RequestBubble text={config.request} />
 
       <AnimatePresence mode="wait">
         {stage && (
           <motion.div
-            key={`${config.active}-${config.loop}-${config.code?.join("|")}-${config.sensors?.join("|")}`}
+            key={beat}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6"
+            className="flex min-h-[190px] flex-col gap-4 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6"
           >
             <span
               className="text-xs font-semibold uppercase tracking-[0.15em]"
               style={{ color: resolveStageColor(stage.color, isLight) }}
             >
               {stage.label}
+              {stage.agent && <span className="ml-2 font-mono text-ink/40">· {stage.agent}</span>}
+              {config.pass === 2 && <span className="ml-2 text-ink/40">· 2nd pass</span>}
             </span>
 
-            {config.active === "guides" && config.showGuideDetail && (
-              <ul className="flex flex-col gap-1.5 text-base text-ink/70">
-                {GUIDE_DETAIL.map((d) => (
-                  <li key={d} className="flex items-center gap-2">
-                    <span className="h-1 w-1 shrink-0 rounded-full bg-blue-300" />
-                    {d}
-                  </li>
-                ))}
-              </ul>
+            {config.active === "analyze" && config.guideDetail && (
+              <>
+                <ul className="flex flex-col gap-1.5 text-base text-ink/70">
+                  {config.guideDetail.map((d) => (
+                    <li key={d} className="flex items-center gap-2">
+                      <span className="h-1 w-1 shrink-0 rounded-full bg-blue-300" />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+                {config.verdict && <VerdictBadge verdict={config.verdict} label="READY" isLight={isLight} />}
+              </>
             )}
 
-            {config.active === "agent" && config.code && (
-              <ul
-                className={`flex flex-col gap-1 font-mono text-sm leading-relaxed ${
-                  isLight ? "text-emerald-800/90" : "text-emerald-300/85"
-                }`}
-              >
-                {config.code.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            )}
-
-            {config.active === "sensors" && config.sensors && (
+            {config.active === "blueprint" && config.repoTable && (
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap gap-2">
-                  {SENSOR_LABELS.map((label, i) => (
-                    <SensorRow key={label} label={label} state={config.sensors![i]} isLight={isLight} />
+                  {config.repoTable.map((r) => (
+                    <span
+                      key={r.repo}
+                      className="rounded-full border border-ink/15 bg-ink/[0.03] px-3 py-1 font-mono text-xs text-ink/75"
+                    >
+                      {r.repo} <span className="text-ink/40">· {r.role}</span>
+                    </span>
                   ))}
                 </div>
-                {config.errorText && (
-                  <p className={`text-sm leading-snug ${isLight ? "text-red-800/90" : "text-red-300/85"}`}>
-                    {config.errorText}
-                  </p>
-                )}
+                {config.confirmState && <ConfirmStateBadge state={config.confirmState} isLight={isLight} />}
                 {config.loopNote && (
                   <p
                     className="text-sm leading-snug"
                     style={{
                       color:
-                        config.loop === "confirm-resume"
-                          ? isLight
-                            ? "#0f766e"
-                            : "#86efac"
-                          : isLight
-                            ? "#5b21b6"
-                            : "#c4b5fd",
+                        config.loop === "confirm-resume" ? (isLight ? "#0f766e" : "#86efac") : isLight ? "#5b21b6" : "#c4b5fd",
                     }}
                   >
                     {config.loopNote}
@@ -539,12 +540,78 @@ function DetailPanel({ config, isLight }: { config: Beat; isLight: boolean }) {
               </div>
             )}
 
-            {config.active === "outcome" && config.outcomePass && (
+            {(config.active === "red" || config.active === "green") && config.files && (
+              <div className="flex flex-col gap-3">
+                {config.filesLabel && (
+                  <span className="text-xs uppercase tracking-wide text-ink/40">{config.filesLabel}</span>
+                )}
+                <ul
+                  className={`flex flex-col gap-1 font-mono text-sm leading-relaxed ${
+                    config.active === "red"
+                      ? isLight
+                        ? "text-red-800/80"
+                        : "text-red-300/80"
+                      : isLight
+                        ? "text-emerald-800/90"
+                        : "text-emerald-300/85"
+                  }`}
+                >
+                  {config.files.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+                {config.verdict && (
+                  <VerdictBadge
+                    verdict={config.verdict}
+                    label={
+                      config.active === "red"
+                        ? `PASS — all ${config.files.length} failing, as expected`
+                        : "tests green, build passes, lint clean"
+                    }
+                    isLight={isLight}
+                  />
+                )}
+              </div>
+            )}
+
+            {config.active === "refactor" && (
+              <div className="flex flex-col gap-3">
+                {config.note && <p className="text-base leading-snug text-ink/70">{config.note}</p>}
+                {config.verdict && (
+                  <VerdictBadge verdict={config.verdict} label="tests still green, no behavior change" isLight={isLight} />
+                )}
+              </div>
+            )}
+
+            {config.active === "review" && (
+              <div className="flex flex-col gap-3">
+                {config.gapFile ? (
+                  <>
+                    <p className={`text-sm leading-snug ${isLight ? "text-red-800/90" : "text-red-300/85"}`}>
+                      {config.gapFile} — {config.gapNote}
+                    </p>
+                    {config.verdict && <VerdictBadge verdict={config.verdict} label="coverage gap found" isLight={isLight} />}
+                    {config.loopNote && (
+                      <p className="text-sm leading-snug" style={{ color: isLight ? "#5b21b6" : "#c4b5fd" }}>
+                        {config.loopNote}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  config.verdict && (
+                    <VerdictBadge verdict={config.verdict} label="coverage, lint, and types clean" isLight={isLight} />
+                  )
+                )}
+              </div>
+            )}
+
+            {config.active === "outcome" && config.outcomeLines && (
               <div className="flex items-center gap-3">
                 <span className={`text-3xl ${toneText(isLight, "emerald")}`}>✓</span>
-                <span className={`text-lg ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
-                  silent — ready for review
-                </span>
+                <div className={`text-lg leading-snug ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
+                  <div>{config.outcomeLines[0]}</div>
+                  <div className="text-ink/50">{config.outcomeLines[1]}</div>
+                </div>
               </div>
             )}
           </motion.div>
@@ -563,16 +630,16 @@ export function GuidesSensorsPipeline() {
 
   return (
     <SceneChrome
-      label="Guides → Sensors — the Feedback Loop"
+      label="Guides → Sensors — the 6-Phase Pipeline"
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full max-w-5xl items-start gap-12">
-        <WorkflowDiagram config={config} activeIndex={activeIndex} isLight={isLight} />
-        <DetailPanel config={config} isLight={isLight} />
+      <div className="flex w-full max-w-[1180px] flex-col items-center gap-8">
+        <WorkflowDiagram config={config} beat={beat} activeIndex={activeIndex} isLight={isLight} />
+        <DetailPanel config={config} beat={beat} isLight={isLight} />
       </div>
     </SceneChrome>
   );

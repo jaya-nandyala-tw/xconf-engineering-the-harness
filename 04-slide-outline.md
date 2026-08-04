@@ -55,16 +55,18 @@ Roughly one slide per 1.3 minutes. Minimal text per slide — these are talking 
 
 Keep this exact nesting on screen for ~20 seconds while you narrate — it's the one diagram you want people to remember, so don't rush past it.
 
-### S16 — Guides/Sensors feedback loop
+### S16 — Guides/Sensors feedback loop, as ai-workflows's real 6-phase pipeline
+
+One story — "let customers save a card and reuse it at checkout," spanning the storefront UI, the checkout BFF, and the payments domain service — runs the actual pipeline from `ai-dev-workflow.md` end to end. GUIDES = the two phases that steer *before* code exists; SENSORS = the four phases that gate *after*, each with its own pass/fail verdict.
 
 ```
- GUIDES (before)                         SENSORS (after)
- instructions → specs → skills   agent    type checks → linters →
- → agents → prompts        ───▶ generates ───▶ tests → arch rules
-                              code                  │
-                                                     ▼
-                                        pass?  ── silent, done
-                                        fail?  ── verbose error ──▶ agent fixes ──▶ (loop back to sensors)
+ GUIDES (before)                        SENSORS (after — one phase gate each)
+ ┌─────────┐   ┌───────────┐            ┌─────┐   ┌───────┐   ┌──────────┐   ┌────────┐
+ │ ANALYZE │──▶│ BLUEPRINT │──────────▶ │ RED │──▶│ GREEN │──▶│ REFACTOR │──▶│ REVIEW │──▶ Outcome
+ └─────────┘   └───────────┘            └─────┘   └───────┘   └──────────┘   └────┬───┘
+                     ▲  Multi-Repo Confirmation        ▲                          │
+                     │  Gate — blocks on a human            coverage gap found ───┘
+                     └── (human-confirm loop)               ── loops back, no human needed (auto-fix loop)
 ```
 
 ### S20 — Context rot table (keep to 3 rows max on slide, more detail live in speech)
