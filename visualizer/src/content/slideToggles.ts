@@ -3,11 +3,7 @@
 // content from deck.ts. Flip back to `true` (or delete the line) to bring it back.
 //
 // Any id not listed here defaults to enabled — see isEnabled() below.
-export const SLIDE_TOGGLES: Record<string, boolean> = {
-  // Confession-wall lines aren't collected yet (needs real anonymized one-liners).
-  // Re-enable once 03-demo-recording-script.md's collection step is done.
-  s1a: false, // Cold open — confession-wall crawl
-};
+export const SLIDE_TOGGLES: Record<string, boolean> = {};
 
 export function isEnabled(id: string): boolean {
   return SLIDE_TOGGLES[id] !== false;

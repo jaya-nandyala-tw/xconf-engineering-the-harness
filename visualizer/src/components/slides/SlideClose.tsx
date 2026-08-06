@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import type { CloseContent } from "../../content/deck";
+import { Icon } from "./Icon";
 
 export function SlideClose({ content }: { content: CloseContent }) {
   return (
@@ -10,6 +11,11 @@ export function SlideClose({ content }: { content: CloseContent }) {
       className="flex w-full max-w-5xl items-center justify-between gap-12"
     >
       <div className="flex-1 text-left">
+        {content.icon && (
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-ink/15 bg-ink/[0.04] text-ink/70">
+            <Icon name={content.icon} className="h-8 w-8" />
+          </div>
+        )}
         <p className="font-display text-5xl font-bold leading-tight text-ink sm:text-6xl">“{content.quote}”</p>
         <p className="mt-6 max-w-xl text-2xl text-ink/60">{content.recapLine}</p>
       </div>

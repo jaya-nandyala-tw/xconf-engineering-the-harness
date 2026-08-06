@@ -6,7 +6,6 @@ import { SceneChrome } from "../components/SceneChrome";
 import type {
   AgendaContent,
   CloseContent,
-  ConfessionCrawlContent,
   CoverContent,
   DividerContent,
   ListContent,
@@ -27,7 +26,6 @@ import { SlideTwoColumn } from "../components/slides/SlideTwoColumn";
 import { SlideVideoPlaceholder } from "../components/slides/SlideVideoPlaceholder";
 import { SlideClose } from "../components/slides/SlideClose";
 import { SlideDivider } from "../components/slides/SlideDivider";
-import { ConfessionCrawl } from "../components/slides/ConfessionCrawl";
 
 function totalBeatsFor(item: StaticDeckItem): number {
   switch (item.slideKind) {
@@ -37,14 +35,12 @@ function totalBeatsFor(item: StaticDeckItem): number {
       return item.revealMode === "sequential" ? (item.content as ListContent).items.length : 1;
     case "video-placeholder":
       return (item.content as VideoPlaceholderContent).callouts.length + 1;
-    case "confession-crawl":
-      return (item.content as ConfessionCrawlContent).lines.length;
     default:
       return 1;
   }
 }
 
-function SlideBody({ item, beat, next }: { item: StaticDeckItem; beat: number; next: () => void }) {
+function SlideBody({ item, beat }: { item: StaticDeckItem; beat: number }) {
   switch (item.slideKind) {
     case "cover":
       return <SlideCover content={item.content as CoverContent} />;
@@ -67,8 +63,6 @@ function SlideBody({ item, beat, next }: { item: StaticDeckItem; beat: number; n
       return <SlideVideoPlaceholder content={item.content as VideoPlaceholderContent} revealCount={beat + 1} />;
     case "close":
       return <SlideClose content={item.content as CloseContent} />;
-    case "confession-crawl":
-      return <ConfessionCrawl content={item.content as ConfessionCrawlContent} beat={beat} next={next} />;
     case "divider":
       return <SlideDivider content={item.content as DividerContent} />;
     case "bespoke": {
@@ -93,7 +87,7 @@ export function SlidePlayer() {
 function StaticSlidePlayer({ item }: { item: StaticDeckItem }) {
   const total = totalBeatsFor(item);
   const { initialBeat, onPastEnd, onPastStart, nextHref, nextLabel } = useSceneNav(item.id, total);
-  const { beat, next } = useBeats({ total, initialBeat, onPastEnd, onPastStart });
+  const { beat } = useBeats({ total, initialBeat, onPastEnd, onPastStart });
 
   return (
     <SceneChrome
@@ -103,7 +97,7 @@ function StaticSlidePlayer({ item }: { item: StaticDeckItem }) {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <SlideBody item={item} beat={beat} next={next} />
+      <SlideBody item={item} beat={beat} />
     </SceneChrome>
   );
 }

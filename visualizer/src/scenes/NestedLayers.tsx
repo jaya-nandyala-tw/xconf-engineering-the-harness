@@ -152,6 +152,8 @@ function InfoPanel({ layer, isLight }: { layer: Layer; isLight: boolean }) {
   );
 }
 
+// Subtitle deliberately omitted here — it duplicated SceneChrome's own caption strip
+// below (same sentence, rendered again), since this beat's `caption` already carries it.
 function AgentTitle() {
   return (
     <motion.div
@@ -161,7 +163,6 @@ function AgentTitle() {
       className="flex flex-col items-center gap-4 text-center"
     >
       <p className="font-display text-5xl font-bold text-ink sm:text-6xl">Agent = Model + Harness.</p>
-      <p className="max-w-xl text-xl text-ink/50">The model provides intelligence. The harness makes it useful.</p>
     </motion.div>
   );
 }

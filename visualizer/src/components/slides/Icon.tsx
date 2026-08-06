@@ -9,7 +9,9 @@ export type IconName =
   | "lock"
   | "map"
   | "person"
-  | "folder";
+  | "folder"
+  | "check"
+  | "code";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -76,6 +78,21 @@ const PATHS: Record<IconName, React.ReactNode> = {
     </>
   ),
   folder: <path d="M3 6.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2h9a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z" />,
+  // Pass/fail verdict — "silent success, verbose failure" (s17a): a plain check inside a
+  // circle, distinct from `checklist`'s task-list glyph (already claimed by the agenda).
+  check: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8 12.5 3 3 5-6" />
+    </>
+  ),
+  // "Promote rules from docs into code" (s17b): a `</>` bracket glyph.
+  code: (
+    <>
+      <path d="M9 6 4 12l5 6" />
+      <path d="M15 6l5 6-5 6" />
+    </>
+  ),
 };
 
 export function Icon({ name, className = "h-6 w-6" }: { name: IconName; className?: string }) {

@@ -1,35 +1,44 @@
 # Talk Outline — "Engineering the Harness" (30 min)
 
-Run-of-show for a 400+ person audience. Timings are cumulative — if you're behind at a checkpoint, cut from **Section 6 (context rot)** first; it's the most cuttable without breaking the arc. Never cut the demos — they're the proof, not decoration.
+Run-of-show for a 400+ person audience. This mirrors `visualizer/src/content/deck.ts`'s own `SECTIONS` array — 9 sections — and its `timeLabel`s, which is the deck's own claim about pacing, not a re-timed estimate. **Those time labels have not been stress-tested against how much the deck now contains.** The decision has been made to cut before the Aug 13 dry run rather than rehearse-then-cut — see the cut-candidates list at the bottom of this section table before that dry run, and actually pick from it.
 
-| # | Time | Section | Goal | Slide ref | Demo? |
+**Resolved framing decision:** "Layer 3 — Make it reviewable" is no longer a standalone section. It's folded into Section 6 (Sensors) as a continuation — "sensors catch the mistake; can a human still tell what happened?" — so the talk's "two layers: guides and sensors" framing (stated in the hook, agenda, and the `nested-layers` scene) now holds end to end instead of being contradicted 80% through.
+
+| # | Time | Section | Goal | Slide/scene ids | Demo? |
 |---|---|---|---|---|---|
-| 1 | 0:00–1:30 | Confession-wall montage + hook + agenda | Get a physical reaction (nod/laugh) from the room; state the promise | S1a–S3 | – |
-| 2 | 1:30–5:00 | The core idea | Land "Agent = Model + Harness" and the 3-layer hierarchy as the mental model for the whole talk | S4–S6 | – |
-| 3 | 5:00–9:00 | The problem, generalized | Make the pain recognizable to *any* multi-repo team, not just yours | S7–S9 | – |
-| 4 | 9:00–13:00 | Layer 1 — Guides | Explain the six primitives that steer an agent *before* it acts | S10–S13 | – |
-| 5 | 13:00–16:00 | **Demo clip 1** | Show guides changing agent output from generic-plausible to codebase-correct | S14 | ✅ Clip 1 |
-| 6 | 16:00–20:00 | Layer 2 — Sensors | Explain the feedback loop that makes an agent self-correct *after* it acts | S15–S17 | – |
-| 7 | 20:00–23:00 | **Demo clip 2** | Show a sensor catching a mistake and the agent fixing it without a human | S18 | ✅ Clip 2 |
-| 8 | 23:00–26:00 | Context rot — the gap nobody mentions | Credibility beat: this isn't a solved-problem victory lap, it's ongoing engineering | S19–S20 | – |
-| 9 | 26:00–28:30 | Generalizing — 5 principles for any team | The actionable takeaway — what to do Monday morning | S21–S22 | – |
-| 10 | 28:30–30:00 | Self-score live + recap + close | Interactive gut-check on the checklist, then land the one sentence you want remembered; hand off to Q&A | S21b, S23 | – |
+| 1 | 0:00–1:30 | Title + hook + agenda | Open cold with the pain, introduce both speakers, state the promise | `s1`, `s1b`, `s2`, `s3` | – |
+| 2 | 1:30–5:00 | The core idea | Land "Agent = Model + Harness" and the 3-layer hierarchy as the mental model for the whole talk | `nested-layers` | – |
+| 3 | 5:00–9:00 | The problem, generalized | Make the pain recognizable to *any* multi-repo team, then make it concrete with one worked example | `divider-problem`, `s7`, `workspace-wrapper`, `s8`, `s9` | ✅ `workspace-wrapper` |
+| 4 | 9:00–13:00 | Layer 1 — Guides | Explain the seven primitives that steer an agent *before* it acts | `s10`–`s13b` | – |
+| 5 | 13:00–15:30 | Ask Before Deciding | Show the same "gate the irreversible, default the rest" principle from Guides, concretely, on a greenfield project | `s14a`, `s14b` | ✅ `input-collection-gate` |
+| 6 | 15:30–22:00 | Layer 2 — Sensors (incl. "make it reviewable") | Explain the feedback loop that makes an agent self-correct *after* it acts, run one real story through the whole 6-phase pipeline, then extend into whether what's left is still reviewable by a human | `s15`, `guides-sensors`, `s17a`–`s17d`, `s20b`, `s20c`, `s20d` | ✅ `guides-sensors` |
+| 7 | 22:00–26:30 | Context rot — the open problem | Credibility beat: this isn't a solved-problem victory lap, it's ongoing engineering | `divider-context-rot`, `context-rot-problem`, `context-rot-solution-1`, `progressive-disclosure`, `s20` | ✅ 3 scenes |
+| 8 | 26:30–29:00 | 5 principles for any team | The actionable takeaway — what to do Monday morning | `s21` | – |
+| 9 | 29:00–30:00 | Self-score + recap + close | Interactive gut-check on the checklist, then land the one sentence you want remembered; hand off to Q&A | `s21b`, `s22` | – |
+
+Section 6 is now the single largest block in the talk at 6:30 — it absorbed what used to be a separate 2:30 section. That makes it the section most worth timing precisely in rehearsal; it's also the one carrying the most content (a 15-beat interactive scene, 4 statement slides, 2 two-column slides, and a table).
+
+**Open logistics question, still unresolved:** `11-collab-doc-draft.md` §7–8 lists "who presents which section — split 15/15, or interleave?" as open, and that's staying open per the last round of decisions — flagged for Prabina, not guessed at here. The section-by-section notes below still propose a split based on which speaker's project each section's content actually comes from, as a starting point for that conversation, not as a decision already made.
 
 ---
 
-## 1. Confession-wall montage + hook + agenda (0:00–1:30)
+## Cut candidates for the "cut now, before the dry run" pass
 
-**Goal:** Everyone in the room has felt this. Open with the failure mode, not the solution — and open cold, before you've said a word.
+The deck had ~2x the content the original 30-minute plan assumed. These are the specific things worth cutting, ranked by how little the talk loses if cut. **Only #1 is decided; the rest are still open — pick from this list and update the sections above and `deck.ts` once you have.**
 
-**Confession-wall montage (0:00–0:20):** As the lights settle and before you speak, run a silent, fast text-crawl of 3–4 anonymized one-line AI-coding-disaster confessions, collected from colleagues ahead of time (see `03-demo-recording-script.md` for collection + format). No narration, no music needed — let the room read and react on its own. This is the true cold open; you haven't taken the mic yet.
+1. **`progressive-disclosure` (`SpecSplitTree`) scene, inside Context Rot — cut candidate #1.** It's the third demonstration of progressive disclosure in the deck (`s12` in Guides, then this one) and doesn't pair as tightly with `context-rot-problem`/`context-rot-solution-1` as those two pair with each other. Cutting it saves a full scene (~60–90 sec) and leaves the sub-agent before/after pair as Context Rot's one solution beat instead of two. **Not decided — still open, not cut.**
+2. **`s20d` (structured change summary table) — cut or fix, not left as-is.** Its rows are still literal placeholders (`"AC-1: ..."`, `"test_..."`). Either cut it (the point is already made by `s20b`'s honesty beat and `s20c`'s stats) or fill it in with a real example — don't let placeholder content reach the stage.
+3. **`s17c` (phase gates recap slide).** It restates what `guides-sensors` just showed, in one sentence, with no new information. Could be cut as a slide and folded into the spoken transition out of the `guides-sensors` scene instead — saves a slide transition, not real content.
+4. **Section 3's `s7` list, items 6–7.** "Gating everything isn't the fix" and "large diffs bottleneck review" were added specifically to set up Section 5 and the reviewability beat. If either of those downstream sections gets cut, drop the matching setup bullet here too so it doesn't dangle.
+5. **Do not cut:** `workspace-wrapper`, `input-collection-gate`, or `guides-sensors` — these are the concrete proof for Guides, Ask Before Deciding, and Sensors respectively, not decoration. `01-talk-outline.md`'s original guidance to protect the demos still applies.
 
-**Your own confession (0:20–0:30):** Walk out as the montage ends and land, without preamble:
+---
 
-> "...and yes. One of those was mine."
+## 1. Title + hook + agenda (0:00–1:30)
 
-Let that get its laugh/wince before you continue.
+**Goal:** Everyone in the room has felt this. Open with the failure mode, not the solution.
 
-**Hook (0:30–1:00):**
+**Hook (0:00–0:30):**
 
 > "Show of hands — who's used an AI coding assistant that gave you code that *looked* perfect, compiled, read well... and was completely wrong for your codebase?"
 
@@ -37,113 +46,119 @@ Pause for hands. Land the reframe:
 
 > "That's not a model problem. Model quality has basically stopped being the bottleneck. That's a **harness** problem — and today I want to show you what a harness actually is, and how to build one."
 
-**Agenda (1:00–1:30):** State it in one breath — what a harness is, the two layers that make one work (guides and sensors), two short clips of it running, and a checklist you can apply regardless of which AI tool you use.
+**Presenters (`s1b`):** introduce both speakers and their projects in one breath — brownfield multi-repo platform vs. greenfield agentic workflow tool — since the contrast is the reason this is a joint talk, not a scheduling accident.
+
+**Agenda (`s3`):** state it in one breath — what a harness is, guides, sensors, make it reviewable. "Take this home" was cut from the agenda slide itself; the spoken line can still close on a Monday-morning-checklist promise without it needing its own bullet. "Make it reviewable" stays on the agenda even though it's not its own section anymore — it's still a distinct thing the audience will hear about, just inside Sensors now.
 
 ## 2. The core idea (1:30–5:00)
 
-Land the definition on a slide, verbatim, and pause on it:
+Land the definition verbatim, then run the `nested-layers` scene start to finish — do not rush the final beat:
 
 > **Agent = Model + Harness.**
 > The model provides intelligence. The harness makes it useful.
 
-Then the 3-layer hierarchy (see `04-slide-outline.md` for the diagram):
+Walk the zoom through all three rings — prompt engineering (message level, "job description"), context engineering (session level, "briefing packet"), harness engineering (system level, "operating system") — then let it zoom back out to all three nested before the final pulse beat.
 
-- **Prompt engineering** (message level) — the job description. Instructions, role, formatting, examples.
-- **Context engineering** (session level) — the briefing packet. What information loads, what gets summarized, what's remembered.
-- **Harness engineering** (system level) — the operating system. Orchestration, tool permissions, guardrails, retry loops, lifecycle.
+Key relationship to say out loud on that last beat — the thesis of the whole talk:
 
-Key relationship to say out loud: *"A prompt can request safety. Only the harness can enforce it."* That line is the thesis of the whole talk — write it on the slide too.
+> "A prompt can request safety. Only the harness can enforce it."
 
 ## 3. The problem, generalized (5:00–9:00)
 
-Don't tell your specific story — describe the *shape* of the problem so anyone with more than a couple of repos recognizes it immediately:
+Don't tell one company's story — describe the *shape* of the problem, then make it concrete with one worked example.
 
-- Local dev setup differs per engineer, per repo — nobody's environment is the same, onboarding is tribal knowledge.
-- Engineers work across many repos in separate windows — no single view of the system, constant context-switching.
-- The AI assistant only sees the one open file/repo — it suggests the pattern it's seen most on the internet, not the pattern your team actually uses.
-- The AI never checks its own work — it says "done" whether or not the code lints, type-checks, or passes tests.
-- Planning misses cross-repo blast radius — a "small" change in one repo quietly requires three more PRs elsewhere that nobody surfaces until later.
+Walk the 7-item list on `s7` (full text in `04-slide-outline.md`) — it's grown by two items since the original draft, specifically to set up Section 5 and the reviewability beat inside Section 6: "gating everything isn't the fix either" and "large AI-generated diffs turn review into the bottleneck."
 
-Land the root cause as a single sentence — this is the pivot into the rest of the talk:
+Then run `workspace-wrapper`: three repos, one shared field, an agent that renames it in the repo it happens to land in, and two sibling repos that silently drift because nothing told them. Replay the same request with a shared workspace and a confirmation gate in place — all three update together. This is "planning misses cross-repo blast radius" made physical, not just asserted.
 
-> "AI tools are only as good as the context they receive **and** the feedback loops that correct them. Without both, an AI can generate plausible-looking code that confidently ignores your team's conventions — at scale."
+Land the root cause as a single sentence — the pivot into the rest of the talk:
+
+> "AI is only as good as the context it gets **and** the feedback loops that correct it."
+
+Then the two-layer transition (`s9`): "So we built two layers: Guides and Sensors." This is now the frame for the *entire* rest of the talk — the reviewability content in Section 6 no longer breaks it.
 
 ## 4. Layer 1 — Guides (9:00–13:00)
 
-Guides steer the agent **before** it acts. Introduce the six primitives as a table (slide), then narrate the two or three that matter most for a live audience:
+*Proposed: Jaya's section — all of this is ssi-ai-kit-flavored material.*
 
-| Primitive | What it does | When it loads |
-|---|---|---|
-| Global instructions | Rules that always apply | Every interaction |
-| Scoped instructions | Domain rules tied to file path | When editing matching files |
-| Agents | Restricted personas (read-only, execute-only, etc.) | When explicitly invoked |
-| Skills | Repeatable multi-step workflows | When explicitly invoked |
-| Prompts | Single-task focused templates | When explicitly invoked |
-| Specs | The architecture knowledge base | When referenced by the above |
+Guides steer the agent **before** it acts. Introduce the seven primitives as a table (`s11` — confirmation gates are the seventh, new since the original six), then narrate the ones that matter most for a live audience:
 
-Call out the two ideas that generalize furthest:
+1. **Progressive disclosure** (`s12`) — don't load everything all the time. Scope instructions by file path so the agent only sees what's relevant to the files it's touching.
+2. **Least privilege for agents** (`s13`) — a read-only Q&A agent literally cannot edit files. A planning agent can't push code. Restricting tools is a harness decision, not a prompt request.
+3. **Gate only what's irreversible, default the rest** (`s13b`) — a confirmation gate on repo scope and cross-service changes; everything else resolves to a visible, explicit default instead of stopping the pipeline.
 
-1. **Progressive disclosure** — don't load everything all the time. Scope instructions by file path so the agent only sees what's relevant to the 5 files it's touching, not all 30+ repos.
-2. **Least privilege for agents** — a read-only Q&A agent literally cannot edit files. A planning agent can't push code. Restricting tools is a harness decision, not a prompt request.
+That third point is the bridge into Section 5 — consider saying so explicitly: "Here's what that actually looks like end to end, on a project built from scratch." *(Note: this idea repeats two more times later — Section 5 in full, and as principle #2 in `s21`. Decided: no added callback line drawing attention to the repetition — just let it land three times on its own.)*
 
-## 5. Demo clip 1 — Guides in action (13:00–16:00)
+## 5. Ask Before Deciding (13:00–15:30)
 
-Play the clip (see `03-demo-recording-script.md` for the shot list). Before playing, set up what to watch for in one sentence:
+*Proposed: Prabina's section — this is the ai-workflows mirror of the Guides principle you just heard.*
 
-> "Watch what happens to the *same* request, once with no scoped context, once with it."
+This section didn't exist in the original talk plan — it replaced what was going to be a pre-recorded "Guides in action" demo clip with a live scene instead. Frame it explicitly as the same rule as `s13b`, applied before any codebase even exists: a structured intake, a blocking confirmation gate, and a skipped input that resolves to a visible default rather than a silent guess.
 
-After the clip, land it in one sentence: *"Same model. Same prompt. Different harness. Different — correct — output."*
+Run `input-collection-gate` (the `GreenfieldIntake` scene) — real, trimmed wording from `ai-workflows`'s `story-analysis-agent` skill, not invented dialogue. Watch for: the optional tech-doc field still gets *asked* even though it's optional; the human's "Skip" gets written down, not assumed; the gate is explicitly non-skippable; nothing downstream starts until it's confirmed.
 
-## 6. Layer 2 — Sensors (16:00–20:00)
+Land it in one sentence: *"Same principle you just saw in Guides. Different codebase, built from nothing. Same rule."*
 
-Sensors catch mistakes **after** the agent acts, and feed the failure back so the agent fixes itself. This is the layer most teams skip entirely — say that explicitly, it's a credibility beat.
+## 6. Layer 2 — Sensors, including "make it reviewable" (15:30–22:00)
 
-Two design rules worth putting on a slide verbatim (they're quotable and useful on their own):
+*Proposed: shared — the two design rules and the reviewability beat are joint material, but the pipeline demo is Prabina's ai-workflows.*
+
+This is now the biggest section in the talk (6:30) — it absorbed what used to be a separate section. Budget rehearsal time accordingly.
+
+Sensors catch mistakes **after** the agent acts, and feed the failure back so the agent fixes itself. Say explicitly that this is the layer most teams skip entirely.
+
+Two design rules, verbatim (`s17a`, `s17b`):
 
 > **Silent success, verbose failure.** A sensor that passes produces zero output. A sensor that fails surfaces the exact error, so the agent can self-correct without a human in the loop.
 
-> **Promote rules from docs into code.** If you keep writing the same instruction in prose and the agent keeps ignoring it, that's a signal to escalate it to a linter or a structural test — prose is the starting point, mechanical enforcement is the destination.
+> **Promote rules from docs into code.** If you keep writing the same instruction in prose and the agent keeps ignoring it, that's a signal to escalate it to a linter or a structural test.
 
-Give the mini feedback-loop diagram: Guides → agent generates code → Sensors (type check → lint → test → architecture rule) → silent on pass / error on fail → agent fixes → done.
+Then run `guides-sensors` — the real `ai-workflows` 6-phase pipeline (ANALYZE → BLUEPRINT → RED → GREEN → REFACTOR → REVIEW) on one story spanning three repos (`storefront-web`, `checkout-bff`, `payments-service`). Two feedback loops actually fire in this one run: a human-confirm loop at BLUEPRINT (the Multi-Repo Confirmation Gate blocks until a person signs off on all 3 repos being touched) and an auto-fix loop at REVIEW (a coverage gap loops back to RED/GREEN with no human needed). Close with `s17c`: phase gates are "silent success, verbose failure" running as the actual pipeline, not just a design rule. *(`s17c` is a cut candidate if you're short on time — see the list above.)*
 
-## 7. Demo clip 2 — Sensors in action (20:00–23:00)
+**Then, on a divider card that stays inside Section 6 — no new numbered section, just a visual separator for pacing (`s17d`):** "Make it reviewable" — "Sensors catch the mistake. Can a human still tell what happened?" Guides steer it, sensors catch it — but neither makes a 40-file diff reviewable.
 
-Set up: *"Now watch the agent make a mistake — and catch it itself before a human ever sees it."*
+`s20b`: both speakers admit the same gap in their own harness's own docs — "promote rules from docs into code" (Jaya, ssi-ai-kit) and "protect shared state with append-only contracts" (Prabina, ai-workflows) are both *named* principles with no enforcement built yet. This is a genuine, unscripted honesty beat — say so.
 
-After the clip: *"Nobody reviewed that. The sensor did — and the agent fixed it in the same turn."*
+`s20c`: two external, citable numbers — PRs at scale regularly exceed 20 files/1,000+ lines with code volume up 30% (Salesforce Engineering, their own data), and 61% of agent-authored PRs get no recorded human review at all (sourced in `10-external-problems.md` §4). These are the only outside citations used anywhere in the deck — worth naming the sources out loud for credibility.
 
-## 8. Context rot — the open problem (23:00–26:00)
+`s20d`: a structured change summary — a PR that ships with acceptance-criteria-to-test traceability, not just a diff. **Still placeholder rows — see cut candidate #2 above; fix or cut before this is stage-ready.**
 
-This section exists to keep the talk honest — you're not selling a finished product, you're describing an engineering discipline with real unsolved edges. That honesty is what makes the rest of the talk credible to a room full of senior engineers.
+## 7. Context rot — the open problem (22:00–26:30)
 
-> "Bigger context windows don't fix this — they just make the haystack bigger."
+*Proposed: shared — the problem framing is joint; the two solution scenes each generalize one speaker's primitive (sub-agents, progressive disclosure).*
 
-Name 2–3 concrete failure modes (pick from your own experience, generalized):
+This section exists to keep the talk honest — you're not selling a finished product, you're describing an engineering discipline with real unsolved edges.
 
-- **Long-horizon drift** — quality degrades the longer a single session runs.
-- **Stale specs** — the knowledge base the agent trusts drifts from what the code actually does.
-- **Self-verification bias** — agents are optimistic about their own work; computational checks have to override self-assessment, not just supplement it.
+Run `context-rot-problem` — a real session's token budget filling up: a 70-token rule gets stated, then answering one question about it costs 54,000 tokens (a full spec-file read) plus another ~18,000 tokens of exploration, crossing the "40% = dumb zone" threshold well before a quick follow-up question arrives and gets lost in the noise. **The scene's own final beat already lands the line and previews both fixes** — there is no separate `s19` slide anymore; it was cut because it duplicated this exact caption verbatim:
 
-State the mitigation pattern generically: scoped, session-persistent memory instead of one giant growing conversation; diff-based refresh instead of "write it once and hope."
+> "Bigger context windows don't fix this — they just make the haystack bigger." Solution 1: sub-agents. Solution 2: progressive disclosure.
 
-## 9. Generalizing — 5 principles for any team (26:00–28:30)
+Then `context-rot-solution-1` — the identical exploration burst, replayed inside a sub-agent, returning a ~340-token summary instead of dumping everything into the main context. The scene computes the actual percentage saved live.
 
-This is the slide people photograph. Keep it to 5, each one sentence:
+Then `progressive-disclosure` (`SpecSplitTree`) — the second worked example of the same primitive from `s12`. **Top cut candidate if you're short on time** — see the list above.
 
-1. **Earn every rule.** Every instruction should trace to a real past failure — hand-written, never auto-generated (auto-generated rules measurably hurt output quality).
-2. **The codebase wins.** When a guideline and the existing code disagree, the agent follows the code — the codebase is the source of truth, not the doc.
-3. **Structure in, structure out.** Real file paths and real symbol names in, correct code out. Vague prompts get vague — or wrong — code.
-4. **Sub-agents are context firewalls, not personas.** Use them to isolate context and return a condensed answer, not to role-play a character.
-5. **Treat the harness as software.** Version it, review it in PRs, refactor it when it drifts. A stale prompt rots exactly like a stale test.
+Close with the 3-row recap table (`s20`): long-horizon drift, stale specs, self-verification bias, each with a one-line mitigation.
 
-## 10. Recap + close (28:30–30:00)
+## 8. Generalizing — 5 principles for any team (26:30–29:00)
 
-**Live bit — self-score the checklist (28:30–29:10):** Project the 5-question harness audit from `06-audience-takeaway.md`. Ask the room to silently score their own team 0–5 on their fingers, no mic needed. *"Who's at a 5?"* — pause, scan for hands (there will be almost none — that's the point, let the silence land). *"Who's at 0 or 1?"* — more hands, knowing laugh. Don't editorialize the result; let the room feel it, then move straight into the recap.
+This is the slide people photograph. `s21`, "merged from both projects":
 
-One breath recap: *"Model plus harness. Guides before, sensors after. Treat both as software, not as a one-time setup."*
+1. **Earn every rule.** Every instruction should trace to a real past failure — hand-written, never auto-generated.
+2. **Gate only the irreversible.** Human confirmation on decisions with real blast radius; a sensible default everywhere else.
+3. **Ground the agent in what's real.** Structure in, structure out, and reuse before you create — the codebase, and confirmed inputs, win over guesswork.
+4. **Sub-agents are single-purpose firewalls, not personas.** Isolate context or responsibility, return a condensed result.
+5. **Treat the harness as software.** Version it, review it, refactor it when it drifts, and make what it produces auditable.
 
-Close on the line you want quoted:
+Principle 2 is the third full treatment of "gate the irreversible" in this deck (`s13b`, all of Section 5, here). Decided: no added commentary — let it land as its own repetition.
+
+## 9. Self-score live + recap + close (29:00–30:00)
+
+**Live bit — self-score the checklist (`s21b`):** Project the 5-question harness audit (identical wording to `06-audience-takeaway.md` — keep them in sync). Ask the room to silently score their own team 0–5 on their fingers, no mic needed. *"Who's at a 5?"* — pause, scan for hands. *"Who's at 0 or 1?"* — more hands, knowing laugh. Don't editorialize the result; let the room feel it, then move straight into the recap.
+
+One breath recap: *"Model plus harness. Guides before, sensors after, and make what comes out the other end auditable. Two of us, two completely different codebases, and we converged on the same principles."*
+
+Close on the line you want quoted (`s22`):
 
 > **"You can't prompt your way to a reliable AI coding agent. You have to engineer the harness around it."**
 
-Hand off: *"I've put a one-page checklist and today's slides at [link] — happy to go deeper in Q&A or after."*
+Hand off: *"I've put a one-page checklist and today's slides at [link] — happy to go deeper in Q&A or after."* (`qrUrl` in `s22` is still unset — fill it in before Aug 14.)
