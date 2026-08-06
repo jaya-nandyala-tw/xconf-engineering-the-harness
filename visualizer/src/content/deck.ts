@@ -2,6 +2,8 @@ import type { ComponentType } from "react";
 import type { IconName } from "../components/slides/Icon";
 import { SlideFilePathMatch } from "../components/slides/bespoke/SlideFilePathMatch";
 import { SlideAgentPersonas } from "../components/slides/bespoke/SlideAgentPersonas";
+import { SlidePRDiff } from "../components/slides/bespoke/SlidePRDiff";
+import { SlidePRSummary } from "../components/slides/bespoke/SlidePRSummary";
 import presenterJayaPhoto from "../assets/brand/presenter-jaya.jpeg";
 import presenterPrabinaPhoto from "../assets/brand/presenter-prabina.jpeg";
 
@@ -18,24 +20,24 @@ export interface DeckSection {
 // on the actual chrome (confirmed in review: section numbers and borders in it washed out).
 const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
 
-// Renumbered sequentially (1-9) to match final array/chronological order. "Make it
-// reviewable" is no longer a standalone section (id 8) — folded into Sensors (id 6) as a
-// continuation ("sensors catch the mistake; can a human still tell what happened?")
-// instead of a third co-equal layer, so the "two layers: guides and sensors" framing
-// stated in the hook/agenda/nested-layers scene stays true for the whole talk. Context
-// rot's two solution scenes (sub-agents, progressive disclosure) still live inside their
-// own section, restoring scenes.ts's own native Problem -> Solution 1 -> Solution 2
-// grouping.
+// Renumbered sequentially (1-10) to match final array/chronological order. "Make it
+// reviewable" is restored as its own standalone section (id 8, "The Third Layer —
+// Reviewability") rather than folded into Sensors (id 6) — sensors catching a mistake
+// doesn't help if nobody can review what's left, so it earns its own chapter card between
+// Context rot (id 7) and the 5 principles recap (id 9). Context rot's two solution scenes
+// (sub-agents, progressive disclosure) still live inside their own section, preserving
+// scenes.ts's own native Problem -> Solution 1 -> Solution 2 grouping.
 export const SECTIONS: DeckSection[] = [
   { id: 1, title: "Title + hook + agenda", timeLabel: "0:00–1:30" },
   { id: 2, title: "The core idea", timeLabel: "1:30–5:00" },
   { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
   { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
   { id: 5, title: "Ask Before Deciding", timeLabel: "13:00–15:30" },
-  { id: 6, title: "Layer 2 — Sensors", timeLabel: "15:30–22:00" },
-  { id: 7, title: "Context rot — the open problem", timeLabel: "22:00–26:30" },
-  { id: 8, title: "5 principles for any team", timeLabel: "26:30–29:00" },
-  { id: 9, title: "Self-score + recap + close", timeLabel: "29:00–30:00" },
+  { id: 6, title: "Layer 2 — Sensors", timeLabel: "15:30–19:30" },
+  { id: 7, title: "Context rot — the open problem", timeLabel: "19:30–24:00" },
+  { id: 8, title: "The Third Layer — Reviewability", timeLabel: "24:00–26:30" },
+  { id: 9, title: "5 principles for any team", timeLabel: "26:30–29:00" },
+  { id: 10, title: "Self-score + recap + close", timeLabel: "29:00–30:00" },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =
@@ -447,75 +449,6 @@ export const DECK: DeckItem[] = [
       subtitle: "RED → GREEN → REFACTOR → REVIEW — “silent success, verbose failure” running as the actual pipeline, not just a design rule.",
     } satisfies StatementContent,
   },
-  // Folded in from a standalone "Layer 3" section — sensors catching a mistake doesn't
-  // help if nobody can review what's left, so this is a continuation of Sensors, not a
-  // third co-equal layer: `section: 6`, same SECTIONS entry, no new numbered chapter. It
-  // still gets its own visual separator card for pacing — accent matches section 6's own
-  // cycled color (jade) rather than reusing a fresh accent, so it doesn't read as a brand
-  // new top-level section the way divider-problem/divider-context-rot do.
-  {
-    kind: "static",
-    id: "s17d",
-    section: 6,
-    navLabel: "One more sensor problem",
-    slideKind: "divider",
-    content: {
-      title: "Make it reviewable",
-      subtitle: "Sensors catch the mistake. Can a human still tell what happened? Two of us hit the same gap, on two different codebases.",
-      accent: "jade",
-    } satisfies DividerContent,
-  },
-  {
-    kind: "static",
-    id: "s20b",
-    section: 6,
-    navLabel: "Two teams, same shape of gap",
-    slideKind: "two-column",
-    content: {
-      heading: "Two teams, same shape of gap",
-      left: {
-        label: "Jaya's side (ssi-ai-kit)",
-        body: "“Promote rules from docs into code” — stated in the harness's own docs. The flagship candidate (import/architecture boundaries) is still prose-only; the linter was never added.",
-      },
-      right: {
-        label: "Prabina's side (ai-workflows)",
-        body: "“Protect shared state with append-only contracts” — named the same way in the harness's own roadmap. No rule or field yet stops an agent from silently rewriting a shared contract entry.",
-      },
-    } satisfies TwoColumnContent,
-  },
-  {
-    kind: "static",
-    id: "s20c",
-    section: 6,
-    navLabel: "The reviewer's problem",
-    slideKind: "two-column",
-    content: {
-      heading: "The reviewer's problem",
-      left: {
-        label: "PRs at scale",
-        body: "Regularly exceed 20 files / 1,000+ lines. Code volume up 30%. (Salesforce Engineering, on their own data.)",
-      },
-      right: {
-        label: "Review coverage",
-        body: "61% of agent-authored PRs get no recorded human review at all. (Industry PR-review study — full sourcing in 10-external-problems.md §4.)",
-      },
-    } satisfies TwoColumnContent,
-  },
-  {
-    kind: "static",
-    id: "s20d",
-    section: 6,
-    navLabel: "Structured change summary",
-    slideKind: "table",
-    content: {
-      heading: "Structured change summary — not just a diff",
-      columns: ["Acceptance criterion", "Test", "Result"],
-      rows: [
-        ["AC-1: ...", "test_...", "✅ pass"],
-        ["AC-2: ...", "test_...", "✅ pass"],
-      ],
-    } satisfies TableContent,
-  },
   {
     kind: "static",
     id: "divider-context-rot",
@@ -581,10 +514,86 @@ export const DECK: DeckItem[] = [
       ],
     } satisfies TableContent,
   },
+  // Standalone third layer — sensors catching a mistake doesn't help if nobody can
+  // review what's left, so this earns its own chapter (`section: 8`) between Context rot
+  // (id 7) and the 5 principles recap (id 9), rather than folding back into Sensors.
+  {
+    kind: "static",
+    id: "s17d",
+    section: 8,
+    navLabel: "Make it reviewable",
+    slideKind: "divider",
+    content: {
+      title: "Make it reviewable",
+      subtitle: "Sensors catch the mistake. Can a human still tell what happened?",
+      accent: "amethyst",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
+    id: "s20c",
+    section: 8,
+    navLabel: "The reviewer's problem",
+    slideKind: "two-column",
+    content: {
+      heading: "The reviewer's problem",
+      left: {
+        label: "PRs at scale",
+        body: "Regularly exceed 20 files / 1,000+ lines. Code volume up 30%. (Salesforce Engineering, on their own data.)",
+      },
+      right: {
+        label: "Review coverage",
+        body: "61% of agent-authored PRs get no recorded human review at all. (An Industry PR-review study)",
+      },
+    } satisfies TwoColumnContent,
+  },
+  {
+    kind: "static",
+    id: "s20c2",
+    section: 8,
+    navLabel: "Problems with huge PRs",
+    slideKind: "list",
+    revealMode: "sequential",
+    content: {
+      heading: "What a 40-file diff actually costs you",
+      items: [
+        "Overlooked bugs in the noise",
+        "Rubber-stamped approvals over real reviews",
+        "Feedback too delayed to act on",
+        "All-or-nothing reverts on bundled changes",
+        "Rising incident and change-failure rates (Cortex, 2026 AI Benchmark Report)",
+      ],
+      style: "bullet",
+    } satisfies ListContent,
+  },
+  {
+    kind: "static",
+    id: "s20c3",
+    section: 8,
+    navLabel: "The 40-file diff",
+    slideKind: "bespoke",
+    content: {
+      eyebrow: "What a reviewer actually sees",
+      title: "One PR. 47 files. 3,140 lines changed.",
+    } satisfies StatementContent,
+    bespokeComponent: SlidePRDiff,
+  },
+  {
+    kind: "static",
+    id: "s20d",
+    section: 8,
+    navLabel: "Structured change summary",
+    slideKind: "bespoke",
+    content: {
+      eyebrow: "Structured change summary",
+      title: "Ship the description, not just the diff.",
+    } satisfies StatementContent,
+    bespokeComponent: SlidePRSummary,
+  },
   {
     kind: "static",
     id: "s21",
-    section: 8,
+    section: 9,
     navLabel: "5 principles",
     slideKind: "list",
     revealMode: "sequential",
@@ -604,7 +613,7 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s21b",
-    section: 9,
+    section: 10,
     navLabel: "Self-score",
     slideKind: "list",
     // revealMode intentionally omitted (defaults to "all") — 04-slide-outline.md is explicit
@@ -624,7 +633,7 @@ export const DECK: DeckItem[] = [
   {
     kind: "static",
     id: "s22",
-    section: 9,
+    section: 10,
     navLabel: "Close",
     slideKind: "close",
     content: {
