@@ -54,7 +54,7 @@ type LayerId = Layer["id"];
 // is always exactly HARNESS_SIZE across (see `scale` below) — if the viewport were
 // smaller than that, every focused ring would get cropped into straight edges with only
 // its curve peeking through at the corners, instead of reading as a clean circle.
-const VIEWPORT = 640;
+const VIEWPORT = 560;
 
 interface BeatConfig {
   showDiagram: boolean;
@@ -132,17 +132,17 @@ function InfoPanel({ layer, isLight }: { layer: Layer; isLight: boolean }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col items-center gap-3 text-center"
+      className="flex flex-col items-center gap-2 text-center"
     >
       {/* Ring uses layer.color at full saturation for its border/glow (fine as a bold
           decorative shape either theme) — but as body text on light mist that same
           violet/orange/pale-yellow drops to ~1.5-2.4:1, so text gets the darkened swap. */}
-      <p className="text-sm uppercase tracking-[0.2em]" style={{ color: diagramTextHex(layer.color, isLight) }}>
+      <p className="text-xs uppercase tracking-[0.2em]" style={{ color: diagramTextHex(layer.color, isLight) }}>
         {layer.title} — {layer.level}-level · {layer.metaphor}
       </p>
-      <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-lg text-ink/70">
+      <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-base text-ink/70">
         {layer.bullets.map((bullet) => (
-          <li key={bullet} className="flex items-center gap-2">
+          <li key={bullet} className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: layer.color }} />
             {bullet}
           </li>
@@ -195,7 +195,7 @@ export function NestedLayers() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="flex flex-col items-center gap-6"
+              className="flex flex-col items-center gap-4"
             >
               <div
                 className="relative overflow-hidden rounded-3xl border border-ink/10 bg-ink/[0.02]"
@@ -219,7 +219,7 @@ export function NestedLayers() {
                 </motion.div>
               </div>
 
-              <div className="min-h-[92px]">
+              <div className="min-h-[64px]">
                 <AnimatePresence mode="wait">
                   {focusedLayer && <InfoPanel key={focusedLayer.id} layer={focusedLayer} isLight={isLight} />}
                 </AnimatePresence>

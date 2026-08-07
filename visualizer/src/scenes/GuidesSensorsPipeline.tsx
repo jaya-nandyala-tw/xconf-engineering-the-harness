@@ -219,11 +219,11 @@ const BEATS: Beat[] = [
 // Horizontal row of 7 stage cards — a 7-node vertical stack would run too tall for a
 // wide slide, and a row also mirrors ai-dev-workflow.md's own left-to-right phase diagram.
 const CARD_W = 128;
-const CARD_H = 76;
+const CARD_H = 64;
 const GAP_X = 34;
 const STRIDE_X = CARD_W + GAP_X;
-const ROW_Y = 54; // headroom for the Blueprint confirm badge above the row
-const LOOP_ARC_DEPTH = 86;
+const ROW_Y = 48; // headroom for the Blueprint confirm badge above the row
+const LOOP_ARC_DEPTH = 64;
 const SVG_W = (STAGES.length - 1) * STRIDE_X + CARD_W;
 const SVG_H = ROW_Y + CARD_H + LOOP_ARC_DEPTH + 16;
 
@@ -375,8 +375,8 @@ function WorkflowDiagram({
   const verdicts = computeVerdicts(beat);
 
   return (
-    <div className="relative w-full overflow-x-auto rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-7 pt-11">
-      <span className="absolute left-7 top-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/35">
+    <div className="relative w-full overflow-x-auto rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-5 pt-9">
+      <span className="absolute left-7 top-3 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/35">
         ai-workflows — 6-Phase Pipeline
       </span>
       <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto block overflow-visible">
@@ -420,7 +420,7 @@ function WorkflowDiagram({
 
 function RequestBubble({ text }: { text: string | null }) {
   return (
-    <div className="flex min-h-[52px] items-center">
+    <div className="flex min-h-[44px] items-center">
       <AnimatePresence mode="wait">
         {text && (
           <motion.div
@@ -429,7 +429,7 @@ function RequestBubble({ text }: { text: string | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.3 }}
-            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-5 py-3 text-lg text-ink/80"
+            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-4 py-2 text-base text-ink/80"
           >
             <span className="mr-2 font-mono text-xs uppercase tracking-wide text-ink/40">request</span>
             {text}
@@ -477,7 +477,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
   const stage = STAGES.find((s) => s.id === config.active);
 
   return (
-    <div className="flex w-full flex-col gap-5 text-left">
+    <div className="flex w-full flex-col gap-3 text-left">
       <RequestBubble text={config.request} />
 
       <AnimatePresence mode="wait">
@@ -488,7 +488,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex min-h-[190px] flex-col gap-4 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6"
+            className="flex min-h-[152px] flex-col gap-3 rounded-2xl border border-ink/10 bg-ink/[0.02] p-5"
           >
             <span
               className="text-xs font-semibold uppercase tracking-[0.15em]"
@@ -501,7 +501,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
 
             {config.active === "analyze" && config.guideDetail && (
               <>
-                <ul className="flex flex-col gap-1.5 text-base text-ink/70">
+                <ul className="flex flex-col gap-1 text-sm text-ink/70">
                   {config.guideDetail.map((d) => (
                     <li key={d} className="flex items-center gap-2">
                       <span className="h-1 w-1 shrink-0 rounded-full bg-blue-300" />
@@ -514,7 +514,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "blueprint" && config.repoTable && (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap gap-2">
                   {config.repoTable.map((r) => (
                     <span
@@ -541,12 +541,12 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {(config.active === "red" || config.active === "green") && config.files && (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 {config.filesLabel && (
                   <span className="text-xs uppercase tracking-wide text-ink/40">{config.filesLabel}</span>
                 )}
                 <ul
-                  className={`flex flex-col gap-1 font-mono text-sm leading-relaxed ${
+                  className={`flex flex-col gap-1 font-mono text-xs leading-snug ${
                     config.active === "red"
                       ? isLight
                         ? "text-red-800/80"
@@ -575,8 +575,8 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "refactor" && (
-              <div className="flex flex-col gap-3">
-                {config.note && <p className="text-base leading-snug text-ink/70">{config.note}</p>}
+              <div className="flex flex-col gap-2">
+                {config.note && <p className="text-sm leading-snug text-ink/70">{config.note}</p>}
                 {config.verdict && (
                   <VerdictBadge verdict={config.verdict} label="tests still green, no behavior change" isLight={isLight} />
                 )}
@@ -584,7 +584,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "review" && (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 {config.gapFile ? (
                   <>
                     <p className={`text-sm leading-snug ${isLight ? "text-red-800/90" : "text-red-300/85"}`}>
@@ -607,8 +607,8 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
 
             {config.active === "outcome" && config.outcomeLines && (
               <div className="flex items-center gap-3">
-                <span className={`text-3xl ${toneText(isLight, "emerald")}`}>✓</span>
-                <div className={`text-lg leading-snug ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
+                <span className={`text-2xl ${toneText(isLight, "emerald")}`}>✓</span>
+                <div className={`text-base leading-snug ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
                   <div>{config.outcomeLines[0]}</div>
                   <div className="text-ink/50">{config.outcomeLines[1]}</div>
                 </div>
@@ -637,7 +637,7 @@ export function GuidesSensorsPipeline() {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full max-w-[1180px] flex-col items-center gap-8">
+      <div className="flex w-full max-w-[1180px] flex-col items-center gap-6">
         <WorkflowDiagram config={config} beat={beat} activeIndex={activeIndex} isLight={isLight} />
         <DetailPanel config={config} beat={beat} isLight={isLight} />
       </div>

@@ -241,7 +241,7 @@ export const DECK: DeckItem[] = [
     slideKind: "divider",
     content: {
       title: "The problem, generalized",
-      subtitle: "Not one team's mess — the shape any multi-repo (or multi-service) codebase runs into.",
+      subtitle: "Not one team's mess — the shape any multi-repo codebase runs into.",
       accent: "turmeric",
     } satisfies DividerContent,
   },
@@ -640,7 +640,7 @@ export const DECK: DeckItem[] = [
       icon: "flag",
       quote: "You can't prompt your way to a reliable AI coding agent. You have to engineer the harness around it.",
       recapLine:
-        "Model plus harness. Guides before, sensors after, and make what comes out the other end auditable. Two of us, two completely different codebases, and we converged on the same principles.",
+        "Model plus harness. Guides before, sensors after, and make what comes out the other end auditable.",
       qrUrl: undefined, // [PLACEHOLDER] fill in the takeaway-doc link before the talk
     } satisfies CloseContent,
   },
