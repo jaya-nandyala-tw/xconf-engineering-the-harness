@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import type { GroupedSection } from "../lib/deckNav";
+import { sectionTimeLabel, type GroupedSection } from "../lib/deckNav";
 import { ACCENT_BG, ACCENT_BORDER, ACCENT_TEXT } from "../lib/accent";
 
 interface GallerySectionProps {
@@ -27,7 +27,7 @@ export function GallerySection({ group, groupIndex, activeItemIndex, onHoverItem
             {String(section.id).padStart(2, "0")}
           </span>
           <h2 className="text-base font-semibold text-ink/85">{section.title}</h2>
-          <span className="text-xs uppercase tracking-[0.15em] text-ink/30">{section.timeLabel}</span>
+          <span className="text-xs uppercase tracking-[0.15em] text-ink/30">{sectionTimeLabel(section)}</span>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-3">

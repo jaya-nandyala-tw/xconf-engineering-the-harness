@@ -12,7 +12,13 @@ export type Accent = "flamingo" | "sapphire" | "jade" | "turmeric" | "amethyst";
 export interface DeckSection {
   id: number;
   title: string;
-  timeLabel: string;
+  // Who owns this section on stage — edit freely before/during rehearsal sync-ups.
+  presenter: string;
+  // Length of this section in minutes. The gallery's displayed time range and Presenter
+  // Preview's pace timer both derive from this, so rebalancing one section's minutes here
+  // automatically shifts every downstream section's planned start time — nothing else to
+  // update by hand. Sums to the talk's total planned length (30 min today).
+  plannedMinutes: number;
   accent: Accent;
 }
 
@@ -28,16 +34,16 @@ const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
 // (sub-agents, progressive disclosure) still live inside their own section, preserving
 // scenes.ts's own native Problem -> Solution 1 -> Solution 2 grouping.
 export const SECTIONS: DeckSection[] = [
-  { id: 1, title: "Title + hook + agenda", timeLabel: "0:00–1:30" },
-  { id: 2, title: "The core idea", timeLabel: "1:30–5:00" },
-  { id: 3, title: "The problem, generalized", timeLabel: "5:00–9:00" },
-  { id: 4, title: "Layer 1 — Guides", timeLabel: "9:00–13:00" },
-  { id: 5, title: "Ask Before Deciding", timeLabel: "13:00–15:30" },
-  { id: 6, title: "Layer 2 — Sensors", timeLabel: "15:30–19:30" },
-  { id: 7, title: "Context rot — the open problem", timeLabel: "19:30–24:00" },
-  { id: 8, title: "The Third Layer — Reviewability", timeLabel: "24:00–26:30" },
-  { id: 9, title: "5 principles for any team", timeLabel: "26:30–29:00" },
-  { id: 10, title: "Self-score + recap + close", timeLabel: "29:00–30:00" },
+  { id: 1, title: "Title + hook + agenda", presenter: "TBD", plannedMinutes: 1.5 },
+  { id: 2, title: "The core idea", presenter: "TBD", plannedMinutes: 3.5 },
+  { id: 3, title: "The problem, generalized", presenter: "TBD", plannedMinutes: 4 },
+  { id: 4, title: "Layer 1 — Guides", presenter: "TBD", plannedMinutes: 4 },
+  { id: 5, title: "Ask Before Deciding", presenter: "TBD", plannedMinutes: 2.5 },
+  { id: 6, title: "Layer 2 — Sensors", presenter: "TBD", plannedMinutes: 4 },
+  { id: 7, title: "Context rot — the open problem", presenter: "TBD", plannedMinutes: 4.5 },
+  { id: 8, title: "The Third Layer — Reviewability", presenter: "TBD", plannedMinutes: 2.5 },
+  { id: 9, title: "5 principles for any team", presenter: "TBD", plannedMinutes: 2.5 },
+  { id: 10, title: "Self-score + recap + close", presenter: "TBD", plannedMinutes: 1 },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =

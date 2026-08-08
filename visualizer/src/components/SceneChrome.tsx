@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { BeatIndicator } from "./BeatIndicator";
 import { ThemeToggle } from "./ThemeToggle";
+import { PresenterPreviewBar } from "./PresenterPreviewBar";
 import { useTheme } from "../lib/theme";
+import { usePresentationMode } from "../lib/presentationMode";
 import thoughtworksLogoLight from "../assets/brand/thoughtworks-wordmark-light.png";
 import thoughtworksLogoDark from "../assets/brand/thoughtworks-wordmark-dark.png";
 
@@ -45,6 +47,7 @@ export function SceneChrome({
   sidebarClassName = "w-80",
 }: SceneChromeProps) {
   const { isLight } = useTheme();
+  const { isPresenterMode } = usePresentationMode();
 
   return (
     <div className="relative flex h-screen w-screen bg-surface text-ink overflow-hidden">
@@ -62,6 +65,8 @@ export function SceneChrome({
             <ThemeToggle />
           </div>
         </header>
+
+        {isPresenterMode && <PresenterPreviewBar />}
 
         <main className="flex min-h-0 flex-1 items-center justify-center px-12">
           {children}

@@ -9,13 +9,19 @@ import "@fontsource/bitter/700.css";
 import "./index.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "./lib/theme.tsx";
+import { PresentationModeProvider } from "./lib/presentationMode.tsx";
+import { TalkTimerProvider } from "./lib/talkTimer.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <App />
-      </BrowserRouter>
+      <PresentationModeProvider>
+        <TalkTimerProvider>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <App />
+          </BrowserRouter>
+        </TalkTimerProvider>
+      </PresentationModeProvider>
     </ThemeProvider>
   </StrictMode>,
 );

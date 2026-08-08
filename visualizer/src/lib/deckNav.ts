@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { DECK, SECTIONS, type DeckItem, type DeckSection } from "../content/deck";
 import { isEnabled } from "../content/slideToggles";
 
@@ -28,8 +29,40 @@ export function getIndex(id: string): number {
   return ENABLED_DECK.findIndex((item) => item.id === id);
 }
 
-function hrefFor(item: DeckItem): string {
+export function hrefFor(item: DeckItem): string {
   return item.kind === "interactive" ? item.route : `/deck/${item.id}`;
+}
+
+// --- Planned schedule, derived from SECTIONS' plannedMinutes --------------------------
+// Single-sourced from plannedMinutes so rebalancing one section's length during a sync-up
+// automatically shifts every downstream planned start time and the pace math in Presenter
+// Preview — nothing here is hand-maintained.
+
+export const TOTAL_PLANNED_SECONDS = SECTIONS.reduce((sum, s) => sum + s.plannedMinutes * 60, 0);
+
+export function sectionPlannedStartSeconds(sectionId: number): number {
+  return SECTIONS.filter((s) => s.id < sectionId).reduce((sum, s) => sum + s.plannedMinutes * 60, 0);
+}
+
+export function formatMinSec(totalSeconds: number): string {
+  const m = Math.floor(totalSeconds / 60);
+  const s = Math.round(totalSeconds % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+export function sectionTimeLabel(section: DeckSection): string {
+  const start = sectionPlannedStartSeconds(section.id);
+  const end = start + section.plannedMinutes * 60;
+  return `${formatMinSec(start)}–${formatMinSec(end)}`;
+}
+
+// Which section is currently on screen, derived from the route rather than threaded through
+// every scene/slide component as a prop — works for both static slides (/deck/:id) and
+// interactive scenes (their own dedicated routes) since both resolve through hrefFor.
+export function useCurrentSection(): DeckSection | undefined {
+  const location = useLocation();
+  const item = ENABLED_DECK.find((i) => hrefFor(i) === location.pathname);
+  return item ? SECTIONS.find((s) => s.id === item.section) : undefined;
 }
 
 export interface NavTarget {
