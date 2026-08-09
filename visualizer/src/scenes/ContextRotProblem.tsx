@@ -110,19 +110,19 @@ const BEATS: BeatConfig[] = [
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal"],
     bubble: { role: "user", text: TURNS.signal.text },
     callout: "none",
-    caption: "The rule is stated. Right now: full attention.",
+    caption: "The rule lands in an empty window. The model reads attentively.",
   },
   {
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead"],
     bubble: { role: "tool", text: TURNS.specRead.text },
     callout: "none",
-    caption: "Cause one: one question about that rule, and the agent reads an entire spec file to answer it.",
+    caption: "Cause 1: one question about the rule, and the agent reads an entire spec file to answer it.",
   },
   {
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1"],
     bubble: { role: "tool", text: TURNS.grep1.text },
     callout: "none",
-    caption: "Cause two starts: it goes looking in the code too — grep across the repo.",
+    caption: "Cause 2 : Agent goes looking in the code — grep across the repo.",
   },
   {
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1", "read1"],

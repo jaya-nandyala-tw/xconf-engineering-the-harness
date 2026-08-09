@@ -246,8 +246,7 @@ export const DECK: DeckItem[] = [
     navLabel: "Section: The problem",
     slideKind: "divider",
     content: {
-      title: "The problem, generalized",
-      subtitle: "Not one team's mess — the shape any multi-repo codebase runs into.",
+      title: "AI's blind spot: Multi-repo Codebases",
       accent: "turmeric",
     } satisfies DividerContent,
   },
@@ -261,14 +260,13 @@ export const DECK: DeckItem[] = [
     content: {
       heading: "The shape of the problem",
       items: [
-        "Local dev setup differs per engineer, per repo — onboarding is tribal knowledge.",
-        "Engineers work across many repos in separate windows — no single view of the system.",
-        "The AI assistant only sees the one open file — it suggests the internet's pattern, not your team's.",
-        "The AI never checks its own work — it says “done” whether or not it lints, type-checks, or passes tests.",
-        "Planning misses cross-repo blast radius — a “small” change quietly needs three more PRs elsewhere, or, on a greenfield build, ships a cross-service change with no sign-off at all.",
-        "Gating everything isn't the fix either — a pipeline that stops for a human at every step just trades silent wrong changes for nothing finishing.",
-        "Large, fast AI-generated diffs turn review into the bottleneck — a human misses something buried in a 40-file change, or rubber-stamps it.",
-      ],
+    "No single view across repos",
+    "Agent sees only one file at a time",
+    "Agent never checks its own work",
+    "Cross-repo blast radius missed in planning",
+    "Over-gating stalls everything",
+    "Big diffs turn review into bottleneck"
+     ],
       style: "bullet",
     } satisfies ListContent,
   },
@@ -288,7 +286,7 @@ export const DECK: DeckItem[] = [
     navLabel: "Root cause",
     slideKind: "statement",
     content: {
-      title: "AI is only as good as\nthe context it gets + the feedback loops that correct it.",
+      title: "AI generated code quality = \n\nContext it gets + Feedback loops that correct it",
       highlightPlus: true,
     } satisfies StatementContent,
   },

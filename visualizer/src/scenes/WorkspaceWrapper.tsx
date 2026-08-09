@@ -94,7 +94,7 @@ const BEATS: Beat[] = [
     showWrapper: false,
     repoStates: { billing: "active", checkout: "neutral", invoicing: "neutral" },
     repoField: ALL_PCT,
-    caption: "A request lands wherever it lands — this time, billing-service.",
+    caption: "The request starts in billing-service",
   },
   {
     request: REQUEST,
