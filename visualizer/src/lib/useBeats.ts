@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { onSyncMessage, postSyncMessage } from "./presentationSync";
 
 interface UseBeatsOptions {
   total: number;
@@ -17,6 +18,7 @@ interface UseBeatsOptions {
 export function useBeats({ total, initialBeat = 0, onExit, onPastEnd, onPastStart }: UseBeatsOptions) {
   const [beat, setBeat] = useState(initialBeat);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Read synchronously in `next` instead of inside the setBeat updater — calling
   // onPastEnd (often a router navigate(), itself a setState) from inside another
@@ -24,6 +26,34 @@ export function useBeats({ total, initialBeat = 0, onExit, onPastEnd, onPastStar
   // component" warning.
   const beatRef = useRef(beat);
   beatRef.current = beat;
+
+  // Beats are the one piece of presentation state that never reaches the URL (unlike scene
+  // changes, which react-router already tracks) — broadcast/apply them explicitly so the
+  // Presenter/Audience window pair stays in lockstep step-for-step, not just scene-for-scene.
+  // Same "skip the echo" guard as the route-sync hook: set right before a remote message
+  // drives our own setBeat, so that resulting change doesn't get broadcast right back out.
+  const applyingRemoteBeat = useRef(false);
+
+  useEffect(() => {
+    if (applyingRemoteBeat.current) {
+      applyingRemoteBeat.current = false;
+      return;
+    }
+    postSyncMessage({ type: "beat", pathname: location.pathname, beat });
+    // location.pathname intentionally omitted from deps — a pathname change means a
+    // different scene entirely (this instance is about to unmount), not a beat to send.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [beat]);
+
+  useEffect(() => {
+    return onSyncMessage((message) => {
+      if (message.type !== "beat") return;
+      if (message.pathname !== location.pathname) return;
+      if (message.beat === beatRef.current) return;
+      applyingRemoteBeat.current = true;
+      setBeat(message.beat);
+    });
+  }, [location.pathname]);
 
   const next = useCallback(() => {
     if (beatRef.current >= total - 1) {

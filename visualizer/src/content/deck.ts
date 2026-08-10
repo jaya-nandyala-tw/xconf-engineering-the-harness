@@ -150,6 +150,10 @@ export interface StaticDeckItem {
   // Only set when slideKind === "bespoke" — a deliberate escape hatch for one-off
   // diagrams (S12, S13) that aren't worth generalizing into a SlideKind of their own.
   bespokeComponent?: ComponentType<{ content: StatementContent }>;
+  // Presenter-only talking points — never rendered on the audience screen (see
+  // PresentationSpeakerNotes / the Presenter View / Audience View window split).
+  // One note per deck item, not per beat, even for slides with sequential reveals.
+  notes?: string;
 }
 
 export interface InteractiveDeckItem {
@@ -160,6 +164,10 @@ export interface InteractiveDeckItem {
   route: string;
   sceneSlug: string;
   coversSlides: string[];
+  // Same as StaticDeckItem.notes — one note for the whole scene, not per internal beat
+  // (interactive scenes have their own BEATS arrays with many sub-steps; splitting notes
+  // to that granularity is more plumbing than a first cut needs).
+  notes?: string;
 }
 
 export type DeckItem = StaticDeckItem | InteractiveDeckItem;
@@ -179,6 +187,7 @@ export const DECK: DeckItem[] = [
       title: "Engineering the Harness",
       subtitle: "Making AI Coding Agents Actually Reliable",
     } satisfies CoverContent,
+    notes: "Let the room settle before advancing. Introduce the talk in one sentence before the hook slide — don't read the subtitle verbatim.",
   },
   {
     kind: "static",
@@ -237,6 +246,7 @@ export const DECK: DeckItem[] = [
     route: "/nested-layers",
     sceneSlug: "nested-layers",
     coversSlides: ["S4", "S5", "S6"],
+    notes: "This is the whole talk's thesis in one diagram — don't rush it. Pause on the closing pulse beat and let the quote land before moving on.",
   },
   {
     kind: "static",

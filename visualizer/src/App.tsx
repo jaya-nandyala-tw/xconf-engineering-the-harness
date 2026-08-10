@@ -10,8 +10,14 @@ import { NestedLayers } from "./scenes/NestedLayers";
 import { GuidesSensorsPipeline } from "./scenes/GuidesSensorsPipeline";
 import { WorkspaceWrapper } from "./scenes/WorkspaceWrapper";
 import { GreenfieldIntake } from "./scenes/GreenfieldIntake";
+import { usePresentationRouteSync } from "./lib/usePresentationRouteSync";
 
 function App() {
+  // Keeps this window's route in lockstep with its Presenter/Audience counterpart —
+  // see usePresentationRouteSync for how; beat-level sync (within a scene) lives in
+  // useBeats instead, since that state never reaches the URL.
+  usePresentationRouteSync();
+
   return (
     <Routes>
       <Route element={<LandingLayout />}>

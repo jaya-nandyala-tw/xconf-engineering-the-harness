@@ -65,6 +65,13 @@ export function useCurrentSection(): DeckSection | undefined {
   return item ? SECTIONS.find((s) => s.id === item.section) : undefined;
 }
 
+// Same route-matching as useCurrentSection, one level more specific — the deck item itself
+// rather than its section. Used to look up per-slide presenter notes.
+export function useCurrentDeckItem(): DeckItem | undefined {
+  const location = useLocation();
+  return ENABLED_DECK.find((i) => hrefFor(i) === location.pathname);
+}
+
 export interface NavTarget {
   href: string;
   label: string;

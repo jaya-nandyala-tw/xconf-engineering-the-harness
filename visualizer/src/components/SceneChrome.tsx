@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { BeatIndicator } from "./BeatIndicator";
 import { ThemeToggle } from "./ThemeToggle";
+import { FullscreenToggle } from "./FullscreenToggle";
 import { PresenterPreviewBar } from "./PresenterPreviewBar";
 import { useTheme } from "../lib/theme";
 import { usePresentationMode } from "../lib/presentationMode";
@@ -74,6 +75,10 @@ export function SceneChrome({
             <span>
               {currentBeat + 1} / {totalBeats}
             </span>
+            {/* Presenter's own window has no use for either — fullscreen is for the
+                audience screen, and the presenter already reads dark/light off their own
+                setup, not something to fiddle with mid-talk. */}
+            {!isPresenterMode && <FullscreenToggle />}
             <ThemeToggle />
           </div>
         </header>
