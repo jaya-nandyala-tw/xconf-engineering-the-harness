@@ -64,7 +64,6 @@ const TREE_DATA: SpecNode = {
       name: "asset-provisioning.md",
       lines: 210,
       children: [
-        { id: "asset-approval", name: "asset-approval-matrix.md", lines: 70 },
         { id: "asset-decommission", name: "asset-decommission.md", lines: 55 },
       ],
     },
@@ -174,10 +173,14 @@ const BEATS: BeatConfig[] = [
   },
 ];
 
-const LAYOUT_W = 1150;
+// Tree now sits full-width above the Agent task strip instead of sharing the row with a
+// 240px sidebar — that reclaimed width goes straight into wider node cards (170 -> 210)
+// rather than more spread between them, since cramped filenames were the actual
+// complaint, not the gaps.
+const LAYOUT_W = 1250;
 const LAYOUT_H = 420;
-const NODE_W = 170;
-const NODE_H = 40;
+const NODE_W = 230;
+const NODE_H = 64;
 const MARGIN_X = NODE_W / 2 + 14;
 const MARGIN_Y = NODE_H / 2 + 16;
 
@@ -185,7 +188,7 @@ const MARGIN_Y = NODE_H / 2 + 16;
 // 5-branch layout needed, since there's more room per node to protect.
 const layoutFn = d3tree<SpecNode>()
   .size([LAYOUT_W, LAYOUT_H])
-  .separation((a, b) => (a.parent === b.parent ? 1.8 : 2.6));
+  .separation((a, b) => (a.parent === b.parent ? 2.3 : 3.2));
 const root = layoutFn(hierarchy(TREE_DATA));
 const LAYOUT_NODES = root.descendants();
 const LAYOUT_LINKS = root.links();
@@ -247,7 +250,6 @@ function NodeCard({
   node,
   active,
   depth,
-  hasChildren,
   isLight,
 }: {
   node: SpecNode;
@@ -269,35 +271,27 @@ function NodeCard({
         boxShadow: active ? "0 0 16px rgba(251, 191, 36, 0.4)" : "0 0 0px rgba(0, 0, 0, 0)",
       }}
       transition={{ type: "spring", stiffness: 280, damping: 16 }}
-      className="relative flex h-full w-full items-center gap-1.5 overflow-hidden rounded-lg border px-2.5"
+      className="relative flex flex-col h-full w-full justify-center items-center gap-1.5 overflow-hidden rounded-lg border px-2.5"
     >
-      <FileIcon color={tone.text} />
-      <motion.span
-        animate={{ color: tone.text }}
-        transition={{ type: "spring", stiffness: 280, damping: 16 }}
-        className="truncate font-mono text-[11.5px]"
-      >
-        {node.name}
-      </motion.span>
-      {hasChildren && (
+      <div className="flex items-center gap-1.5">
+        <FileIcon color={tone.text} />
         <motion.span
           animate={{ color: tone.text }}
           transition={{ type: "spring", stiffness: 280, damping: 16 }}
-          className="shrink-0 text-[9px]"
-          title="branches further"
+          className="truncate font-mono text-[11.5px]"
         >
-          ▸
+          {node.name}
         </motion.span>
-      )}
+      </div>
       <motion.span
         animate={{
           backgroundColor: active ? "rgba(251, 191, 36, 0.28)" : inkRgba(isLight, 0.06),
           color: active ? (isLight ? "#92400e" : "#fde68a") : inkTextRgba(isLight, 0.48),
         }}
         transition={{ type: "spring", stiffness: 280, damping: 16 }}
-        className="ml-auto shrink-0 rounded-[4px] px-1.5 py-0.5 font-mono text-[9px] font-semibold"
+        className="shrink-0 rounded-[4px] px-1.5 py-0.5 font-mono text-[9px] font-semibold"
       >
-        {formatTokens(tokens)} tok
+        {formatTokens(tokens)} tokens
       </motion.span>
 
       {/* Size bar — this file's tokens relative to the biggest file in the tree, so
@@ -426,8 +420,8 @@ export function SpecSplitTree() {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full max-w-[1400px] items-center gap-6">
-        <div className="flex flex-1 items-center justify-center overflow-hidden">
+      <div className="flex w-full flex-col items-center gap-6">
+        <div className="flex w-full items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait">
             {config.phase === "monolith" ? (
               <Monolith isLight={isLight} />
@@ -437,42 +431,41 @@ export function SpecSplitTree() {
           </AnimatePresence>
         </div>
 
-        <div className="flex w-60 shrink-0 flex-col gap-5 rounded-xl border border-ink/10 bg-ink/[0.03] p-5">
+        {/* Sits below the tree now instead of beside it as a narrow tall sidebar — full
+            width means the three pieces (question, tokens bar, payoff) can sit in a row
+            instead of stacked, so the same content needs far less vertical height. */}
+        <div className="flex max-w-4xl flex-col gap-3 rounded-xl border border-ink/10 bg-ink/[0.03] p-5">
           <p className="text-xs uppercase tracking-[0.15em] text-ink/40">Agent task</p>
+          <p className="mt-1 text-base leading-snug text-white/80">
+            {config.task ?? "No task yet"}
+          </p>
 
-          {/* Fixed dark "terminal" backdrop regardless of theme (bg-wave, not the
-              translucent bg-black/30 this used to be — that composited to a washed-out
-              gray over light mist) — so the text inside must stay fixed-light too,
-              not text-ink, which would flip to dark-on-dark in light theme. */}
-          <div className="rounded-lg border border-ink/10 bg-wave px-4 py-3">
-            <p className="text-[10px] uppercase tracking-wide text-white/30">question</p>
-            <p className="mt-1 text-base leading-snug text-white/80">
-              {config.task ?? "no task yet"}
-            </p>
+          <div className="flex items-stretch gap-5">
+            <div className="flex-[3]">
+              <TokensLoadedBar linesLoaded={config.linesLoaded} isLight={isLight} />
+            </div>
+
+            <AnimatePresence>
+              {config.showPayoff && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className="flex-[2] rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-3 py-2"
+                >
+                  <p className={`font-mono text-3xl font-semibold ${isLight ? "text-emerald-700" : "text-emerald-300"}`}>
+                    {SAVINGS_PCT}%
+                  </p>
+                  <p className={`mt-1 text-sm ${isLight ? "text-emerald-800/90" : "text-emerald-300/80"}`}>
+                    less loaded for the same answer
+                  </p>
+                  <p className={`mt-1.5 font-mono text-xs ${isLight ? "text-emerald-800/70" : "text-emerald-300/60"}`}>
+                    {MONOLITH_TOKENS.toLocaleString()} → {FULL_TRAVERSAL_TOKENS.toLocaleString()} tokens
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-
-          <TokensLoadedBar linesLoaded={config.linesLoaded} isLight={isLight} />
-
-          <AnimatePresence>
-            {config.showPayoff && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.15 }}
-                className="rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3"
-              >
-                <p className={`font-mono text-3xl font-semibold ${isLight ? "text-emerald-700" : "text-emerald-300"}`}>
-                  {SAVINGS_PCT}%
-                </p>
-                <p className={`mt-1 text-sm ${isLight ? "text-emerald-800/90" : "text-emerald-300/80"}`}>
-                  less loaded for the same answer
-                </p>
-                <p className={`mt-1.5 font-mono text-xs ${isLight ? "text-emerald-800/70" : "text-emerald-300/60"}`}>
-                  {MONOLITH_TOKENS.toLocaleString()} → {FULL_TRAVERSAL_TOKENS.toLocaleString()} tokens
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </div>
     </SceneChrome>

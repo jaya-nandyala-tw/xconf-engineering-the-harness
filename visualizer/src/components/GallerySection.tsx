@@ -28,6 +28,7 @@ export function GallerySection({ group, groupIndex, activeItemIndex, onHoverItem
           </span>
           <h2 className="text-base font-semibold text-ink/85">{section.title}</h2>
           <span className="text-xs uppercase tracking-[0.15em] text-ink/30">{sectionTimeLabel(section)}</span>
+          <span className="text-xs uppercase tracking-[0.15em] text-ink/30">· {section.presenter}</span>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-3">

@@ -210,9 +210,14 @@ function stateTone(state: RepoState, isLight: boolean): { border: string; bg: st
   }
 }
 
+// The tail lives on the bubble itself — a real, always-correct anchor point — instead of
+// a separate connector line hanging in the gap above the cards with nothing above it to
+// visibly hang from. It points generically down at "what follows," not at any one card:
+// the bubble is centered over the whole row, so a line claiming to trace to one specific
+// repo would be pointing somewhere it doesn't actually originate from.
 function RequestBubble({ text }: { text: string | null }) {
   return (
-    <div className="flex h-11 items-center">
+    <div className="flex h-12 items-center">
       <AnimatePresence mode="wait">
         {text && (
           <motion.div
@@ -221,10 +226,18 @@ function RequestBubble({ text }: { text: string | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.3 }}
-            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-5 py-2.5 text-base text-ink/80"
+            className="relative rounded-xl border border-ink/10 bg-ink/[0.04] px-6 py-2.5 text-lg text-ink/80"
           >
             <span className="mr-2 font-mono text-xs uppercase tracking-wide text-ink/40">request</span>
             {text}
+            {/* A thin 1px border at low opacity (matching the bubble's own outline) all but
+                disappears at presentation scale/distance — a solid filled triangle instead
+                of a rotated bordered square reads clearly as "pointing down" from across a
+                room, not just up close. */}
+            <span
+              className="absolute left-1/2 top-full -translate-x-1/2 border-x-[8px] border-t-[9px] border-x-transparent border-t-ink/25"
+              aria-hidden
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -232,29 +245,32 @@ function RequestBubble({ text }: { text: string | null }) {
   );
 }
 
-// Local copy, before ai-kit exists — plain path, still on disk in this repo.
-function FolderRow({ type, path }: { type: FolderType; path: string }) {
+// Local copy, before ai-kit exists — plain path, still on disk in this repo. No separate
+// "SKILLS" type label: every path's first segment already names its folder type, so a
+// label would just repeat the first word and cost width that's better spent not
+// truncating the path itself.
+function FolderRow({ path }: { path: string }) {
   return (
-    <div className="flex items-center gap-1.5 overflow-hidden text-ink/75">
-      <Icon name="folder" className="h-3 w-3 shrink-0" />
-      <span className="shrink-0 text-[10px] uppercase tracking-wide">{type}</span>
-      <span className="truncate font-mono text-[10px] text-ink/55">{path}</span>
+    <div className="flex items-center gap-2 overflow-hidden text-ink/75">
+      <Icon name="folder" className="h-3.5 w-3.5 shrink-0" />
+      <span className="truncate font-mono text-xs text-ink/65">{path}</span>
     </div>
   );
 }
 
 // Once ai-kit holds the canonical copy, the four local folders are deleted from the
 // repo outright — this replaces the FolderRow list entirely, not a struck-through
-// remnant of it.
+// remnant of it. Kept to one short tag instead of repeating the same full sentence in
+// all 3 cards — SharedFoldersPanel above already spells out what moved where.
 function MovedNotice() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center gap-1.5 text-[11px] font-medium text-flamingo"
+      className="flex items-center gap-1.5 text-sm font-medium text-flamingo"
     >
-      <Icon name="folder" className="h-3.5 w-3.5 shrink-0" />
-      <span>skills, agents, specs, plans — deleted, moved to ai-kit</span>
+      <Icon name="folder" className="h-4 w-4 shrink-0" />
+      <span>→ ai-kit</span>
     </motion.div>
   );
 }
@@ -278,31 +294,41 @@ function RepoCard({
       layout
       animate={{ borderColor: tone.border, backgroundColor: tone.bg }}
       transition={{ type: "spring", stiffness: 160, damping: 22 }}
-      className="flex w-[240px] flex-col gap-2 rounded-2xl border-2 p-4"
+      className="flex w-[310px] flex-col gap-3 rounded-2xl border-2 p-5"
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[13px] font-semibold text-ink/85">{repo.name}</span>
-        <motion.span animate={{ color: tone.text }} className="text-base">
+        <span className="font-mono text-base font-semibold text-ink/85">{repo.name}</span>
+        <motion.span animate={{ color: tone.text }} className="text-lg">
           {tone.icon}
         </motion.span>
       </div>
-      <span className="text-[10px] uppercase tracking-wide text-ink/40">{repo.role}</span>
+      <span className="text-xs uppercase tracking-wide text-ink/40">{repo.role}</span>
       <AnimatePresence mode="popLayout">
         {docsShared ? (
           <MovedNotice key="moved" />
         ) : (
-          <motion.div key="local" layout className="flex flex-col gap-1">
+          <motion.div key="local" layout className="flex flex-col gap-1.5">
             {FOLDER_TYPES.map((type) => (
-              <FolderRow key={type} type={type} path={LOCAL_PATHS[repo.id][type]} />
+              <FolderRow key={type} path={LOCAL_PATHS[repo.id][type]} />
             ))}
           </motion.div>
         )}
       </AnimatePresence>
       <motion.div
         animate={{ borderColor: tone.border, color: tone.text }}
-        className="rounded-lg border px-2.5 py-1.5 font-mono text-xs"
+        className="overflow-hidden rounded-lg border px-3 py-2 font-mono text-sm"
       >
-        discount.{field}
+        {/* Keyed on field so the exact value that just changed — the whole point of the
+            demo — gets a bright flash-to-settle instead of quietly tweening color like
+            the rest of the card. */}
+        <motion.span
+          key={field}
+          initial={{ color: "#facc15" }}
+          animate={{ color: tone.text }}
+          transition={{ duration: 0.7 }}
+        >
+          discount.{field}
+        </motion.span>
       </motion.div>
     </motion.div>
   );
@@ -317,12 +343,12 @@ function SharedFoldersPanel() {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="grid w-full grid-cols-2 gap-x-4 gap-y-1.5 rounded-xl border border-flamingo/40 bg-flamingo/10 px-4 py-3 sm:grid-cols-4"
+      className="grid w-full grid-cols-2 gap-x-5 gap-y-2 rounded-xl border border-flamingo/40 bg-flamingo/10 px-5 py-3 sm:grid-cols-4"
     >
       {FOLDER_TYPES.map((type) => (
-        <div key={type} className="flex items-center gap-1.5 overflow-hidden text-flamingo">
-          <Icon name="folder" className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate font-mono text-[10px] font-medium">{SHARED_PATHS[type]}</span>
+        <div key={type} className="flex items-center gap-2 overflow-hidden text-flamingo">
+          <Icon name="folder" className="h-4 w-4 shrink-0" />
+          <span className="truncate font-mono text-xs font-medium">{SHARED_PATHS[type]}</span>
         </div>
       ))}
     </motion.div>
@@ -336,11 +362,11 @@ function AnalysisPanel({ isLight }: { isLight: boolean }) {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className={`w-full rounded-xl border border-violet-400/40 bg-violet-400/10 px-4 py-3 text-sm ${
+      className={`w-full rounded-xl border border-violet-400/40 bg-violet-400/10 px-5 py-3 text-base ${
         isLight ? "text-violet-900" : "text-violet-100"
       }`}
     >
-      <span className={`mr-2 font-mono text-[10px] uppercase tracking-wide ${toneText(isLight, "violet")}`}>
+      <span className={`mr-2 font-mono text-xs uppercase tracking-wide ${toneText(isLight, "violet")}`}>
         impact analysis
       </span>
       billing-service (owner) · checkout-service (consumer) · invoicing-service (consumer)
@@ -357,7 +383,7 @@ function GatePanel({ state, isLight }: { state: GateState; isLight: boolean }) {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0, borderColor: color }}
       exit={{ opacity: 0 }}
-      className="flex w-full items-center gap-2.5 rounded-xl border px-4 py-3 text-sm"
+      className="flex w-full items-center gap-3 rounded-xl border px-5 py-3 text-base"
       style={{ backgroundColor: approved ? "rgba(74,222,128,0.08)" : "rgba(167,139,250,0.08)" }}
     >
       <span style={{ color }}>{approved ? "✓" : "⏸"}</span>
@@ -367,6 +393,22 @@ function GatePanel({ state, isLight }: { state: GateState; isLight: boolean }) {
           : "3 repos affected — confirm before writing any code."}
       </span>
     </motion.div>
+  );
+}
+
+// A stub, not a functioning card — no folder rows, no field, no state of its own. Three
+// repos already makes the owner/2-consumers point; this exists purely so the audience
+// doesn't read "three" as "the whole blast radius" when a real org has many more.
+// No explicit height here — the row is items-stretch, which only stretches flex items
+// whose cross-size is the auto *keyword*; an explicit height (even h-full/100%) opts a
+// child out of that and falls back to its own content height instead. Leaving height
+// unset is what lets this track whatever height the real cards land on that beat.
+function GhostRepoCard() {
+  return (
+    <div className="flex w-[240px] flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-ink/20 p-5 text-center">
+      <span className="text-3xl text-ink/30">+9</span>
+      <span className="text-xs uppercase tracking-wide text-ink/35">more repos</span>
+    </div>
   );
 }
 
@@ -381,7 +423,7 @@ function Callout({ tone, isLight, children }: { tone: "red" | "green"; isLight: 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className={`rounded-lg border px-6 py-3 text-lg ${cls}`}
+      className={`rounded-lg border px-7 py-3 text-xl ${cls}`}
     >
       {children}
     </motion.div>
@@ -404,7 +446,7 @@ export function WorkspaceWrapper() {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full max-w-4xl flex-col items-center gap-6">
+      <div className="flex w-full max-w-[1320px] flex-col items-center gap-5">
         <RequestBubble text={config.request} />
 
         {/* ai-kit wraps the repos — a single bordered container the 3 repo cards render
@@ -428,8 +470,8 @@ export function WorkspaceWrapper() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-start gap-1 self-start"
               >
-                <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-flamingo">ai-kit</span>
-                <span className="font-mono text-[10px] text-ink/45">
+                <span className="font-mono text-sm uppercase tracking-[0.2em] text-flamingo">ai-kit</span>
+                <span className="font-mono text-xs text-ink/45">
                   .gitignore: billing-service/, checkout-service/, invoicing-service/
                 </span>
               </motion.div>
@@ -442,7 +484,7 @@ export function WorkspaceWrapper() {
             {config.gateState && <GatePanel key="gate" state={config.gateState} isLight={isLight} />}
           </AnimatePresence>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-stretch gap-6">
             {REPOS.map((repo) => (
               <RepoCard
                 key={repo.id}
@@ -453,6 +495,7 @@ export function WorkspaceWrapper() {
                 isLight={isLight}
               />
             ))}
+            <GhostRepoCard />
           </div>
         </motion.div>
 

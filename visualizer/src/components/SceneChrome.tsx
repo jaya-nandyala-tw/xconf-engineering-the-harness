@@ -22,6 +22,12 @@ interface SceneChromeProps {
   // column. Only Context Rot uses this today; omitting it keeps every other scene's
   // layout exactly as before.
   sidebar?: ReactNode;
+  // Optional full-bleed layer behind header/main/footer, spanning the whole h-screen
+  // w-screen root — for scenes whose diagram is an immersive backdrop rather than a
+  // boxed element inside `main` (e.g. Nested Layers' zoom). Layered at z-0 under the
+  // chrome column (z-10) so header/caption/beat-indicator text stays readable on top.
+  // Only Nested Layers uses this today; omitting it keeps every other scene unchanged.
+  background?: ReactNode;
   // Width of the sidebar wrapper, as a Tailwind width class. Defaults to the original
   // fixed w-80 so every existing consumer (e.g. ContextRotProblem) renders unchanged —
   // only scenes that explicitly opt in get a different width.
@@ -45,13 +51,19 @@ export function SceneChrome({
   children,
   sidebar,
   sidebarClassName = "w-80",
+  background,
 }: SceneChromeProps) {
   const { isLight } = useTheme();
   const { isPresenterMode } = usePresentationMode();
 
   return (
     <div className="relative flex h-screen w-screen bg-surface text-ink overflow-hidden">
-      <div className="flex h-full min-w-0 flex-1 flex-col">
+      {background && (
+        <div className="absolute inset-0 z-0">
+          <AnimatePresence>{background}</AnimatePresence>
+        </div>
+      )}
+      <div className="relative z-10 flex h-full min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between px-8 pt-6 text-xs uppercase tracking-[0.2em] text-ink/40">
           <Link to="/" className="flex items-center gap-3 opacity-90 transition-opacity hover:opacity-100">
             <img src={isLight ? thoughtworksLogoDark : thoughtworksLogoLight} alt="Thoughtworks" className="h-7 w-auto" />

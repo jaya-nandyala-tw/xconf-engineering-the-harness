@@ -81,7 +81,7 @@ export function SlidePlayer() {
   if (!item) return <Navigate to="/" replace />;
   if (item.kind === "interactive") return <Navigate to={item.route} replace />;
 
-  return <StaticSlidePlayer item={item} />;
+  return <StaticSlidePlayer key={item.id} item={item} />;
 }
 
 function StaticSlidePlayer({ item }: { item: StaticDeckItem }) {

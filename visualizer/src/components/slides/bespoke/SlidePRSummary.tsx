@@ -28,27 +28,27 @@ const PR = {
 };
 
 function SectionLabel({ children }: { children: string }) {
-  return <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/35">{children}</p>;
+  return <p className="text-sm font-semibold uppercase tracking-[0.2em] text-ink/35">{children}</p>;
 }
 
 export function SlidePRSummary({ content }: { content: StatementContent }) {
   return (
-    <div className="flex w-full max-w-5xl flex-col items-center gap-8 text-center">
+    <div className="flex w-full max-w-6xl flex-col items-center gap-8 text-center">
       <div>
         {content.eyebrow && <p className="text-base uppercase tracking-[0.3em] text-ink/40">{content.eyebrow}</p>}
-        <h1 className="font-display mt-2 text-5xl font-bold text-ink">{content.title}</h1>
+        <h1 className="font-display mt-2 text-6xl font-bold text-ink">{content.title}</h1>
       </div>
 
       <div className="w-full overflow-hidden rounded-2xl border border-ink/10 bg-ink/[0.03] text-left">
-        <div className="border-b border-ink/10 px-6 py-4">
-          <p className="font-display text-lg font-bold text-ink">{PR.title}</p>
-          <p className="mt-1 text-sm text-ink/40">{PR.meta}</p>
+        <div className="border-b border-ink/10 px-8 py-5">
+          <p className="font-display text-2xl font-bold text-ink">{PR.title}</p>
+          <p className="mt-1 text-base text-ink/40">{PR.meta}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-x-8 gap-y-5 px-6 py-5">
-          <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-1">
+        <div className="grid grid-cols-2 gap-x-10 gap-y-6 px-8 py-6">
+          <div className="col-span-2 flex flex-wrap gap-x-6 gap-y-1">
             {PR.context.map((line) => (
-              <code key={line} className="text-xs text-ink/40">
+              <code key={line} className="text-sm text-ink/40">
                 {line}
               </code>
             ))}
@@ -56,14 +56,14 @@ export function SlidePRSummary({ content }: { content: StatementContent }) {
 
           <div className="col-span-2">
             <SectionLabel>Summary</SectionLabel>
-            <p className="mt-1.5 text-base leading-snug text-ink/85">{PR.summary}</p>
+            <p className="mt-2 text-lg leading-snug text-ink/85">{PR.summary}</p>
           </div>
 
           <div>
             <SectionLabel>Changes</SectionLabel>
-            <ul className="mt-1.5 flex flex-col gap-1.5">
+            <ul className="mt-2 flex flex-col gap-2">
               {PR.changes.map((change) => (
-                <li key={change} className="text-sm leading-snug text-ink/70">
+                <li key={change} className="text-base leading-snug text-ink/70">
                   {change}
                 </li>
               ))}
@@ -72,9 +72,9 @@ export function SlidePRSummary({ content }: { content: StatementContent }) {
 
           <div>
             <SectionLabel>AC Coverage</SectionLabel>
-            <div className="mt-1.5 flex flex-col gap-1.5">
+            <div className="mt-2 flex flex-col gap-2">
               {PR.acCoverage.map((row) => (
-                <div key={row.ac} className="flex items-baseline gap-2 text-sm">
+                <div key={row.ac} className="flex items-baseline gap-2 text-base">
                   <span className="shrink-0 font-mono text-ink/50">{row.ac}</span>
                   <span className="truncate text-ink/70">{row.test}</span>
                   <span className="ml-auto shrink-0 font-semibold text-jade">{row.status}</span>
@@ -85,16 +85,16 @@ export function SlidePRSummary({ content }: { content: StatementContent }) {
 
           <div>
             <SectionLabel>Risk</SectionLabel>
-            <p className="mt-1.5 text-sm leading-snug text-ink/70">
+            <p className="mt-2 text-base leading-snug text-ink/70">
               <span className="font-semibold text-turmeric">{PR.risk.level}</span> — {PR.risk.note}
             </p>
           </div>
 
           <div>
             <SectionLabel>Reviewer Checklist</SectionLabel>
-            <ul className="mt-1.5 flex flex-col gap-1.5">
+            <ul className="mt-2 flex flex-col gap-2">
               {PR.checklist.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm leading-snug text-ink/70">
+                <li key={item} className="flex items-start gap-2 text-base leading-snug text-ink/70">
                   <span className="text-jade">✓</span>
                   {item}
                 </li>
@@ -104,7 +104,7 @@ export function SlidePRSummary({ content }: { content: StatementContent }) {
         </div>
       </div>
 
-      <p className="text-base text-ink/40">Same 6 sections, every time — traceable, not just a diff.</p>
+      <p className="text-2xl text-ink/50">Same 6 sections, every time — traceable, not just a diff.</p>
     </div>
   );
 }

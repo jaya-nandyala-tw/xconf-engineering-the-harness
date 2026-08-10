@@ -30,12 +30,12 @@ function DiffBar({ additions, deletions }: { additions: number; deletions: numbe
   const greenBlocks = total === 0 ? 0 : Math.max(1, Math.min(4, Math.round((additions / total) * 5)));
   const redBlocks = 5 - greenBlocks;
   return (
-    <div className="flex shrink-0 gap-0.5">
+    <div className="flex shrink-0 gap-1">
       {Array.from({ length: greenBlocks }).map((_, i) => (
-        <span key={`g${i}`} className="h-2.5 w-2.5 rounded-[2px] bg-jade" />
+        <span key={`g${i}`} className="h-3 w-3 rounded-[2px] bg-jade" />
       ))}
       {Array.from({ length: redBlocks }).map((_, i) => (
-        <span key={`r${i}`} className="h-2.5 w-2.5 rounded-[2px] bg-flamingo" />
+        <span key={`r${i}`} className="h-3 w-3 rounded-[2px] bg-flamingo" />
       ))}
     </div>
   );
@@ -43,21 +43,21 @@ function DiffBar({ additions, deletions }: { additions: number; deletions: numbe
 
 export function SlidePRDiff({ content }: { content: StatementContent }) {
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-8 text-center">
+    <div className="flex w-full max-w-6xl flex-col items-center gap-8 text-center">
       <div>
         {content.eyebrow && <p className="text-base uppercase tracking-[0.3em] text-ink/40">{content.eyebrow}</p>}
-        <h1 className="font-display mt-2 text-5xl font-bold text-ink">{content.title}</h1>
+        <h1 className="font-display mt-2 text-6xl font-bold text-ink">{content.title}</h1>
       </div>
 
       <div className="w-full overflow-hidden rounded-2xl border border-ink/10 bg-ink/[0.03] text-left">
-        <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-6 py-4">
+        <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-8 py-5">
           <div className="min-w-0">
-            <p className="font-display truncate text-lg font-bold text-ink">
+            <p className="font-display truncate text-2xl font-bold text-ink">
               feat: rewrite auth, billing, and onboarding flows
             </p>
-            <p className="mt-1 text-sm text-ink/40">#482 opened by an agent · {TOTAL_FILES} files changed</p>
+            <p className="mt-1 text-base text-ink/40">#482 opened by an agent · {TOTAL_FILES} files changed</p>
           </div>
-          <div className="flex shrink-0 items-center gap-3 font-mono text-base">
+          <div className="flex shrink-0 items-center gap-4 font-mono text-xl">
             <span className="text-jade">+{TOTAL_ADDITIONS.toLocaleString()}</span>
             <span className="text-flamingo">−{TOTAL_DELETIONS.toLocaleString()}</span>
           </div>
@@ -67,10 +67,10 @@ export function SlidePRDiff({ content }: { content: StatementContent }) {
           {FILES.map((file) => (
             <div
               key={file.path}
-              className="flex items-center justify-between gap-4 border-b border-dotted border-ink/10 px-6 py-3"
+              className="flex items-center justify-between gap-4 border-b border-dotted border-ink/10 px-8 py-3.5"
             >
-              <code className="min-w-0 truncate text-sm text-ink/75">{file.path}</code>
-              <div className="flex shrink-0 items-center gap-3 font-mono text-xs text-ink/40">
+              <code className="min-w-0 truncate text-base text-ink/75">{file.path}</code>
+              <div className="flex shrink-0 items-center gap-4 font-mono text-sm text-ink/40">
                 <span>
                   +{file.additions} −{file.deletions}
                 </span>
@@ -78,11 +78,11 @@ export function SlidePRDiff({ content }: { content: StatementContent }) {
               </div>
             </div>
           ))}
-          <div className="px-6 py-3 text-sm italic text-ink/35">… and {MORE_FILES} more files</div>
+          <div className="px-8 py-3.5 text-base italic text-ink/35">… and {MORE_FILES} more files</div>
         </div>
       </div>
 
-      <p className="text-base text-ink/40">Somewhere in here is the one line that breaks production.</p>
+      <p className="text-2xl text-ink/50">Somewhere in here is the one line that breaks production.</p>
     </div>
   );
 }

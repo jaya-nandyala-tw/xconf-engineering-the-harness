@@ -34,16 +34,16 @@ const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
 // (sub-agents, progressive disclosure) still live inside their own section, preserving
 // scenes.ts's own native Problem -> Solution 1 -> Solution 2 grouping.
 export const SECTIONS: DeckSection[] = [
-  { id: 1, title: "Title + hook + agenda", presenter: "TBD", plannedMinutes: 1.5 },
-  { id: 2, title: "The core idea", presenter: "TBD", plannedMinutes: 3.5 },
-  { id: 3, title: "The problem, generalized", presenter: "TBD", plannedMinutes: 4 },
-  { id: 4, title: "Layer 1 — Guides", presenter: "TBD", plannedMinutes: 4 },
-  { id: 5, title: "Ask Before Deciding", presenter: "TBD", plannedMinutes: 2.5 },
-  { id: 6, title: "Layer 2 — Sensors", presenter: "TBD", plannedMinutes: 4 },
-  { id: 7, title: "Context rot — the open problem", presenter: "TBD", plannedMinutes: 4.5 },
-  { id: 8, title: "The Third Layer — Reviewability", presenter: "TBD", plannedMinutes: 2.5 },
-  { id: 9, title: "5 principles for any team", presenter: "TBD", plannedMinutes: 2.5 },
-  { id: 10, title: "Self-score + recap + close", presenter: "TBD", plannedMinutes: 1 },
+  { id: 1, title: "Title + hook + agenda", presenter: "Jaya + Prabina", plannedMinutes: 1.5 },
+  { id: 2, title: "The core idea", presenter: "Prabina", plannedMinutes: 3.5 },
+  { id: 3, title: "The problem, generalized", presenter: "Jaya", plannedMinutes: 4 },
+  { id: 4, title: "Layer 1 — Guides", presenter: "Jaya", plannedMinutes: 3 },
+  { id: 5, title: "Ask Before Deciding", presenter: "Prabina", plannedMinutes: 2.5 },
+  { id: 6, title: "Layer 2 — Sensors", presenter: "Prabina", plannedMinutes: 4 },
+  { id: 7, title: "Context rot — the open problem", presenter: "Jaya", plannedMinutes: 4.5 },
+  { id: 8, title: "The Third Layer — Reviewability", presenter: "Prabina", plannedMinutes: 3.5 },
+  { id: 9, title: "5 principles for any team", presenter: "Jaya", plannedMinutes: 2.5 },
+  { id: 10, title: "Self-score + recap + close", presenter: "Jaya + Prabina", plannedMinutes: 1 },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =
@@ -115,7 +115,6 @@ export interface VideoPlaceholderContent {
 export interface CloseContent {
   quote: string;
   recapLine: string;
-  qrUrl?: string;
   icon?: IconName;
 }
 
@@ -286,7 +285,7 @@ export const DECK: DeckItem[] = [
     navLabel: "Root cause",
     slideKind: "statement",
     content: {
-      title: "AI generated code quality = \n\nContext it gets + Feedback loops that correct it",
+      title: "AI generated code quality = \n\nThe context it's given + Feedback loops that correct it",
       highlightPlus: true,
     } satisfies StatementContent,
   },
@@ -341,7 +340,7 @@ export const DECK: DeckItem[] = [
     slideKind: "bespoke",
     content: {
       eyebrow: "Progressive disclosure",
-      title: "Load only what's relevant to the 5 files being touched.",
+      title: "Load only what's relevant.",
     } satisfies StatementContent,
     bespokeComponent: SlideFilePathMatch,
   },
@@ -353,7 +352,7 @@ export const DECK: DeckItem[] = [
     slideKind: "bespoke",
     content: {
       eyebrow: "Least privilege",
-      title: "A read-only agent literally cannot edit files.",
+      title: "A read-only agent cannot edit files.",
     } satisfies StatementContent,
     bespokeComponent: SlideAgentPersonas,
   },
@@ -646,7 +645,6 @@ export const DECK: DeckItem[] = [
       quote: "You can't prompt your way to a reliable AI coding agent. You have to engineer the harness around it.",
       recapLine:
         "Model plus harness. Guides before, sensors after, and make what comes out the other end auditable.",
-      qrUrl: undefined, // [PLACEHOLDER] fill in the takeaway-doc link before the talk
     } satisfies CloseContent,
   },
 ];
