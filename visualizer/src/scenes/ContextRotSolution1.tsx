@@ -136,7 +136,7 @@ const BEATS: BeatConfig[] = [
     visibleIds: AFTER_COLLAPSE_IDS,
     bubble: { role: "subagent", text: TURNS.summary.text },
     subagentPanel: "collapsed",
-    caption: "Sub-agent reports condensed summary of grep output and file contents to the main thread.",
+    caption: "Sub-agent reports a condensed summary back to the main thread.",
   },
   {
     visibleIds: AFTER_COLLAPSE_IDS,
@@ -151,7 +151,7 @@ const BEATS: BeatConfig[] = [
       role: "harness",
       text: "That's cause two handled — and it pulled the window back under 40% too.",
     },
-    caption: "Cause two: solved. Cause one — the whole spec file — is Solution 2, next: Progressive Disclosure.",
+    caption: "Cause two: solved. Cause one — the whole spec file — is next: Progressive Disclosure.",
   },
 ];
 

@@ -76,7 +76,7 @@ const BEATS: Beat[] = [
     request: REQUEST,
     active: null,
     loop: "none",
-    caption: "One story — but it touches three layers: the storefront UI, the checkout BFF, and the payments domain service.",
+    caption: "One story touches three layers: storefront UI, checkout BFF, payments service.",
   },
   // --- Phase 1: ANALYZE (Guides) ---
   {
@@ -129,7 +129,7 @@ const BEATS: Beat[] = [
     ],
     verdict: "pass",
     loop: "none",
-    caption: "The first phase gate: tests get written before any production code exists — and all of them fail. That's the correct verdict here.",
+    caption: "Phase gate one: tests are written before any code exists — and all of them fail. That's correct.",
   },
   // --- Phase 4: GREEN (Sensors, pass 1) ---
   {
@@ -144,7 +144,7 @@ const BEATS: Beat[] = [
     ],
     verdict: "pass",
     loop: "none",
-    caption: "The implementer writes just enough code to turn every test green — the tests themselves are never touched.",
+    caption: "Just enough code to turn every test green. The tests themselves never change.",
   },
   // --- Phase 5: REFACTOR (Sensors) ---
   {
@@ -163,7 +163,7 @@ const BEATS: Beat[] = [
     gapNote: "AC-4 (graceful decline when payments-service is unreachable) has no covering test.",
     verdict: "fail",
     loop: "none",
-    caption: "One more gate before a PR exists — coverage, lint, and types, all checked together. This time it finds a gap.",
+    caption: "One more gate before a PR exists — coverage, lint, types. This time it finds a gap.",
   },
   {
     request: REQUEST,
@@ -212,7 +212,7 @@ const BEATS: Beat[] = [
     outcomeLines: ["PR opened — AC coverage table across all 3 repos", "ready for human review"],
     loop: "none",
     caption:
-      "Two different loops, closed two different ways. A person confirmed the blast radius. The agent closed the coverage gap itself. Only then does it stop — for a human.",
+      "Two loops, closed two ways — a person confirmed the blast radius, the agent closed the coverage gap. Only then does it stop.",
   },
 ];
 

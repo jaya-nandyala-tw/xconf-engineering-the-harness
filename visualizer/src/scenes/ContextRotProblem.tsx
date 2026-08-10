@@ -116,7 +116,7 @@ const BEATS: BeatConfig[] = [
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead"],
     bubble: { role: "tool", text: TURNS.specRead.text },
     callout: "none",
-    caption: "Cause 1: one question about the rule, and the agent reads an entire spec file to answer it.",
+    caption: "Cause 1: one question about the rule, and the agent reads the entire spec file.",
   },
   {
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1"],

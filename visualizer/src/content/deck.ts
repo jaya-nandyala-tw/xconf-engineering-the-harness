@@ -377,7 +377,7 @@ export const DECK: DeckItem[] = [
       eyebrow: "Gate only what's irreversible",
       title: "Default everything else.",
       subtitle:
-        "A confirmation gate on repo scope and cross-service changes — the decisions you can't cheaply undo. Everything else resolves to a visible, explicit default instead of stopping the pipeline.",
+        "Gate the decisions you can't cheaply undo — repo scope, cross-service changes. Everything else gets a visible default.",
     } satisfies StatementContent,
   },
   {
@@ -391,7 +391,7 @@ export const DECK: DeckItem[] = [
       eyebrow: "Reduce hallucinations",
       title: "Ask Before Deciding",
       subtitle:
-        "Guide with input gates. A structured intake, a blocking gate, a visible default — applied before any codebase exists to constrain the agent.",
+        "A structured intake, a blocking gate, a visible default — all before any codebase exists.",
     } satisfies StatementContent,
   },
   {
@@ -433,7 +433,7 @@ export const DECK: DeckItem[] = [
       icon: "check",
       title: "Silent success, verbose failure.",
       subtitle:
-        "A sensor that passes produces zero output. A sensor that fails surfaces the exact error, so the agent can self-correct without a human in the loop.",
+        "A passing sensor produces zero output. A failing one surfaces the exact error, so the agent can self-correct.",
     } satisfies StatementContent,
   },
   {
@@ -446,7 +446,7 @@ export const DECK: DeckItem[] = [
       icon: "code",
       title: "Promote rules from docs into code.",
       subtitle:
-        "If you keep writing the same instruction in prose and the agent keeps ignoring it, escalate it to a linter or a structural test.",
+        "Writing the same instruction in prose and still getting ignored? Escalate it to a linter or a structural test.",
     } satisfies StatementContent,
   },
   {
@@ -458,8 +458,8 @@ export const DECK: DeckItem[] = [
     content: {
       icon: "lock",
       eyebrow: "Phase gates",
-      title: "An automatic pass/fail verdict before the next phase is even allowed to start.",
-      subtitle: "RED → GREEN → REFACTOR → REVIEW — “silent success, verbose failure” running as the actual pipeline, not just a design rule.",
+      title: "An automatic pass/fail verdict before the next phase can start.",
+      subtitle: "RED → GREEN → REFACTOR → REVIEW — “silent success, verbose failure” as the actual pipeline, not just a rule.",
     } satisfies StatementContent,
   },
   {
@@ -553,11 +553,11 @@ export const DECK: DeckItem[] = [
       heading: "The reviewer's problem",
       left: {
         label: "PRs at scale",
-        body: "Regularly exceed 20 files / 1,000+ lines. Code volume up 30%. (Salesforce Engineering, on their own data.)",
+        body: "Regularly exceeds 20 files / 1,000+ lines — code volume up 30%. (Salesforce Engineering)",
       },
       right: {
         label: "Review coverage",
-        body: "61% of agent-authored PRs get no recorded human review at all. (An Industry PR-review study)",
+        body: "61% of agent-authored PRs get no recorded human review. (Industry PR-review study)",
       },
     } satisfies TwoColumnContent,
   },
@@ -575,7 +575,7 @@ export const DECK: DeckItem[] = [
         "Rubber-stamped approvals over real reviews",
         "Feedback too delayed to act on",
         "All-or-nothing reverts on bundled changes",
-        "Rising incident and change-failure rates (Cortex, 2026 AI Benchmark Report)",
+        "Rising incident and change-failure rates (Cortex, 2026)",
       ],
       style: "bullet",
     } satisfies ListContent,
@@ -617,7 +617,7 @@ export const DECK: DeckItem[] = [
       items: [
         "Earn every rule. Every instruction should trace to a real past failure — hand-written, never auto-generated.",
         "Gate only the irreversible. Human confirmation on decisions with real blast radius; a sensible default everywhere else.",
-        "Ground the agent in what's real. Structure in, structure out, and reuse before you create — the codebase, and confirmed inputs, win over guesswork.",
+        "Ground the agent in what's real. Reuse before you create — the codebase and confirmed inputs win over guesswork.",
         "Sub-agents are single-purpose firewalls, not personas. Isolate context or responsibility, return a condensed result.",
         "Treat the harness as software. Version it, review it, refactor it when it drifts, and make what it produces auditable.",
       ],
@@ -654,7 +654,7 @@ export const DECK: DeckItem[] = [
       icon: "flag",
       quote: "You can't prompt your way to a reliable AI coding agent. You have to engineer the harness around it.",
       recapLine:
-        "Model plus harness. Guides before, sensors after, and make what comes out the other end auditable.",
+        "Model plus harness. Guides before, sensors after — and audit what comes out.",
     } satisfies CloseContent,
   },
 ];
