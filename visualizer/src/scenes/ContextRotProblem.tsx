@@ -128,7 +128,7 @@ const BEATS: BeatConfig[] = [
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1", "read1"],
     bubble: { role: "tool", text: TURNS.read1.text },
     callout: "none",
-    caption: "Reading one file costs real tokens. This one alone: 6,800.",
+    caption: "Reading this one file costs 6,800 tokens.",
   },
   {
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1", "read1", "testrun"],
@@ -140,13 +140,13 @@ const BEATS: BeatConfig[] = [
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1", "read1", "testrun", "read5"],
     bubble: { role: "tool", text: TURNS.read5.text },
     callout: "none",
-    caption: "One more file. Exploration just became the single largest category in the window.",
+    caption: "As file grows, exploration becomes the single largest category in the window.",
   },
   {
     visibleIds: ["sysPrompt", "toolDefs", "sys", "signal", "specRead", "grep1", "read1", "testrun", "read5", "read6"],
     bubble: { role: "tool", text: TURNS.read6.text },
     callout: "none",
-    caption: "Imports pull in three more files nobody asked for. That's the 40% line — crossed.",
+    caption: "Imports pull in three more irrelevant files. That's the 40% line — crossed.",
   },
   {
     visibleIds: [
@@ -205,8 +205,29 @@ const BEATS: BeatConfig[] = [
       text: "Two things filled this window that didn't need to. Both get their own fix, next.",
     },
     callout: "none",
-    caption:
-      '"Bigger context windows don\'t fix this — they just make the haystack bigger." Solution 1: sub-agents. Solution 2: progressive disclosure.',
+    caption: "Bigger context windows don't fix this — they just make the haystack bigger.",
+  },
+  {
+    visibleIds: [
+      "sysPrompt",
+      "toolDefs",
+      "sys",
+      "signal",
+      "specRead",
+      "grep1",
+      "read1",
+      "testrun",
+      "read5",
+      "read6",
+      "bug",
+      "t7",
+    ],
+    bubble: {
+      role: "harness",
+      text: "Two things filled this window that didn't need to. Both get their own fix, next.",
+    },
+    callout: "none",
+    caption: "Two fixes: sub-agents and progressive disclosure",
   },
 ];
 

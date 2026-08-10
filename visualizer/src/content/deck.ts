@@ -475,10 +475,11 @@ export const DECK: DeckItem[] = [
     coversSlides: ["S19", "S20"],
   },
   // The standalone S19 statement slide ("Bigger context windows don't fix this — they
-  // just make the haystack bigger.") was cut — it duplicated this scene's own final beat
-  // caption verbatim (ContextRotProblem.tsx's last BEATS entry), which already lands the
-  // same line and previews both solution scenes. coversSlides above already documented
-  // that this scene covers S19 — the standalone slide was the actual redundant copy.
+  // just make the haystack bigger.") was cut — it duplicated this scene's own second-to-last
+  // beat caption verbatim (ContextRotProblem.tsx's BEATS entries), which already lands the
+  // same line before the following beat previews both solution scenes. coversSlides above
+  // already documented that this scene covers S19 — the standalone slide was the actual
+  // redundant copy.
   // Sub-agents (Solution 1) and progressive disclosure (Solution 2) now live here, right
   // after the problem they fix, instead of inside Guides/Sensors — restoring scenes.ts's
   // own native Problem -> Solution 1 -> Solution 2 grouping. This is also a capstone: both

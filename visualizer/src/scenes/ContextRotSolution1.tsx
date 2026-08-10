@@ -121,7 +121,7 @@ const BEATS: BeatConfig[] = [
       role: "harness",
       text: "Two things filled this window that didn't need to. Let's fix the exploration first.",
     },
-    caption: "Picking up from the Problem: past 40%, exploration is the biggest category in the window.",
+    caption: "Continuing from the Problem: Exploration is past 40%.",
   },
   {
     visibleIds: FULL_BLOAT_IDS,
@@ -130,13 +130,13 @@ const BEATS: BeatConfig[] = [
       text: "Delegating the research instead — grep, file reads, test run all run in an isolated sub-context.",
     },
     subagentPanel: "shown",
-    caption: "A sub-agent does the same exploration off to the side. Its context is disposable — the main thread never sees it.",
+    caption: "Explore using a subagent. Keeps exploration context outside the main thread.",
   },
   {
     visibleIds: AFTER_COLLAPSE_IDS,
     bubble: { role: "subagent", text: TURNS.summary.text },
     subagentPanel: "collapsed",
-    caption: "It reports back one thing: a condensed summary. The grep output and file contents never touch the main thread.",
+    caption: "Sub-agent reports condensed summary of grep output and file contents to the main thread.",
   },
   {
     visibleIds: AFTER_COLLAPSE_IDS,
