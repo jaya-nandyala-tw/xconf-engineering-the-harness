@@ -176,6 +176,18 @@ export type DeckItem = StaticDeckItem | InteractiveDeckItem;
 // and the joint-talk collab docs (11-collab-doc-draft.md, 12-ai-workflows-potential-content.md).
 // Placeholders below ([PLACEHOLDER] / [BACKLOG]) mark content or scenes not yet built.
 export const DECK: DeckItem[] = [
+  // Loops on its own timers while the room settles in — → chains into the title slide
+  // whenever the presenter's ready, same as any other scene-to-scene transition.
+  {
+    kind: "interactive",
+    id: "confession-wall",
+    section: 1,
+    navLabel: "Confession Wall",
+    route: "/confession-wall",
+    sceneSlug: "confession-wall",
+    coversSlides: [],
+    notes: "Walk-in loop — let it run while people find seats. Advance to the title slide when you're ready to start.",
+  },
   {
     kind: "static",
     id: "s1",
@@ -295,7 +307,7 @@ export const DECK: DeckItem[] = [
     navLabel: "Root cause",
     slideKind: "statement",
     content: {
-      title: "AI generated code quality = \n\nThe context it's given + Feedback loops that correct it",
+      title: "AI generated code quality = The context it's given + Feedback loops that correct it",
       highlightPlus: true,
     } satisfies StatementContent,
   },
@@ -374,8 +386,8 @@ export const DECK: DeckItem[] = [
     slideKind: "statement",
     content: {
       icon: "lock",
-      eyebrow: "Gate only what's irreversible",
-      title: "Default everything else.",
+      eyebrow: "Default everything else",
+      title: "Gate only what's irreversible.",
       subtitle:
         "Gate the decisions you can't cheaply undo — repo scope, cross-service changes. Everything else gets a visible default.",
     } satisfies StatementContent,
@@ -422,45 +434,6 @@ export const DECK: DeckItem[] = [
     route: "/guides-sensors",
     sceneSlug: "guides-sensors",
     coversSlides: ["S16"],
-  },
-  {
-    kind: "static",
-    id: "s17a",
-    section: 6,
-    navLabel: "Rule 1",
-    slideKind: "statement",
-    content: {
-      icon: "check",
-      title: "Silent success, verbose failure.",
-      subtitle:
-        "A passing sensor produces zero output. A failing one surfaces the exact error, so the agent can self-correct.",
-    } satisfies StatementContent,
-  },
-  {
-    kind: "static",
-    id: "s17b",
-    section: 6,
-    navLabel: "Rule 2",
-    slideKind: "statement",
-    content: {
-      icon: "code",
-      title: "Promote rules from docs into code.",
-      subtitle:
-        "Writing the same instruction in prose and still getting ignored? Escalate it to a linter or a structural test.",
-    } satisfies StatementContent,
-  },
-  {
-    kind: "static",
-    id: "s17c",
-    section: 6,
-    navLabel: "Phase gates",
-    slideKind: "statement",
-    content: {
-      icon: "lock",
-      eyebrow: "Phase gates",
-      title: "An automatic pass/fail verdict before the next phase can start.",
-      subtitle: "RED → GREEN → REFACTOR → REVIEW — “silent success, verbose failure” as the actual pipeline, not just a rule.",
-    } satisfies StatementContent,
   },
   {
     kind: "static",
@@ -512,21 +485,23 @@ export const DECK: DeckItem[] = [
     sceneSlug: "progressive-disclosure",
     coversSlides: ["S19", "S20"],
   },
+  // Sub-agents and progressive disclosure both fix within-session bloat — this is the
+  // third, distinct failure mode: a big story spanning many sessions, where nothing
+  // carries the earlier decisions forward except an ever-growing (and eventually
+  // truncated/summarized) conversation. The fix is structural, not a bigger window.
   {
     kind: "static",
-    id: "s20",
+    id: "s20b",
     section: 7,
-    navLabel: "Context rot recap",
-    slideKind: "table",
+    navLabel: "Steering log",
+    slideKind: "statement",
     content: {
-      heading: "Context rot — 3 failure modes",
-      columns: ["Failure mode", "One-line mitigation"],
-      rows: [
-        ["Long-horizon drift", "Scoped, persistent memory instead of one ever-growing session"],
-        ["Stale specs", "Diff-based refresh tied to code changes, not calendar-based"],
-        ["Self-verification bias", "Computational sensors override the agent's own “I'm done” claim"],
-      ],
-    } satisfies TableContent,
+      icon: "folder",
+      eyebrow: "Long-horizon drift",
+      title: "Write every steering decision back into the plan.",
+      subtitle:
+        "Decisions and resolved gaps get persisted to the plan file, not the session — so a long story hands off across sessions without drifting.",
+    } satisfies StatementContent,
   },
   // Standalone third layer — sensors catching a mistake doesn't help if nobody can
   // review what's left, so this earns its own chapter (`section: 8`) between Context rot
@@ -606,6 +581,18 @@ export const DECK: DeckItem[] = [
   },
   {
     kind: "static",
+    id: "divider-principles",
+    section: 9,
+    navLabel: "Section: 5 principles",
+    slideKind: "divider",
+    content: {
+      title: "Two projects. One set of rules.",
+      subtitle: "Everything so far, distilled into five principles.",
+      accent: "flamingo",
+    } satisfies DividerContent,
+  },
+  {
+    kind: "static",
     id: "s21",
     section: 9,
     navLabel: "5 principles",
@@ -615,11 +602,11 @@ export const DECK: DeckItem[] = [
       heading: "5 principles for any team",
       subheading: "Merged from both projects",
       items: [
-        "Earn every rule. Every instruction should trace to a real past failure — hand-written, never auto-generated.",
-        "Gate only the irreversible. Human confirmation on decisions with real blast radius; a sensible default everywhere else.",
-        "Ground the agent in what's real. Reuse before you create — the codebase and confirmed inputs win over guesswork.",
-        "Sub-agents are single-purpose firewalls, not personas. Isolate context or responsibility, return a condensed result.",
-        "Treat the harness as software. Version it, review it, refactor it when it drifts, and make what it produces auditable.",
+        "Earn every rule. Trace it to a real past failure — hand-written, never auto-generated.",
+        "Gate only the irreversible. Confirm real blast radius; default everywhere else.",
+        "Ground the agent in what's real. Reuse before you create — the codebase over guesswork.",
+        "Sub-agents are firewalls, not personas. Isolate context, return a condensed result.",
+        "Treat the harness as software: version it, review it, refactor it, audit its output.",
       ],
       style: "numbered",
     } satisfies ListContent,

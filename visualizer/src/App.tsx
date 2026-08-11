@@ -10,6 +10,7 @@ import { NestedLayers } from "./scenes/NestedLayers";
 import { GuidesSensorsPipeline } from "./scenes/GuidesSensorsPipeline";
 import { WorkspaceWrapper } from "./scenes/WorkspaceWrapper";
 import { GreenfieldIntake } from "./scenes/GreenfieldIntake";
+import { ConfessionWall } from "./scenes/ConfessionWall";
 import { usePresentationRouteSync } from "./lib/usePresentationRouteSync";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
       <Route path="/guides-sensors" element={<GuidesSensorsPipeline />} />
       <Route path="/workspace-wrapper" element={<WorkspaceWrapper />} />
       <Route path="/input-collection-gate" element={<GreenfieldIntake />} />
+      <Route path="/confession-wall" element={<ConfessionWall />} />
     </Routes>
   );
 }

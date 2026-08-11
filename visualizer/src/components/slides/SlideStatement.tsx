@@ -18,15 +18,26 @@ function Clause({ text }: { text: string }) {
   );
 }
 
-// "A + B" statements (e.g. S8's root-cause line) stack as three centered lines with
-// the "+" on its own line in flamingo, instead of wrapping as one dense paragraph.
+// "A = B + C" statements (e.g. S8's root-cause line) stack as centered lines with both
+// operators — "=" and "+" — on their own line in flamingo, instead of "=" trailing as
+// plain text at the end of clause A's last line.
 function PlusTitle({ title }: { title: string }) {
-  const parts = title.split(" + ");
+  const eqIndex = title.indexOf(" = ");
+  const lead = eqIndex !== -1 ? title.slice(0, eqIndex) : null;
+  const rest = eqIndex !== -1 ? title.slice(eqIndex + 3) : title;
+
+  const parts = rest.split(" + ");
   if (parts.length !== 2) {
     return <h1 className="font-display text-6xl font-bold leading-tight text-ink sm:text-7xl">{title}</h1>;
   }
   return (
     <h1 className="font-display flex flex-col items-center gap-3 text-5xl font-bold leading-tight text-ink sm:text-6xl">
+      {lead != null && (
+        <>
+          <Clause text={lead} />
+          <span className="text-flamingo text-6xl sm:text-7xl">=</span>
+        </>
+      )}
       <Clause text={parts[0]} />
       <span className="text-flamingo text-6xl sm:text-7xl">+</span>
       <Clause text={parts[1]} />
@@ -40,7 +51,7 @@ export function SlideStatement({ content }: { content: StatementContent }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex max-w-4xl flex-col items-center gap-6 text-center"
+      className="flex max-w-5xl flex-col items-center gap-6 text-center"
     >
       {content.icon && (
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-ink/15 bg-ink/[0.04] text-ink/70">

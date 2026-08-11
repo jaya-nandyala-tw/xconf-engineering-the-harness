@@ -234,7 +234,7 @@ function ContextBar({ visibleIds, isLight }: { visibleIds: string[]; isLight: bo
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <div className="flex w-full items-baseline justify-between text-[11px] uppercase tracking-wide">
+      <div className="flex w-full items-baseline justify-between text-sm uppercase tracking-wide">
         <span className={pastThreshold ? `font-semibold ${toneText(isLight, "orange")}` : "text-ink/35"}>
           {middleIds.length > 0
             ? `conversation & tool output (${middleIds.length}) — ${
@@ -300,7 +300,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
 // and each swatch is the segment's own border color so the key visually matches the bar.
 function ZoneLegend({ isLight }: { isLight: boolean }) {
   return (
-    <div className="flex flex-col items-end gap-1 text-[11px] text-ink/50">
+    <div className="flex flex-col items-end gap-1 text-xs text-ink/50">
       <LegendItem color={toneStyle("pinned", isLight).border} label="Pinned — system prompt, always attended" />
       <LegendItem color={toneStyle("recent", isLight).border} label="Recent — attended, but temporary" />
       <LegendItem color={toneStyle("middle", isLight).border} label='Past 40% — "lost in the middle"' />
@@ -318,9 +318,9 @@ function TokenCounter({ tokens, isLight }: { tokens: number; isLight: boolean })
     <div className="flex flex-col gap-1">
       <div className="flex items-baseline gap-3">
         <span className="font-mono text-3xl text-ink/90">{display.toLocaleString()}</span>
-        <span className="text-sm text-ink/40">tokens · ≈{pctLabel}% of a 250K window</span>
+        <span className="text-base text-ink/40">tokens · ≈{pctLabel}% of a 250K window</span>
       </div>
-      <p className={`text-xs ${isLight ? "text-orange-700/70" : "text-orange-300/60"}`}>
+      <p className={`text-sm ${isLight ? "text-orange-700/70" : "text-orange-300/60"}`}>
         the haystack: ≈{words.toLocaleString()} words (~{pages} pages) · the needle: one sentence about cookies
       </p>
     </div>
@@ -396,11 +396,11 @@ function ChatLogBubble({ bubble, isLatest, isLight }: { bubble: Bubble; isLatest
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-lg border px-3 py-2 text-[13px] leading-snug ${style.wrap} ${
-        style.mono ? "font-mono text-xs" : ""
+      className={`rounded-lg border px-3 py-2 text-[15px] leading-snug ${style.wrap} ${
+        style.mono ? "font-mono text-sm" : ""
       } ${isLatest ? "ring-1 ring-inset ring-ink/25" : ""}`}
     >
-      <span className="mr-1.5 font-mono text-[9px] uppercase tracking-wide opacity-50">{style.label}</span>
+      <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wide opacity-50">{style.label}</span>
       {bubble.text}
     </motion.div>
   );
@@ -416,7 +416,7 @@ function ChatLogPanel({ log, isLight }: { log: Bubble[]; isLight: boolean }) {
 
   return (
     <div className="flex h-full w-full flex-col gap-2 rounded-xl border border-ink/10 bg-ink/[0.03] p-4">
-      <p className="text-xs uppercase tracking-[0.15em] text-ink/40 shrink-0">Chat</p>
+      <p className="text-sm uppercase tracking-[0.15em] text-ink/40 shrink-0">Chat</p>
       <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         <AnimatePresence initial={false}>
           {log.map((b, i) => (
@@ -441,7 +441,7 @@ function SubAgentPanel({ state, isLight }: { state: "shown" | "collapsed"; isLig
           className="w-full rounded-2xl border-2 border-dashed border-violet-400/40 bg-violet-400/[0.04] p-4"
         >
           <div
-            className={`mb-2 flex items-center justify-between text-xs uppercase tracking-wide ${
+            className={`mb-2 flex items-center justify-between text-sm uppercase tracking-wide ${
               isLight ? "text-violet-700/80" : "text-violet-300/70"
             }`}
           >
@@ -488,12 +488,12 @@ function SubAgentPayoff({ isLight }: { isLight: boolean }) {
         <p className="font-mono text-2xl font-semibold text-ink/70 line-through decoration-red-400/60">
           {EXPLORATION_TOKENS.toLocaleString()}
         </p>
-        <p className="text-xs uppercase tracking-wide text-ink/40">without sub-agent</p>
+        <p className="text-sm uppercase tracking-wide text-ink/40">without sub-agent</p>
       </div>
       <span className={`text-2xl ${toneText(isLight, "emerald")}`}>→</span>
       <div className="text-center">
         <p className={`font-mono text-2xl font-semibold ${toneText(isLight, "emerald")}`}>{TURNS.summary.tokens}</p>
-        <p className={`text-xs uppercase tracking-wide ${isLight ? "text-emerald-800/80" : "text-emerald-300/70"}`}>
+        <p className={`text-sm uppercase tracking-wide ${isLight ? "text-emerald-800/80" : "text-emerald-300/70"}`}>
           with sub-agent
         </p>
       </div>
@@ -523,8 +523,8 @@ function ContextBudgetPanel({ visibleIds, isLight }: { visibleIds: string[]; isL
   return (
     <div className="flex h-full w-full flex-col gap-2.5 overflow-y-auto rounded-xl border border-ink/10 bg-ink/[0.03] p-4">
       <div className="flex items-baseline justify-between shrink-0">
-        <p className="text-xs uppercase tracking-[0.15em] text-ink/40">Context Budget</p>
-        <span className="font-mono text-xs text-ink/40">{total.toLocaleString()} tok</span>
+        <p className="text-sm uppercase tracking-[0.15em] text-ink/40">Context Budget</p>
+        <span className="font-mono text-sm text-ink/40">{total.toLocaleString()} tok</span>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -535,7 +535,7 @@ function ContextBudgetPanel({ visibleIds, isLight }: { visibleIds: string[]; isL
           const pct = total > 0 ? (tokens / total) * 100 : 0;
           return (
             <div key={category} className="flex flex-col gap-1">
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-xs">
                 <span className="text-ink/60">{meta.label}</span>
                 <span className="font-mono text-ink/50">{tokens.toLocaleString()}</span>
               </div>
@@ -573,6 +573,7 @@ export function ContextRotSolution1() {
       caption={config.caption}
       nextHref={nextHref}
       nextLabel={nextLabel}
+      sidebarClassName="w-[30%]"
       sidebar={
         <div className="flex h-full min-h-0 flex-col gap-3">
           <div className="min-h-0 flex-[7]">

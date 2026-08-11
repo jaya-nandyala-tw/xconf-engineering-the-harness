@@ -289,10 +289,10 @@ function StageNode({
         transition={{ type: "spring", stiffness: 160, damping: 22 }}
         className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl border px-2 text-center"
       >
-        <span className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: resolvedColor }}>
+        <span className="text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: resolvedColor }}>
           {label}
         </span>
-        {agent && <span className="font-mono text-[9px] text-ink/40">{agent}</span>}
+        {agent && <span className="font-mono text-[10px] text-ink/40">{agent}</span>}
         {dotColor && <span className="h-2 w-2 rounded-full" style={{ backgroundColor: dotColor }} />}
       </motion.div>
     </foreignObject>
@@ -376,7 +376,7 @@ function WorkflowDiagram({
 
   return (
     <div className="relative w-full overflow-x-auto rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-5 pt-9">
-      <span className="absolute left-7 top-3 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/35">
+      <span className="absolute left-7 top-3 font-mono text-xs uppercase tracking-[0.2em] text-ink/35">
         ai-workflows — 6-Phase Pipeline
       </span>
       <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto block overflow-visible">
@@ -491,7 +491,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             className="flex min-h-[152px] flex-col gap-3 rounded-2xl border border-ink/10 bg-ink/[0.02] p-5"
           >
             <span
-              className="text-xs font-semibold uppercase tracking-[0.15em]"
+              className="text-sm font-semibold uppercase tracking-[0.15em]"
               style={{ color: resolveStageColor(stage.color, isLight) }}
             >
               {stage.label}
@@ -501,7 +501,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
 
             {config.active === "analyze" && config.guideDetail && (
               <>
-                <ul className="flex flex-col gap-1 text-sm text-ink/70">
+                <ul className="flex flex-col gap-1 text-base text-ink/70">
                   {config.guideDetail.map((d) => (
                     <li key={d} className="flex items-center gap-2">
                       <span className="h-1 w-1 shrink-0 rounded-full bg-blue-300" />
@@ -519,7 +519,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
                   {config.repoTable.map((r) => (
                     <span
                       key={r.repo}
-                      className="rounded-full border border-ink/15 bg-ink/[0.03] px-3 py-1 font-mono text-xs text-ink/75"
+                      className="rounded-full border border-ink/15 bg-ink/[0.03] px-3 py-1 font-mono text-sm text-ink/75"
                     >
                       {r.repo} <span className="text-ink/40">· {r.role}</span>
                     </span>
@@ -528,7 +528,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
                 {config.confirmState && <ConfirmStateBadge state={config.confirmState} isLight={isLight} />}
                 {config.loopNote && (
                   <p
-                    className="text-sm leading-snug"
+                    className="text-base leading-snug"
                     style={{
                       color:
                         config.loop === "confirm-resume" ? (isLight ? "#0f766e" : "#86efac") : isLight ? "#5b21b6" : "#c4b5fd",
@@ -546,7 +546,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
                   <span className="text-xs uppercase tracking-wide text-ink/40">{config.filesLabel}</span>
                 )}
                 <ul
-                  className={`flex flex-col gap-1 font-mono text-xs leading-snug ${
+                  className={`flex flex-col gap-1 font-mono text-sm leading-snug ${
                     config.active === "red"
                       ? isLight
                         ? "text-red-800/80"

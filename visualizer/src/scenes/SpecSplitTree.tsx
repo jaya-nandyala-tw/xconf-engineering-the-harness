@@ -394,9 +394,6 @@ function TokensLoadedBar({ linesLoaded, isLight }: { linesLoaded: number; isLigh
       <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-ink/10">
         <motion.div className="h-full rounded-full bg-amber-400" style={{ width }} />
       </div>
-      <p className="mt-1.5 text-sm text-ink/30">
-        vs. {MONOLITH_TOKENS.toLocaleString()} tokens ({MONOLITH.lines.toLocaleString()} lines) if it stayed one file
-      </p>
     </div>
   );
 }
@@ -420,7 +417,39 @@ export function SpecSplitTree() {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full flex-col items-center gap-6">
+      <div className="flex w-full flex-col items-center gap-5">
+        {/* Sits above the tree now, kept short (one row for the question, the tokens bar
+            and payoff alongside it) so the tree below is the dominant thing on screen
+            instead of competing with a tall stacked panel for vertical space. */}
+        <div className="flex w-full max-w-5xl items-center gap-5 rounded-xl border border-ink/10 bg-ink/[0.03] px-5 py-3">
+          <div className="flex min-w-0 flex-[5] items-baseline gap-2.5">
+            <span className="shrink-0 text-xs uppercase tracking-[0.15em] text-ink/40">Agent task</span>
+            <span className="truncate text-base text-ink/80">{config.task ?? "No task yet"}</span>
+          </div>
+
+          <div className="flex-[3]">
+            <TokensLoadedBar linesLoaded={config.linesLoaded} isLight={isLight} />
+          </div>
+
+          <AnimatePresence>
+            {config.showPayoff && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="flex-[2] rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-3 py-2"
+              >
+                <p className={`font-mono text-2xl font-semibold ${isLight ? "text-emerald-700" : "text-emerald-300"}`}>
+                  {SAVINGS_PCT}%
+                </p>
+                <p className={`text-xs ${isLight ? "text-emerald-800/90" : "text-emerald-300/80"}`}>
+                  less loaded for the same answer
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         <div className="flex w-full items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait">
             {config.phase === "monolith" ? (
@@ -429,43 +458,6 @@ export function SpecSplitTree() {
               <SpecTree activeIds={activeIds} isLight={isLight} />
             )}
           </AnimatePresence>
-        </div>
-
-        {/* Sits below the tree now instead of beside it as a narrow tall sidebar — full
-            width means the three pieces (question, tokens bar, payoff) can sit in a row
-            instead of stacked, so the same content needs far less vertical height. */}
-        <div className="flex max-w-4xl flex-col gap-3 rounded-xl border border-ink/10 bg-ink/[0.03] p-5">
-          <p className="text-xs uppercase tracking-[0.15em] text-ink/40">Agent task</p>
-          <p className="mt-1 text-base leading-snug text-white/80">
-            {config.task ?? "No task yet"}
-          </p>
-
-          <div className="flex items-stretch gap-5">
-            <div className="flex-[3]">
-              <TokensLoadedBar linesLoaded={config.linesLoaded} isLight={isLight} />
-            </div>
-
-            <AnimatePresence>
-              {config.showPayoff && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.15 }}
-                  className="flex-[2] rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-3 py-2"
-                >
-                  <p className={`font-mono text-3xl font-semibold ${isLight ? "text-emerald-700" : "text-emerald-300"}`}>
-                    {SAVINGS_PCT}%
-                  </p>
-                  <p className={`mt-1 text-sm ${isLight ? "text-emerald-800/90" : "text-emerald-300/80"}`}>
-                    less loaded for the same answer
-                  </p>
-                  <p className={`mt-1.5 font-mono text-xs ${isLight ? "text-emerald-800/70" : "text-emerald-300/60"}`}>
-                    {MONOLITH_TOKENS.toLocaleString()} → {FULL_TRAVERSAL_TOKENS.toLocaleString()} tokens
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </div>
     </SceneChrome>

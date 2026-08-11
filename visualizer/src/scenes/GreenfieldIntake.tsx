@@ -114,11 +114,11 @@ function ChatLogBubble({ bubble, isLatest }: { bubble: Bubble; isLatest: boolean
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-lg border px-3 py-2 text-[13px] leading-snug ${roleStyle(bubble.role)} ${
+      className={`rounded-lg border px-3 py-2 text-[15px] leading-snug ${roleStyle(bubble.role)} ${
         isLatest ? "ring-1 ring-inset ring-ink/25" : ""
       }`}
     >
-      <span className="mr-1.5 font-mono text-[9px] uppercase tracking-wide opacity-50">{bubble.role}</span>
+      <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wide opacity-50">{bubble.role}</span>
       {bubble.lines.map((line, i) => (
         <span key={i} className="block">
           {line}
@@ -127,7 +127,7 @@ function ChatLogBubble({ bubble, isLatest }: { bubble: Bubble; isLatest: boolean
       {bubble.chips && (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {bubble.chips.map((chip) => (
-            <span key={chip} className="rounded-full border border-ink/20 px-2 py-0.5 text-[11px] text-ink/60">
+            <span key={chip} className="rounded-full border border-ink/20 px-2 py-0.5 text-xs text-ink/60">
               {chip}
             </span>
           ))}
@@ -147,7 +147,7 @@ function ChatLogPanel({ log }: { log: Bubble[] }) {
 
   return (
     <div className="flex h-full w-full flex-col gap-2 rounded-xl border border-ink/10 bg-ink/[0.03] p-4">
-      <p className="text-xs uppercase tracking-[0.15em] text-ink/40 shrink-0">Chat — story-analysis-agent</p>
+      <p className="text-sm uppercase tracking-[0.15em] text-ink/40 shrink-0">Chat — story-analysis-agent</p>
       <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         <AnimatePresence initial={false}>
           {log.map((b, i) => (
