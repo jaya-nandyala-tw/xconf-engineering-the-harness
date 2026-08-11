@@ -77,6 +77,10 @@ interface BeatConfig {
   pulseHarness?: boolean;
 }
 
+// Zooms out, not in: prompt (the thing everyone already recognizes) first, then pulls back
+// to reveal it's nested inside a context, and pulls back again to reveal the context itself
+// runs inside a harness — each step exposing the parent the previous layer's gaps actually
+// come from, instead of starting broad and narrowing into specifics.
 const BEATS: BeatConfig[] = [
   {
     showDiagram: false,
@@ -84,7 +88,7 @@ const BEATS: BeatConfig[] = [
   },
   {
     showDiagram: true,
-    focused: "harness",
+    focused: "prompt",
   },
   {
     showDiagram: true,
@@ -92,7 +96,7 @@ const BEATS: BeatConfig[] = [
   },
   {
     showDiagram: true,
-    focused: "prompt",
+    focused: "harness",
   },
   // {
   //   showDiagram: true,
@@ -276,8 +280,8 @@ export function NestedLayers() {
       <div
         className={
           config.showDiagram
-            ? "flex w-full max-w-3xl flex-col items-center justify-center gap-6 rounded-3xl bg-surface/70 px-8 py-10 text-center backdrop-blur-sm"
-            : "flex w-full max-w-3xl flex-col items-center justify-center gap-8"
+            ? "flex w-full max-w-2xl flex-col items-center justify-center gap-6 rounded-3xl bg-surface/70 px-6 py-6 text-center backdrop-blur-sm"
+            : "flex w-full max-w-2xl flex-col items-center justify-center gap-8"
         }
       >
         <AnimatePresence mode="wait">
