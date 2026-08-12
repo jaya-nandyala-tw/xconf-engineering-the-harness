@@ -21,7 +21,7 @@ export function Gallery() {
             <Link
               to={firstHref}
               onClick={() => setMode("slideshow")}
-              className="rounded-full bg-flamingo px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-90"
+              className="rounded-full bg-turmeric px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-90"
             >
               ▶ Audience View
             </Link>

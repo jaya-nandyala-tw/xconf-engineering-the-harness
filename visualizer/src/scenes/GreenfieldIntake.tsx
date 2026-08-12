@@ -100,7 +100,7 @@ const BEATS: BeatConfig[] = [
 ];
 
 function roleStyle(role: Role): string {
-  return role === "you" ? "border-ink/15 bg-ink/[0.04] text-ink/85" : "border-flamingo/30 bg-flamingo/10 text-flamingo";
+  return role === "you" ? "border-ink/15 bg-ink/[0.04] text-ink/85" : "border-turmeric/30 bg-turmeric/10 text-turmeric";
 }
 
 function buildChatLog(beats: BeatConfig[], uptoBeat: number): Bubble[] {
@@ -167,7 +167,7 @@ function Stepper({ activeStep }: { activeStep: Step }) {
           key={label}
           className={`flex-1 rounded-full border px-4 py-2 text-center text-sm font-medium transition-colors ${
             i === activeStep
-              ? "border-flamingo bg-flamingo text-white"
+              ? "border-turmeric bg-turmeric text-white"
               : i < activeStep
                 ? "border-jade/40 bg-jade/10 text-jade"
                 : "border-ink/15 text-ink/35"

@@ -324,7 +324,7 @@ function ContextBar({ visibleIds, isLight }: { visibleIds: string[]; isLight: bo
           the full 250K window, the "used" sliver is often too narrow to fit three
           proportionally-sized labels. Segment meaning comes from ZoneLegend's color key
           below instead; this line just carries the two numbers that actually change. */}
-      <div className="flex w-full items-baseline justify-between text-sm uppercase tracking-wide">
+      <div className="flex w-full flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 text-sm uppercase tracking-wide">
         <span className={pastThreshold ? `font-semibold ${toneText(isLight, "orange")}` : "text-ink/35"}>
           {middleIds.length > 0
             ? `conversation & tool output (${middleIds.length}) — ${
@@ -620,7 +620,7 @@ export function ContextRotProblem() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className={`rounded-lg border border-red-400/30 bg-red-400/10 px-6 py-3 text-xl ${toneText(isLight, "red")}`}
+              className="rounded-lg border border-turmeric/30 bg-turmeric/10 px-6 py-3 text-xl text-turmeric"
             >
               ✗ Re-implements with localStorage — the rule is buried, not recent, not pinned
             </motion.div>

@@ -234,7 +234,7 @@ function ContextBar({ visibleIds, isLight }: { visibleIds: string[]; isLight: bo
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <div className="flex w-full items-baseline justify-between text-sm uppercase tracking-wide">
+      <div className="flex w-full flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 text-sm uppercase tracking-wide">
         <span className={pastThreshold ? `font-semibold ${toneText(isLight, "orange")}` : "text-ink/35"}>
           {middleIds.length > 0
             ? `conversation & tool output (${middleIds.length}) — ${
@@ -485,7 +485,7 @@ function SubAgentPayoff({ isLight }: { isLight: boolean }) {
       className="flex items-center gap-6 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-6 py-4"
     >
       <div className="text-center">
-        <p className="font-mono text-2xl font-semibold text-ink/70 line-through decoration-red-400/60">
+        <p className="font-mono text-2xl font-semibold text-ink/70 line-through decoration-turmeric/60">
           {EXPLORATION_TOKENS.toLocaleString()}
         </p>
         <p className="text-sm uppercase tracking-wide text-ink/40">without sub-agent</p>

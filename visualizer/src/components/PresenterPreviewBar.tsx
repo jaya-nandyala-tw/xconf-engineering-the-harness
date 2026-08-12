@@ -54,7 +54,7 @@ export function PresenterPreviewBar({ currentBeat }: PresenterPreviewBarProps) {
   if (Math.abs(deltaSeconds) > ON_PACE_THRESHOLD_SECONDS) {
     if (deltaSeconds > 0) {
       paceLabel = `▲ ${formatMinSec(deltaSeconds)} behind`;
-      paceClass = "text-flamingo";
+      paceClass = "text-turmeric";
     } else {
       paceLabel = `▼ ${formatMinSec(-deltaSeconds)} ahead`;
       paceClass = "text-jade";
@@ -102,7 +102,7 @@ export function PresenterPreviewBar({ currentBeat }: PresenterPreviewBarProps) {
             <button
               type="button"
               onClick={() => openAudienceView(location.pathname, location.search)}
-              className="rounded-full border border-flamingo/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-flamingo transition-colors hover:border-flamingo/70"
+              className="rounded-full border border-turmeric/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-turmeric transition-colors hover:border-turmeric/70"
             >
               ▣ Open Audience View
             </button>
@@ -111,8 +111,8 @@ export function PresenterPreviewBar({ currentBeat }: PresenterPreviewBarProps) {
       </div>
 
       {noteBullets.length > 0 && (
-        <div className="mt-2.5 max-w-4xl rounded-lg border border-flamingo/25 bg-flamingo/[0.06] px-4 py-2.5">
-          <span className="mb-1 block font-semibold uppercase tracking-[0.15em] text-flamingo/70">
+        <div className="mt-2.5 max-w-4xl rounded-lg border border-turmeric/25 bg-turmeric/[0.06] px-4 py-2.5">
+          <span className="mb-1 block font-semibold uppercase tracking-[0.15em] text-turmeric/70">
             Speaker notes
           </span>
           {noteBullets.length === 1 ? (
@@ -121,7 +121,7 @@ export function PresenterPreviewBar({ currentBeat }: PresenterPreviewBarProps) {
             <ul className="flex flex-col gap-1">
               {noteBullets.map((point, i) => (
                 <li key={i} className="flex gap-2 text-sm leading-snug text-ink/80">
-                  <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-flamingo/60" />
+                  <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-turmeric/60" />
                   {point}
                 </li>
               ))}

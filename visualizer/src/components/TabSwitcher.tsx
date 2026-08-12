@@ -15,7 +15,7 @@ export function TabSwitcher() {
           end={tab.end}
           className={({ isActive }) =>
             `rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors ${
-              isActive ? "bg-flamingo text-white" : "text-ink/50 hover:text-ink/80"
+              isActive ? "bg-turmeric text-white" : "text-ink/50 hover:text-ink/80"
             }`
           }
         >

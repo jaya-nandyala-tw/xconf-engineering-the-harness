@@ -10,8 +10,8 @@ export function SlideTwoColumn({ content }: { content: TwoColumnContent }) {
           <p className="mt-4 text-2xl leading-snug text-ink/80">{content.left.body}</p>
         </div>
         <span className="font-display text-4xl text-ink/30">→</span>
-        <div className="flex-1 rounded-2xl border border-flamingo/40 bg-flamingo/10 p-9 text-center">
-          <p className="text-sm uppercase tracking-[0.25em] text-flamingo">{content.right.label}</p>
+        <div className="flex-1 rounded-2xl border border-turmeric/40 bg-turmeric/10 p-9 text-center">
+          <p className="text-sm uppercase tracking-[0.25em] text-turmeric">{content.right.label}</p>
           <p className="mt-4 text-2xl leading-snug text-ink/90">{content.right.body}</p>
         </div>
       </div>

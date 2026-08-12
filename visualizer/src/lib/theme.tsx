@@ -126,14 +126,13 @@ export function inkHex(isLight: boolean): string {
 // in light mode, so the state's meaning (color) stays intact and legible in both themes.
 // Literal class strings (not template-interpolated) so Tailwind's scanner picks them up —
 // same reasoning as lib/accent.ts's ACCENT_BG/TEXT/BORDER maps.
-export type ToneHue = "blue" | "emerald" | "orange" | "amber" | "red" | "violet";
+export type ToneHue = "blue" | "emerald" | "orange" | "amber" | "violet";
 
 const TONE_TEXT: Record<ToneHue, { dark: string; light: string }> = {
   blue: { dark: "text-blue-300", light: "text-blue-700" },
   emerald: { dark: "text-emerald-300", light: "text-emerald-700" },
   orange: { dark: "text-orange-300", light: "text-orange-700" },
   amber: { dark: "text-amber-300", light: "text-amber-700" },
-  red: { dark: "text-red-300", light: "text-red-700" },
   violet: { dark: "text-violet-300", light: "text-violet-700" },
 };
 

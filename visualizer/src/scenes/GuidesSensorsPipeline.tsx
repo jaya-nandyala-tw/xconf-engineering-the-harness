@@ -275,7 +275,7 @@ function StageNode({
 }) {
   const isActive = status === "active";
   const resolvedColor = resolveStageColor(color, isLight);
-  const dotColor = verdict ? (verdict === "pass" ? "#4ade80" : "#f87171") : undefined;
+  const dotColor = verdict ? (verdict === "pass" ? "#4ade80" : "#cc850a") : undefined;
 
   return (
     <foreignObject x={stageX(index)} y={ROW_Y} width={CARD_W} height={CARD_H}>
@@ -462,7 +462,7 @@ function VerdictBadge({ verdict, label, isLight }: { verdict: Verdict; label: st
   const tone =
     verdict === "pass"
       ? { bg: "rgba(52,211,153,0.16)", border: "rgba(52,211,153,0.6)", text: isLight ? "#0f766e" : "#86efac" }
-      : { bg: "rgba(248,113,113,0.16)", border: "rgba(248,113,113,0.65)", text: isLight ? "#b91c1c" : "#fca5a5" };
+      : { bg: "rgba(204,133,10,0.16)", border: "rgba(204,133,10,0.65)", text: isLight ? "#976207" : "#cc850a" };
   return (
     <span
       className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs"
@@ -548,9 +548,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
                 <ul
                   className={`flex flex-col gap-1 font-mono text-sm leading-snug ${
                     config.active === "red"
-                      ? isLight
-                        ? "text-red-800/80"
-                        : "text-red-300/80"
+                      ? "text-turmeric"
                       : isLight
                         ? "text-emerald-800/90"
                         : "text-emerald-300/85"
@@ -587,7 +585,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
               <div className="flex flex-col gap-2">
                 {config.gapFile ? (
                   <>
-                    <p className={`text-sm leading-snug ${isLight ? "text-red-800/90" : "text-red-300/85"}`}>
+                    <p className="text-sm leading-snug text-turmeric">
                       {config.gapFile} — {config.gapNote}
                     </p>
                     {config.verdict && <VerdictBadge verdict={config.verdict} label="coverage gap found" isLight={isLight} />}

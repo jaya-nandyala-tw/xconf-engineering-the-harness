@@ -1,6 +1,5 @@
 import type { ComponentType } from "react";
 import type { IconName } from "../components/slides/Icon";
-import { SlideFilePathMatch } from "../components/slides/bespoke/SlideFilePathMatch";
 import { SlideAgentPersonas } from "../components/slides/bespoke/SlideAgentPersonas";
 import { SlidePRDiff } from "../components/slides/bespoke/SlidePRDiff";
 import { SlidePRSummary } from "../components/slides/bespoke/SlidePRSummary";
@@ -24,7 +23,7 @@ export interface DeckSection {
 
 // Sapphire excluded — same teal family as the `wave` background, so it reads low-contrast
 // on the actual chrome (confirmed in review: section numbers and borders in it washed out).
-const ACCENT_CYCLE: Accent[] = ["flamingo", "jade", "turmeric", "amethyst"];
+const ACCENT_CYCLE: Accent[] = ["turmeric", "jade", "turmeric", "amethyst"];
 
 // Renumbered sequentially (1-10) to match final array/chronological order. "Make it
 // reviewable" is restored as its own standalone section (id 8, "The Third Layer —
@@ -77,7 +76,7 @@ export interface StatementContent {
   subtitle?: string;
   icon?: IconName;
   // When true, SlideStatement splits `title` on " + " and stacks the clauses on their
-  // own lines with the "+" as its own line in flamingo — for statements that are
+  // own lines with the "+" as its own line in turmeric — for statements that are
   // literally structured as "A + B" (e.g. S8's root-cause line).
   highlightPlus?: boolean;
 }
@@ -196,7 +195,7 @@ export const DECK: DeckItem[] = [
     route: "/confession-wall",
     sceneSlug: "confession-wall",
     coversSlides: [],
-    notes: "Walk-in loop — let it run while people find seats. Advance to the title slide when you're ready to start.",
+    notes: "Walk-in loop — let it run while people find seats. Advance to the title slide when you're ready to start. Confirm mic/camera sync before advancing — this venue's had streaming sync issues at past events.",
   },
   {
     kind: "static",
@@ -233,7 +232,7 @@ export const DECK: DeckItem[] = [
         },
       ],
     } satisfies PresentersContent,
-    notes: "Quick, don't over-read the bios verbatim — the room can read. Name-check both of you, then move.",
+    notes: "Quick, don't over-read the bios verbatim — the room can read. Name-check both of you, then move. Optional, if it fits: mention the ~30-repo AI platform work for a client (self-service infra automation) to ground the multi-repo problem as real, not hypothetical.",
   },
   {
     kind: "static",
@@ -242,7 +241,7 @@ export const DECK: DeckItem[] = [
     navLabel: "Hook",
     slideKind: "statement",
     content: {
-      title: "Who's had an AI assistant confidently ignore every convention on their team?",
+      title: "Who's had an AI assistant ignore their team's conventions?",
     } satisfies StatementContent,
     notes: "Actually pause for hands. This is the hook — let the recognition land before moving to the agenda.",
   },
@@ -420,19 +419,6 @@ export const DECK: DeckItem[] = [
       "Don't read every row — the room can read. Call out 2-3: global instructions, confirmation gates, and specs.",
       "Confirmation gates is the one that pays off in Workspace Wrapper — plant that connection now.",
     ],
-  },
-  {
-    kind: "static",
-    id: "s12",
-    section: 4,
-    navLabel: "Progressive disclosure",
-    slideKind: "bespoke",
-    content: {
-      eyebrow: "Progressive disclosure",
-      title: "Load only what's relevant.",
-    } satisfies StatementContent,
-    bespokeComponent: SlideFilePathMatch,
-    notes: "This is the same idea the Progressive Disclosure scene demos in full later — a quick preview, not the whole story yet.",
   },
   {
     kind: "static",
@@ -638,6 +624,7 @@ export const DECK: DeckItem[] = [
       subtitle:
         "Decisions and resolved gaps get persisted to the plan file, not the session — so a long story hands off across sessions without drifting.",
     } satisfies StatementContent,
+    notes: "The fix for long-horizon drift isn't a bigger context window — it's writing decisions to a persistent plan file instead of trusting the session to remember. One beat, then straight into the reviewability divider.",
   },
   // Standalone third layer — sensors catching a mistake doesn't help if nobody can
   // review what's left, so this earns its own chapter (`section: 8`) between Context rot
@@ -734,10 +721,11 @@ export const DECK: DeckItem[] = [
     navLabel: "Section: 5 principles",
     slideKind: "divider",
     content: {
-      title: "Two projects. One set of rules.",
+      title: "Different Projects. Same Rules",
       subtitle: "Everything so far, distilled into five principles.",
-      accent: "flamingo",
+      accent: "turmeric",
     } satisfies DividerContent,
+    notes: "This section was trimmed for time in rehearsal — keep it brisk, don't restore the cut detail. The credibility point: two unrelated projects converged on the same five rules independently — say that plainly.",
   },
   {
     kind: "static",
@@ -745,7 +733,6 @@ export const DECK: DeckItem[] = [
     section: 9,
     navLabel: "5 principles",
     slideKind: "list",
-    revealMode: "sequential",
     content: {
       heading: "5 principles for any team",
       subheading: "Merged from both projects",
@@ -758,8 +745,8 @@ export const DECK: DeckItem[] = [
       ],
       style: "numbered",
     } satisfies ListContent,
-    notes: "The synthesis of everything so far — merged from both projects, not five new ideas. Give each one a beat to land.",
-    beatNotes: [
+    notes: [
+      "The synthesis of everything so far — merged from both projects, not five new ideas. All five load at once now — read the room, then summarize the connections below rather than walking through them one at a time.",
       "Earn every rule — ties back to the seven primitives (S11): none of those exist without a real past failure behind them.",
       "Gate only the irreversible — this is S13b's punchline again, restated as a general principle.",
       "Ground the agent in what's real — this is the Input Collection Gate's whole premise.",
@@ -800,6 +787,6 @@ export const DECK: DeckItem[] = [
       recapLine:
         "Model plus harness. Guides before, sensors after — and audit what comes out.",
     } satisfies CloseContent,
-    notes: "Say the quote slowly, let it be the last full sentence of the talk. Thank the room after the recap line, not before it.",
+    notes: "Say the quote slowly, let it be the last full sentence of the talk. Thank the room after the recap line, not before it. Budget ~10 min for Q&A after this — leave time, don't run the close long.",
   },
 ];

@@ -11,7 +11,7 @@ export function SlideDivider({ content }: { content: DividerContent }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex w-full max-w-4xl flex-col items-center gap-6 text-center"
+      className="flex w-full max-w-5xl flex-col items-center gap-6 text-center"
     >
       <div className={`h-1.5 w-24 rounded-full ${ACCENT_BG[content.accent]}`} />
       <h1 className="font-display text-6xl font-bold leading-tight text-ink sm:text-7xl">{content.title}</h1>

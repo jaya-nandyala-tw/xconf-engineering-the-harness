@@ -4,7 +4,7 @@ import type { ListContent } from "../../content/deck";
 function Marker({ style, index }: { style: ListContent["style"]; index: number }) {
   if (style === "numbered") {
     return (
-      <span className="font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-flamingo text-lg font-bold text-white">
+      <span className="font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-turmeric text-lg font-bold text-white">
         {index + 1}
       </span>
     );

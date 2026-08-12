@@ -143,12 +143,12 @@ export function ConfessionWall() {
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
           <motion.div
             className="h-[75vmin] w-[75vmin] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(242,97,122,0.18), transparent 68%)" }}
+            style={{ background: "radial-gradient(circle, rgba(204,133,10,0.18), transparent 68%)" }}
             animate={{ scale: [1, 1.12, 1], opacity: [0.55, 0.9, 0.55] }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
           />
           <span
-            className="text-flamingo/[0.14] absolute top-[14vmin] left-[6vw] select-none font-display"
+            className="text-turmeric/[0.14] absolute top-[14vmin] left-[6vw] select-none font-display"
             style={{ fontSize: "34vmin", lineHeight: 1 }}
             aria-hidden
           >
@@ -183,7 +183,7 @@ export function ConfessionWall() {
                     entry than a centered pull-quote. */}
                 <p className="w-full font-display text-4xl leading-snug text-ink sm:text-[44px]">
                   {typedText}
-                  <span className="text-flamingo animate-pulse">▮</span>
+                  <span className="text-turmeric animate-pulse">▮</span>
                 </p>
 
                 <AnimatePresence>
@@ -195,7 +195,7 @@ export function ConfessionWall() {
                       className="flex w-full flex-col items-start gap-4"
                     >
                       <p className="w-full text-2xl leading-snug text-ink/70 flex items-start gap-2.5">
-                        <span className="rounded-full bg-flamingo h-7 px-3.5 min-w-[128px] py-1.5 mt-1 text-xs font-bold uppercase tracking-[0.15em] text-white">
+                        <span className="rounded-full bg-turmeric h-7 px-3.5 min-w-[128px] py-1.5 mt-1 text-xs font-bold uppercase tracking-[0.15em] text-white">
                           The Failure
                         </span>
                         {confession.failure}

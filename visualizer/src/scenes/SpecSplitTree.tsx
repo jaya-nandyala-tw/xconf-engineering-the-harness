@@ -354,7 +354,7 @@ function SpecTree({ activeIds, isLight }: { activeIds: Set<string>; isLight: boo
   );
 }
 
-function Monolith({ isLight }: { isLight: boolean }) {
+function Monolith() {
   return (
     <motion.div
       key="monolith"
@@ -362,17 +362,17 @@ function Monolith({ isLight }: { isLight: boolean }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.85 }}
       transition={{ duration: 0.45 }}
-      className="flex w-[360px] flex-col items-center gap-3 rounded-2xl border-2 border-red-400/40 bg-red-400/[0.06] px-8 py-10"
+      className="flex w-[360px] flex-col items-center gap-3 rounded-2xl border-2 border-turmeric/40 bg-turmeric/[0.06] px-8 py-10"
     >
-      <span className={`text-xs uppercase tracking-[0.2em] ${isLight ? "text-red-800/80" : "text-red-300/70"}`}>
+      <span className="text-xs uppercase tracking-[0.2em] text-turmeric">
         one giant file
       </span>
       <span className="font-mono text-lg text-ink/80">{MONOLITH.name}</span>
-      <span className={`font-mono text-5xl font-semibold ${isLight ? "text-red-700" : "text-red-300"}`}>
+      <span className="font-mono text-5xl font-semibold text-turmeric">
         {MONOLITH_TOKENS.toLocaleString()}
       </span>
-      <span className={`text-sm ${isLight ? "text-red-800/80" : "text-red-300/70"}`}>tokens — every flow, every time</span>
-      <span className={`text-xs ${isLight ? "text-red-800/70" : "text-red-300/40"}`}>
+      <span className="text-sm text-turmeric">tokens — every flow, every time</span>
+      <span className="text-xs text-turmeric/70">
         {MONOLITH.lines.toLocaleString()} lines
       </span>
     </motion.div>
@@ -452,7 +452,7 @@ export function SpecSplitTree() {
         <div className="flex w-full items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait">
             {config.phase === "monolith" ? (
-              <Monolith isLight={isLight} />
+              <Monolith />
             ) : (
               <SpecTree activeIds={activeIds} isLight={isLight} />
             )}

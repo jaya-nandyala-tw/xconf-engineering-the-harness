@@ -19,7 +19,7 @@ function Clause({ text }: { text: string }) {
 }
 
 // "A = B + C" statements (e.g. S8's root-cause line) stack as centered lines with both
-// operators — "=" and "+" — on their own line in flamingo, instead of "=" trailing as
+// operators — "=" and "+" — on their own line in turmeric, instead of "=" trailing as
 // plain text at the end of clause A's last line.
 function PlusTitle({ title }: { title: string }) {
   const eqIndex = title.indexOf(" = ");
@@ -35,11 +35,11 @@ function PlusTitle({ title }: { title: string }) {
       {lead != null && (
         <>
           <Clause text={lead} />
-          <span className="text-flamingo text-6xl sm:text-7xl">=</span>
+          <span className="text-turmeric text-6xl sm:text-7xl">=</span>
         </>
       )}
       <Clause text={parts[0]} />
-      <span className="text-flamingo text-6xl sm:text-7xl">+</span>
+      <span className="text-turmeric text-6xl sm:text-7xl">+</span>
       <Clause text={parts[1]} />
     </h1>
   );

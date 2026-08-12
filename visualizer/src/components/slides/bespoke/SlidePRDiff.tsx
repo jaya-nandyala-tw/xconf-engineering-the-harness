@@ -35,7 +35,7 @@ function DiffBar({ additions, deletions }: { additions: number; deletions: numbe
         <span key={`g${i}`} className="h-3 w-3 rounded-[2px] bg-jade" />
       ))}
       {Array.from({ length: redBlocks }).map((_, i) => (
-        <span key={`r${i}`} className="h-3 w-3 rounded-[2px] bg-flamingo" />
+        <span key={`r${i}`} className="h-3 w-3 rounded-[2px] bg-turmeric" />
       ))}
     </div>
   );
@@ -59,7 +59,7 @@ export function SlidePRDiff({ content }: { content: StatementContent }) {
           </div>
           <div className="flex shrink-0 items-center gap-4 font-mono text-xl">
             <span className="text-jade">+{TOTAL_ADDITIONS.toLocaleString()}</span>
-            <span className="text-flamingo">−{TOTAL_DELETIONS.toLocaleString()}</span>
+            <span className="text-turmeric">−{TOTAL_DELETIONS.toLocaleString()}</span>
           </div>
         </div>
 

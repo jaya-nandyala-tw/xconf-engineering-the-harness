@@ -177,7 +177,7 @@ const BEATS: Beat[] = [
   },
 ];
 
-// Violet/flamingo/green/red — same brand-accent family used across the rest of the
+// Violet/green/turmeric — same brand-accent family used across the rest of the
 // visualizer, none of them teal-adjacent, so every state stays legible on the wave bg.
 // Neutral's border/text are bumped a notch brighter than a typical "inactive" tone —
 // at true low-alpha they read as almost invisible against the wave background, and the
@@ -202,9 +202,9 @@ function stateTone(state: RepoState, isLight: boolean): { border: string; bg: st
       };
     case "drift":
       return {
-        border: "rgba(248,113,113,0.7)",
-        bg: "rgba(248,113,113,0.14)",
-        text: isLight ? "#b91c1c" : "#fca5a5",
+        border: "rgba(204,133,10,0.7)",
+        bg: "rgba(204,133,10,0.14)",
+        text: isLight ? "#976207" : "#cc850a",
         icon: "✗",
       };
   }
@@ -267,7 +267,7 @@ function MovedNotice() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center gap-1.5 text-sm font-medium text-flamingo"
+      className="flex items-center gap-1.5 text-sm font-medium text-turmeric"
     >
       <Icon name="folder" className="h-4 w-4 shrink-0" />
       <span>→ ai-kit</span>
@@ -343,10 +343,10 @@ function SharedFoldersPanel() {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="grid w-full grid-cols-2 gap-x-5 gap-y-2 rounded-xl border border-flamingo/40 bg-flamingo/10 px-5 py-3 sm:grid-cols-4"
+      className="grid w-full grid-cols-2 gap-x-5 gap-y-2 rounded-xl border border-turmeric/40 bg-turmeric/10 px-5 py-3 sm:grid-cols-4"
     >
       {FOLDER_TYPES.map((type) => (
-        <div key={type} className="flex items-center gap-2 overflow-hidden text-flamingo">
+        <div key={type} className="flex items-center gap-2 overflow-hidden text-turmeric">
           <Icon name="folder" className="h-4 w-4 shrink-0" />
           <span className="truncate font-mono text-xs font-medium">{SHARED_PATHS[type]}</span>
         </div>
@@ -415,7 +415,7 @@ function GhostRepoCard() {
 function Callout({ tone, isLight, children }: { tone: "red" | "green"; isLight: boolean; children: ReactNode }) {
   const cls =
     tone === "red"
-      ? `border-red-400/30 bg-red-400/10 ${toneText(isLight, "red")}`
+      ? "border-turmeric/30 bg-turmeric/10 text-turmeric"
       : `border-emerald-400/30 bg-emerald-400/10 ${toneText(isLight, "emerald")}`;
   return (
     <motion.div
@@ -455,8 +455,8 @@ export function WorkspaceWrapper() {
         <motion.div
           layout
           animate={{
-            borderColor: config.showWrapper ? "rgba(242,97,122,0.45)" : "rgba(255,255,255,0)",
-            backgroundColor: config.showWrapper ? "rgba(242,97,122,0.05)" : "rgba(255,255,255,0)",
+            borderColor: config.showWrapper ? (isLight ? "rgba(151,98,7,0.45)" : "rgba(204,133,10,0.45)") : "rgba(255,255,255,0)",
+            backgroundColor: config.showWrapper ? (isLight ? "rgba(151,98,7,0.05)" : "rgba(204,133,10,0.05)") : "rgba(255,255,255,0)",
           }}
           transition={{ type: "spring", stiffness: 120, damping: 22 }}
           className="flex flex-col items-center gap-4 rounded-[32px] border-2 p-6"
@@ -470,7 +470,7 @@ export function WorkspaceWrapper() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-start gap-1 self-start"
               >
-                <span className="font-mono text-sm uppercase tracking-[0.2em] text-flamingo">ai-kit</span>
+                <span className="font-mono text-sm uppercase tracking-[0.2em] text-turmeric">ai-kit</span>
                 <span className="font-mono text-xs text-ink/45">
                   .gitignore: billing-service/, checkout-service/, invoicing-service/
                 </span>
