@@ -91,7 +91,6 @@ const TRAVERSAL = ["index", "ws-approval", "escalation", "sla-matrix", "exceptio
 const cumulativeLines = (upToIndex: number) =>
   TRAVERSAL.slice(0, upToIndex + 1).reduce((sum, id) => sum + (LINES_BY_ID.get(id) ?? 0), 0);
 const FULL_TRAVERSAL_LINES = cumulativeLines(TRAVERSAL.length - 1);
-const FULL_TRAVERSAL_TOKENS = tokensFor(FULL_TRAVERSAL_LINES);
 const SAVINGS_PCT = Math.round((1 - FULL_TRAVERSAL_LINES / MONOLITH.lines) * 100);
 const TASK_QUESTION = "What's the SLA exception policy for a stuck approval?";
 
