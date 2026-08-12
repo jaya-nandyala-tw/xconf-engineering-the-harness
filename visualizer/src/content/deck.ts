@@ -32,17 +32,18 @@ const ACCENT_CYCLE: Accent[] = ["turmeric", "jade", "turmeric", "amethyst"];
 // Context rot (id 7) and the 5 principles recap (id 9). Context rot's two solution scenes
 // (sub-agents, progressive disclosure) still live inside their own section, preserving
 // scenes.ts's own native Problem -> Solution 1 -> Solution 2 grouping.
+
 export const SECTIONS: DeckSection[] = [
   { id: 1, title: "Title + hook + agenda", presenter: "Jaya + Prabina", plannedMinutes: 1.5 },
-  { id: 2, title: "The core idea", presenter: "Prabina", plannedMinutes: 3.5 },
-  { id: 3, title: "The problem, generalized", presenter: "Jaya", plannedMinutes: 4 },
-  { id: 4, title: "Layer 1 — Guides", presenter: "Jaya", plannedMinutes: 3 },
+  { id: 2, title: "The core idea", presenter: "Prabina", plannedMinutes: 3.0 },
+  { id: 3, title: "The problem, generalized", presenter: "Jaya", plannedMinutes: 3.5 },
+  { id: 4, title: "Layer 1 — Guides", presenter: "Jaya", plannedMinutes: 2.5 },
   { id: 5, title: "Ask Before Deciding", presenter: "Prabina", plannedMinutes: 2.5 },
-  { id: 6, title: "Layer 2 — Sensors", presenter: "Prabina", plannedMinutes: 4 },
-  { id: 7, title: "Context rot — the open problem", presenter: "Jaya", plannedMinutes: 4.5 },
+  { id: 6, title: "Layer 2 — Sensors", presenter: "Prabina", plannedMinutes: 5.0 },
+  { id: 7, title: "Context rot — the open problem", presenter: "Jaya", plannedMinutes: 5.0 },
   { id: 8, title: "The Third Layer — Reviewability", presenter: "Prabina", plannedMinutes: 3.5 },
-  { id: 9, title: "5 principles for any team", presenter: "Jaya", plannedMinutes: 2.5 },
-  { id: 10, title: "Self-score + recap + close", presenter: "Jaya + Prabina", plannedMinutes: 1 },
+  { id: 9, title: "5 principles for any team", presenter: "Jaya", plannedMinutes: 1.5 },
+  { id: 10, title: "Self-score + recap + close", presenter: "Jaya + Prabina", plannedMinutes: 2.0 },
 ].map((s, i) => ({ ...s, accent: ACCENT_CYCLE[i % ACCENT_CYCLE.length] }));
 
 export type SlideKind =
