@@ -99,7 +99,7 @@ export function SceneChrome({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
-                  className="font-display text-5xl font-bold leading-tight text-ink/90"
+                  className="font-display text-3xl font-bold leading-tight text-ink/90"
                 >
                   {caption}
                 </motion.p>

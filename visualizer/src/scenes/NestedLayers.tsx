@@ -224,7 +224,7 @@ function AgentTitle() {
       transition={{ duration: 0.4 }}
       className="flex flex-col items-center gap-4 text-center"
     >
-      <p className="font-display text-6xl font-bold leading-tight text-ink sm:text-6xl">Agent = Model + Harness.</p>
+      <p className="font-display whitespace-nowrap text-6xl font-bold leading-tight text-ink sm:text-6xl">Agent = Model + Harness.</p>
       <p className="max-w-2xl text-3xl text-ink/60">The model provides intelligence. The harness makes it useful.</p>
     </motion.div>
   );
@@ -281,7 +281,7 @@ export function NestedLayers() {
         className={
           config.showDiagram
             ? "flex w-full max-w-2xl flex-col items-center justify-center gap-6 rounded-3xl bg-surface/70 px-6 py-6 text-center backdrop-blur-sm"
-            : "flex w-full max-w-2xl flex-col items-center justify-center gap-8"
+            : "flex w-full max-w-5xl flex-col items-center justify-center gap-8"
         }
       >
         <AnimatePresence mode="wait">

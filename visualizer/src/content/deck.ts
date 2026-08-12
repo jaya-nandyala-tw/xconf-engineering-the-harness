@@ -222,7 +222,7 @@ export const DECK: DeckItem[] = [
         {
           name: "Jaya Simha Reddy Nandyala",
           title: "Senior Consultant | Full Stack Engineer",
-          bio: "7+ years building enterprise apps across React, Python, and Java Spring Boot — now designing harness-engineering systems that make AI coding agents reliable across large, multi-repo codebases.",
+          bio: "7+ years building enterprise web applications — now designing harness-engineering systems that make AI coding agents reliable across large, multi-repo codebases.",
           photo: presenterJayaPhoto,
         },
         {
