@@ -83,7 +83,7 @@ export function SceneChrome({
           </div>
         </header>
 
-        {isPresenterMode && <PresenterPreviewBar />}
+        {isPresenterMode && <PresenterPreviewBar currentBeat={currentBeat} />}
 
         <main className="flex min-h-0 flex-1 items-center justify-center px-12">
           {children}

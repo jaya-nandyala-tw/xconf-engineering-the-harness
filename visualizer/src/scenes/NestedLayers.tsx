@@ -47,7 +47,7 @@ const LAYERS: Layer[] = [
     description: "The actual message, instructions, and examples.",
     color: "#fde68a",
     size: 26,
-    bullets: ["Instructions", "Role", "Examples"],
+    bullets: ["Instructions", "Requests", "Examples"],
   },
 ];
 

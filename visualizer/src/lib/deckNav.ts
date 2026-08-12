@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { DECK, SECTIONS, type DeckItem, type DeckSection } from "../content/deck";
+import { DECK, SECTIONS, type DeckItem, type DeckSection, type Notes } from "../content/deck";
 import { isEnabled } from "../content/slideToggles";
 
 // The effective talk sequence — everything downstream (Gallery, keyboard chaining,
@@ -70,6 +70,13 @@ export function useCurrentSection(): DeckSection | undefined {
 export function useCurrentDeckItem(): DeckItem | undefined {
   const location = useLocation();
   return ENABLED_DECK.find((i) => hrefFor(i) === location.pathname);
+}
+
+// Resolves which note to show for the current beat — a beat-specific override if the
+// item has one, else the item's whole-scene fallback. Undefined for both means no note
+// at all, which the presenter bar treats as "render nothing."
+export function notesForBeat(item: DeckItem | undefined, beat: number): Notes | undefined {
+  return item?.beatNotes?.[beat] ?? item?.notes;
 }
 
 export interface NavTarget {

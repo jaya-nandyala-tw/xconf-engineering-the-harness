@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import {
   formatMinSec,
+  notesForBeat,
   sectionPlannedStartSeconds,
   sectionTimeLabel,
   useCurrentDeckItem,
@@ -31,11 +32,19 @@ function openAudienceView(pathname: string, search: string) {
   win?.focus();
 }
 
-export function PresenterPreviewBar() {
+interface PresenterPreviewBarProps {
+  // Which beat/step is currently on screen — threaded down from SceneChrome so notes
+  // can track a scene's actual sub-steps instead of staying fixed for the whole item.
+  currentBeat: number;
+}
+
+export function PresenterPreviewBar({ currentBeat }: PresenterPreviewBarProps) {
   const section = useCurrentSection();
   const deckItem = useCurrentDeckItem();
   const location = useLocation();
   const { elapsedSeconds, isRunning, start, pause, reset } = useTalkTimer();
+  const notes = notesForBeat(deckItem, currentBeat);
+  const noteBullets = notes == null ? [] : Array.isArray(notes) ? notes : [notes];
 
   const plannedStart = section ? sectionPlannedStartSeconds(section.id) : 0;
   const deltaSeconds = elapsedSeconds - plannedStart;
@@ -101,11 +110,24 @@ export function PresenterPreviewBar() {
         </div>
       </div>
 
-      {deckItem?.notes && (
-        <p className="mt-1.5 max-w-4xl leading-snug text-ink/55">
-          <span className="mr-1.5 font-semibold uppercase tracking-[0.1em] text-ink/35">Notes</span>
-          {deckItem.notes}
-        </p>
+      {noteBullets.length > 0 && (
+        <div className="mt-2.5 max-w-4xl rounded-lg border border-flamingo/25 bg-flamingo/[0.06] px-4 py-2.5">
+          <span className="mb-1 block font-semibold uppercase tracking-[0.15em] text-flamingo/70">
+            Speaker notes
+          </span>
+          {noteBullets.length === 1 ? (
+            <p className="text-sm leading-snug text-ink/80">{noteBullets[0]}</p>
+          ) : (
+            <ul className="flex flex-col gap-1">
+              {noteBullets.map((point, i) => (
+                <li key={i} className="flex gap-2 text-sm leading-snug text-ink/80">
+                  <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-flamingo/60" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );
