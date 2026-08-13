@@ -375,7 +375,7 @@ function WorkflowDiagram({
   const verdicts = computeVerdicts(beat);
 
   return (
-    <div className="relative w-full overflow-x-auto rounded-[32px] border-2 border-ink/10 bg-ink/[0.02] px-8 pb-6 pt-10">
+    <div className="relative w-full overflow-x-auto rounded-[32px] border-2 border-ink/10 bg-ink/[0.02] px-8 pb-4 pt-8 mt-16">
       <span className="absolute left-8 top-4 font-mono text-sm uppercase tracking-[0.2em] text-ink/35">
         ai-workflows — 6-Phase Pipeline
       </span>
@@ -488,7 +488,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex min-h-[180px] flex-col gap-4 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6"
+            className="flex min-h-[160px] flex-col gap-3 rounded-2xl border border-ink/10 bg-ink/[0.02] p-5"
           >
             <span
               className="text-base font-semibold uppercase tracking-[0.15em]"
@@ -635,7 +635,13 @@ export function GuidesSensorsPipeline() {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full max-w-[1440px] flex-col items-center gap-7">
+      {/* self-start overrides SceneChrome main's vertical centering — DetailPanel's
+          content height varies a lot beat to beat (a 6-word outcome line vs. a repo
+          table + confirm badge + loop note), and centering a variable-height block made
+          the pipeline diagram above it visibly jump up/down every beat. Anchoring to the
+          top keeps the diagram itself pinned; only the empty space below DetailPanel
+          changes now, which doesn't read as a jump. */}
+      <div className="flex w-full max-w-[1440px] flex-col items-center gap-4 self-start pt-2">
         <WorkflowDiagram config={config} beat={beat} activeIndex={activeIndex} isLight={isLight} />
         <DetailPanel config={config} beat={beat} isLight={isLight} />
       </div>
