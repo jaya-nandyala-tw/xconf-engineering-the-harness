@@ -280,17 +280,22 @@ export const DECK: DeckItem[] = [
     notes: "An agent is a model plus a harness — that's the idea this whole talk builds on.",
     beatNotes: [
       [
-        "The model is the LLM itself — the reasoning engine. It's powerful, but stateless, with no memory, tools, or guardrails of its own.",
+        "So let's understand components that make up an AI Agent:",
+        "The model, the LLM itself -- is the reasoning engine. It's powerful, but stateless, with no memory, tools, or guardrails of its own.",
         "The harness is everything built around the model — orchestration, tool permissions, guardrails, retry loops — the system that makes that raw intelligence usable and safe.",
-        "An agent is the model plus the harness, together.",
-        "These layers aren't separate systems sitting side by side — they're nested, one inside the next. Harness contains context, context contains prompt, and each outer layer has more reach than the one it contains.",
+        "The Model and the harness together make the Agent.",
+
+        "Harness itself has layers nested inside it, and we're about to zoom through them"
       ],
       [
+        "First layer is Prompt Engineering",
         "Prompt Engineering is crafting the message sent to the model. This could be in the form of instructions, requests, and examples.",
         "But a prompt only lasts for one message — it carries no memory, no retrieval, and no state across turns. That gap is what Context Engineering closes.",
       ],
       [
-        "Context Engineering is the briefing packet for this specific session — retrieval, memory, and summarization.",
+        "Which brings us to the next layer, Context Engineering",
+        "Context Engineering is the briefing packet for a session — it provides retrieval, memory, and summarization.",
+        "In short, it makes the stateless prompt stateful.",
         "But context can only inform the model — it has no power to enforce anything. The model can still ignore it or act unsafely. That's the gap Harness Engineering closes.",
       ],
       [
@@ -462,7 +467,11 @@ export const DECK: DeckItem[] = [
       subtitle:
         "A structured intake, a blocking gate, a visible default — all before any codebase exists.",
     } satisfies StatementContent,
-    notes: "Greenfield mirror of Guides — same idea, but before there's any code to steer. Sets up the next scene's live demo.",
+    notes: [
+    "AI agents hallucinate — when they don't know the answer, they don't stay quiet, they guess, and state that guess with full confidence.",
+    " If the agent is left unconstrained it'll invent assumptions about scope, stack, even requirements, instead of asking.",
+    "Ask Before Deciding is what should be followed here: a set of input collection gates in place before any implementation starts.",  
+    ]
   },
   {
     kind: "interactive",
@@ -474,14 +483,14 @@ export const DECK: DeckItem[] = [
     coversSlides: ["S14b"],
     notes: "Real trimmed dialogue from story-analysis-agent's actual Input Collection Gate skill — this isn't a mockup.",
     beatNotes: [
-      "Before any fetch or context load — the intake sequence starts immediately.",
-      "Fixed order, not agent judgment — call that distinction out.",
-      "Jira first, one field at a time.",
-      "Even optional fields get asked — never silently skipped.",
-      "The skip itself gets recorded — that's the point, not a shortcut.",
-      "The confirmation gate — blocking, and non-skippable. Emphasize 'non-skippable.'",
-      "Nothing downstream starts until the human answers.",
-      "Payoff beat: the skipped input resolves to a visible, written default — not a silent guess. Let this line land before advancing.",
+      "We'll go through an example of where we've asked an agent for story ananlysis. Before the agent fetches anything or reads any code, a fixed intake sequence kicks in — asking for input is the very first thing it does.",
+      "It doesn't ask one open-ended question. It offers three fixed intake types — user story-only, story & UI, story & tech doc — the structure should be fixed, not left to the agent's judgment.",
+      "Once 'Jira plus Tech' is picked, fields come one at a time, in a set order — Jira ticket first.",
+      "Tech doc is optional here, but the agent still asks for it explicitly. An optional field never gets silently skipped by the agent itself.",
+      "The human chooses to skip it. That's a recorded human decision — not the agent quietly deciding it doesn't need one.",
+      "Before anything else, it summarizes what it collected and what was skipped, and asks for confirmation. The confirmation gate is blocking and non-skippable.",
+      "Only once the human actually answers all the questions, does anything downstream start.",
+      "Because the tech doc was skipped, that gap has to resolve to something later — here it resolves to an explicit sensible default.",
     ],
   },
   {
@@ -494,8 +503,7 @@ export const DECK: DeckItem[] = [
       icon: "loop",
       title: "Sensors catch mistakes after the agent acts, and feed the error back.",
     } satisfies StatementContent,
-    notes: "Prabina's section opens here — Sensors is the 'after' half of the guides/sensors split from S9.",
-  },
+    notes: "ow moving forward, we have covered guides which steers the agent before it acts. Now let's come to Sensors for catching what gets through after it acts.",  },
   {
     kind: "interactive",
     id: "guides-sensors",

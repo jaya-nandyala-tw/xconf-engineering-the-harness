@@ -114,20 +114,20 @@ function ChatLogBubble({ bubble, isLatest }: { bubble: Bubble; isLatest: boolean
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-lg border px-3 py-2 text-[15px] leading-snug ${roleStyle(bubble.role)} ${
+      className={`rounded-lg border px-4 py-2.5 text-base leading-snug ${roleStyle(bubble.role)} ${
         isLatest ? "ring-1 ring-inset ring-ink/25" : ""
       }`}
     >
-      <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wide opacity-50">{bubble.role}</span>
+      <span className="mr-1.5 font-mono text-xs uppercase tracking-wide opacity-50">{bubble.role}</span>
       {bubble.lines.map((line, i) => (
         <span key={i} className="block">
           {line}
         </span>
       ))}
       {bubble.chips && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap gap-2">
           {bubble.chips.map((chip) => (
-            <span key={chip} className="rounded-full border border-ink/20 px-2 py-0.5 text-xs text-ink/60">
+            <span key={chip} className="rounded-full border border-ink/20 px-3 py-1 text-sm text-ink/60">
               {chip}
             </span>
           ))}
@@ -146,9 +146,9 @@ function ChatLogPanel({ log }: { log: Bubble[] }) {
   }, [log.length]);
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 rounded-xl border border-ink/10 bg-ink/[0.03] p-4">
-      <p className="text-sm uppercase tracking-[0.15em] text-ink/40 shrink-0">Chat — story-analysis-agent</p>
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
+    <div className="flex h-full w-full flex-col gap-3 rounded-xl border border-ink/10 bg-ink/[0.03] p-5">
+      <p className="text-base uppercase tracking-[0.15em] text-ink/40 shrink-0">Chat — story-analysis-agent</p>
+      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
         <AnimatePresence initial={false}>
           {log.map((b, i) => (
             <ChatLogBubble key={i} bubble={b} isLatest={i === log.length - 1} />
@@ -161,11 +161,11 @@ function ChatLogPanel({ log }: { log: Bubble[] }) {
 
 function Stepper({ activeStep }: { activeStep: Step }) {
   return (
-    <div className="flex w-full items-center gap-2">
+    <div className="flex w-full items-center gap-3">
       {STEP_LABELS.map((label, i) => (
         <div
           key={label}
-          className={`flex-1 rounded-full border px-4 py-2 text-center text-sm font-medium transition-colors ${
+          className={`flex-1 rounded-full border px-5 py-2.5 text-center text-base font-medium transition-colors ${
             i === activeStep
               ? "border-turmeric bg-turmeric text-white"
               : i < activeStep
@@ -183,8 +183,8 @@ function Stepper({ activeStep }: { activeStep: Step }) {
 function StateRow({ label, value }: { label: string; value: string }) {
   const isUnset = value === "—";
   return (
-    <div className="flex items-center justify-between border-b border-ink/10 py-2.5 last:border-0">
-      <span className="text-sm text-ink/50">{label}</span>
+    <div className="flex items-center justify-between border-b border-ink/10 py-3.5 last:border-0">
+      <span className="text-base text-ink/50">{label}</span>
       <AnimatePresence mode="wait">
         <motion.span
           key={value}
@@ -192,7 +192,7 @@ function StateRow({ label, value }: { label: string; value: string }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 4 }}
           transition={{ duration: 0.25 }}
-          className={`font-mono text-sm ${isUnset ? "text-ink/25" : "text-ink/90"}`}
+          className={`font-mono text-base ${isUnset ? "text-ink/25" : "text-ink/90"}`}
         >
           {value}
         </motion.span>
@@ -204,7 +204,7 @@ function StateRow({ label, value }: { label: string; value: string }) {
 function CollectedInputsPanel({ state }: { state: InputsState }) {
   const gateLabel = state.gate === "waiting" ? "waiting for human" : state.gate === "confirmed" ? "confirmed ✓" : "—";
   return (
-    <div className="w-full max-w-md rounded-2xl border border-ink/10 bg-ink/[0.02] px-6 py-1">
+    <div className="w-full max-w-lg rounded-2xl border border-ink/10 bg-ink/[0.02] px-7 py-1.5">
       <StateRow label="Jira" value={state.jira} />
       <StateRow label="Tech doc" value={state.techDoc} />
       <StateRow label="Gate" value={gateLabel} />
@@ -228,15 +228,15 @@ export function GreenfieldIntake() {
       totalBeats={BEATS.length}
       currentBeat={beat}
       caption={config.caption}
-      sidebarClassName="w-[40vw]"
+      sidebarClassName="w-[44vw]"
       sidebar={
         <div className="flex h-full min-h-0 flex-col gap-3">
           <ChatLogPanel log={chatLog} />
         </div>
       }
     >
-      <div className="flex h-full min-h-0 w-full max-w-2xl flex-col items-center justify-center gap-8">
-        <h1 className="font-display text-center text-4xl font-bold text-ink sm:text-5xl">Input Collection Gates</h1>
+      <div className="flex h-full min-h-0 w-full max-w-3xl flex-col items-center justify-center gap-9">
+        <h1 className="font-display text-center text-5xl font-bold text-ink sm:text-6xl">Input Collection Gates</h1>
         <Stepper activeStep={config.step} />
         <CollectedInputsPanel state={config.state} />
 
@@ -247,7 +247,7 @@ export function GreenfieldIntake() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="rounded-lg border border-jade/40 bg-jade/10 px-6 py-3 text-center text-lg text-jade"
+              className="rounded-lg border border-jade/40 bg-jade/10 px-7 py-3.5 text-center text-xl text-jade"
             >
               ✓ Visible, explicit default — not a silent guess
             </motion.div>

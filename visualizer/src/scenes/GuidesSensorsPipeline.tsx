@@ -70,13 +70,13 @@ const BEATS: Beat[] = [
     request: null,
     active: null,
     loop: "none",
-    caption: "Guides before, sensors after — now watch a real 6-phase pipeline run one story end to end.",
+    caption: "A 6-phase pipeline run one story end to end.",
   },
   {
     request: REQUEST,
     active: null,
     loop: "none",
-    caption: "One story touches three layers: storefront UI, checkout BFF, payments service.",
+    caption: "A feature request arrives which may touch multiple services.",
   },
   // --- Phase 1: ANALYZE (Guides) ---
   {
@@ -114,7 +114,7 @@ const BEATS: Beat[] = [
     repoTable: REPO_TABLE,
     confirmState: "approved",
     loop: "confirm-resume",
-    loopNote: "Confirmed — 3 repos, file plan drafted for each.",
+    loopNote: "Confirmed — 3 repos, plan.md file is drafted.",
     caption: "Confirmed. Only now does the blueprint get written.",
   },
   // --- Phase 3: RED (Sensors, pass 1) ---
@@ -218,14 +218,14 @@ const BEATS: Beat[] = [
 
 // Horizontal row of 7 stage cards — a 7-node vertical stack would run too tall for a
 // wide slide, and a row also mirrors ai-dev-workflow.md's own left-to-right phase diagram.
-const CARD_W = 128;
-const CARD_H = 64;
-const GAP_X = 34;
+const CARD_W = 156;
+const CARD_H = 80;
+const GAP_X = 42;
 const STRIDE_X = CARD_W + GAP_X;
-const ROW_Y = 48; // headroom for the Blueprint confirm badge above the row
-const LOOP_ARC_DEPTH = 64;
+const ROW_Y = 60; // headroom for the Blueprint confirm badge above the row
+const LOOP_ARC_DEPTH = 78;
 const SVG_W = (STAGES.length - 1) * STRIDE_X + CARD_W;
-const SVG_H = ROW_Y + CARD_H + LOOP_ARC_DEPTH + 16;
+const SVG_H = ROW_Y + CARD_H + LOOP_ARC_DEPTH + 20;
 
 function stageX(index: number): number {
   return index * STRIDE_X;
@@ -287,13 +287,13 @@ function StageNode({
           opacity: status === "pending" ? 0.35 : 1,
         }}
         transition={{ type: "spring", stiffness: 160, damping: 22 }}
-        className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl border px-2 text-center"
+        className="flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 text-center"
       >
-        <span className="text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: resolvedColor }}>
+        <span className="text-sm font-semibold uppercase tracking-[0.12em]" style={{ color: resolvedColor }}>
           {label}
         </span>
-        {agent && <span className="font-mono text-[10px] text-ink/40">{agent}</span>}
-        {dotColor && <span className="h-2 w-2 rounded-full" style={{ backgroundColor: dotColor }} />}
+        {agent && <span className="font-mono text-xs text-ink/40">{agent}</span>}
+        {dotColor && <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: dotColor }} />}
       </motion.div>
     </foreignObject>
   );
@@ -308,7 +308,7 @@ function MainConnector({ index, lit, isLight }: { index: number; lit: boolean; i
       d={`M ${x1} ${y} L ${x2} ${y}`}
       fill="none"
       animate={{ stroke: lit ? inkRgba(isLight, 0.45) : inkRgba(isLight, 0.1) }}
-      strokeWidth={2}
+      strokeWidth={2.5}
       markerEnd={lit ? "url(#main-arrow)" : undefined}
       transition={{ duration: 0.3 }}
     />
@@ -317,9 +317,9 @@ function MainConnector({ index, lit, isLight }: { index: number; lit: boolean; i
 
 function ConfirmBadge({ state }: { state: "waiting" | "approved" }) {
   const color = state === "approved" ? "#4ade80" : "#a78bfa";
-  const size = 32;
+  const size = 40;
   const x = stageCenterX(BLUEPRINT_INDEX) - size / 2;
-  const y = ROW_Y - size - 12;
+  const y = ROW_Y - size - 14;
   return (
     <foreignObject x={x} y={y} width={size} height={size}>
       <motion.div
@@ -327,7 +327,7 @@ function ConfirmBadge({ state }: { state: "waiting" | "approved" }) {
         animate={{ opacity: 1, scale: 1, borderColor: color }}
         exit={{ opacity: 0, scale: 0.7 }}
         transition={{ type: "spring", stiffness: 240, damping: 20 }}
-        className="flex h-full w-full items-center justify-center rounded-full border-2 text-sm"
+        className="flex h-full w-full items-center justify-center rounded-full border-2 text-base"
         style={{ backgroundColor: state === "approved" ? "rgba(52,211,153,0.15)" : "rgba(96,165,250,0.12)", color }}
       >
         {state === "approved" ? "✓" : "⏸"}
@@ -347,7 +347,7 @@ function GapLoopArc({ visible }: { visible: boolean }) {
       d={GAP_LOOP_PATH}
       fill="none"
       stroke="#a78bfa"
-      strokeWidth={2.5}
+      strokeWidth={3}
       markerEnd={arrowReady ? "url(#loop-arrow)" : undefined}
       initial={{ pathLength: 0, opacity: 0 }}
       animate={{ pathLength: visible ? 1 : 0, opacity: visible ? 1 : 0 }}
@@ -375,8 +375,8 @@ function WorkflowDiagram({
   const verdicts = computeVerdicts(beat);
 
   return (
-    <div className="relative w-full overflow-x-auto rounded-[28px] border-2 border-ink/10 bg-ink/[0.02] px-7 pb-5 pt-9">
-      <span className="absolute left-7 top-3 font-mono text-xs uppercase tracking-[0.2em] text-ink/35">
+    <div className="relative w-full overflow-x-auto rounded-[32px] border-2 border-ink/10 bg-ink/[0.02] px-8 pb-6 pt-10">
+      <span className="absolute left-8 top-4 font-mono text-sm uppercase tracking-[0.2em] text-ink/35">
         ai-workflows — 6-Phase Pipeline
       </span>
       <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto block overflow-visible">
@@ -420,7 +420,7 @@ function WorkflowDiagram({
 
 function RequestBubble({ text }: { text: string | null }) {
   return (
-    <div className="flex min-h-[44px] items-center">
+    <div className="flex min-h-[52px] items-center">
       <AnimatePresence mode="wait">
         {text && (
           <motion.div
@@ -429,9 +429,9 @@ function RequestBubble({ text }: { text: string | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.3 }}
-            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-4 py-2 text-base text-ink/80"
+            className="rounded-xl border border-ink/10 bg-ink/[0.04] px-5 py-2.5 text-lg text-ink/80"
           >
-            <span className="mr-2 font-mono text-xs uppercase tracking-wide text-ink/40">request</span>
+            <span className="mr-2 font-mono text-sm uppercase tracking-wide text-ink/40">request</span>
             {text}
           </motion.div>
         )}
@@ -450,7 +450,7 @@ function ConfirmStateBadge({ state, isLight }: { state: "draft" | "waiting" | "a
   const labelText = state === "approved" ? "confirmed ✓" : state === "waiting" ? "awaiting confirmation" : "drafting…";
   return (
     <span
-      className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs"
+      className="inline-flex w-fit items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-sm"
       style={{ backgroundColor: tone.bg, borderColor: tone.border, color: tone.text }}
     >
       {labelText}
@@ -465,7 +465,7 @@ function VerdictBadge({ verdict, label, isLight }: { verdict: Verdict; label: st
       : { bg: "rgba(204,133,10,0.16)", border: "rgba(204,133,10,0.65)", text: isLight ? "#976207" : "#cc850a" };
   return (
     <span
-      className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs"
+      className="inline-flex w-fit items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-sm"
       style={{ backgroundColor: tone.bg, borderColor: tone.border, color: tone.text }}
     >
       {verdict === "pass" ? "✓" : "✗"} {label}
@@ -488,10 +488,10 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex min-h-[152px] flex-col gap-3 rounded-2xl border border-ink/10 bg-ink/[0.02] p-5"
+            className="flex min-h-[180px] flex-col gap-4 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6"
           >
             <span
-              className="text-sm font-semibold uppercase tracking-[0.15em]"
+              className="text-base font-semibold uppercase tracking-[0.15em]"
               style={{ color: resolveStageColor(stage.color, isLight) }}
             >
               {stage.label}
@@ -501,10 +501,10 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
 
             {config.active === "analyze" && config.guideDetail && (
               <>
-                <ul className="flex flex-col gap-1 text-base text-ink/70">
+                <ul className="flex flex-col gap-1.5 text-lg text-ink/70">
                   {config.guideDetail.map((d) => (
                     <li key={d} className="flex items-center gap-2">
-                      <span className="h-1 w-1 shrink-0 rounded-full bg-blue-300" />
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-300" />
                       {d}
                     </li>
                   ))}
@@ -514,12 +514,12 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "blueprint" && config.repoTable && (
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap gap-2.5">
                   {config.repoTable.map((r) => (
                     <span
                       key={r.repo}
-                      className="rounded-full border border-ink/15 bg-ink/[0.03] px-3 py-1 font-mono text-sm text-ink/75"
+                      className="rounded-full border border-ink/15 bg-ink/[0.03] px-4 py-1.5 font-mono text-base text-ink/75"
                     >
                       {r.repo} <span className="text-ink/40">· {r.role}</span>
                     </span>
@@ -528,7 +528,7 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
                 {config.confirmState && <ConfirmStateBadge state={config.confirmState} isLight={isLight} />}
                 {config.loopNote && (
                   <p
-                    className="text-base leading-snug"
+                    className="text-lg leading-snug"
                     style={{
                       color:
                         config.loop === "confirm-resume" ? (isLight ? "#0f766e" : "#86efac") : isLight ? "#5b21b6" : "#c4b5fd",
@@ -541,12 +541,12 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {(config.active === "red" || config.active === "green") && config.files && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 {config.filesLabel && (
-                  <span className="text-xs uppercase tracking-wide text-ink/40">{config.filesLabel}</span>
+                  <span className="text-sm uppercase tracking-wide text-ink/40">{config.filesLabel}</span>
                 )}
                 <ul
-                  className={`flex flex-col gap-1 font-mono text-sm leading-snug ${
+                  className={`flex flex-col gap-1.5 font-mono text-base leading-snug ${
                     config.active === "red"
                       ? "text-turmeric"
                       : isLight
@@ -573,8 +573,8 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "refactor" && (
-              <div className="flex flex-col gap-2">
-                {config.note && <p className="text-sm leading-snug text-ink/70">{config.note}</p>}
+              <div className="flex flex-col gap-3">
+                {config.note && <p className="text-base leading-snug text-ink/70">{config.note}</p>}
                 {config.verdict && (
                   <VerdictBadge verdict={config.verdict} label="tests still green, no behavior change" isLight={isLight} />
                 )}
@@ -582,15 +582,15 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "review" && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 {config.gapFile ? (
                   <>
-                    <p className="text-sm leading-snug text-turmeric">
+                    <p className="text-base leading-snug text-turmeric">
                       {config.gapFile} — {config.gapNote}
                     </p>
                     {config.verdict && <VerdictBadge verdict={config.verdict} label="coverage gap found" isLight={isLight} />}
                     {config.loopNote && (
-                      <p className="text-sm leading-snug" style={{ color: isLight ? "#5b21b6" : "#c4b5fd" }}>
+                      <p className="text-base leading-snug" style={{ color: isLight ? "#5b21b6" : "#c4b5fd" }}>
                         {config.loopNote}
                       </p>
                     )}
@@ -604,9 +604,9 @@ function DetailPanel({ config, beat, isLight }: { config: Beat; beat: number; is
             )}
 
             {config.active === "outcome" && config.outcomeLines && (
-              <div className="flex items-center gap-3">
-                <span className={`text-2xl ${toneText(isLight, "emerald")}`}>✓</span>
-                <div className={`text-base leading-snug ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
+              <div className="flex items-center gap-4">
+                <span className={`text-3xl ${toneText(isLight, "emerald")}`}>✓</span>
+                <div className={`text-lg leading-snug ${isLight ? "text-emerald-800/90" : "text-emerald-300/85"}`}>
                   <div>{config.outcomeLines[0]}</div>
                   <div className="text-ink/50">{config.outcomeLines[1]}</div>
                 </div>
@@ -635,7 +635,7 @@ export function GuidesSensorsPipeline() {
       nextHref={nextHref}
       nextLabel={nextLabel}
     >
-      <div className="flex w-full max-w-[1180px] flex-col items-center gap-6">
+      <div className="flex w-full max-w-[1440px] flex-col items-center gap-7">
         <WorkflowDiagram config={config} beat={beat} activeIndex={activeIndex} isLight={isLight} />
         <DetailPanel config={config} beat={beat} isLight={isLight} />
       </div>
